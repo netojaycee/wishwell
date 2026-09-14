@@ -90,6 +90,15 @@ export async function updateBoardTheme(boardId: string, ownerId: string, themeId
   return row ?? null;
 }
 
+export async function listRecentPublicBoardsForOccasion(occasionTypeId: string, limit = 3) {
+  return db
+    .select()
+    .from(board)
+    .where(and(eq(board.occasionTypeId, occasionTypeId), eq(board.visibility, "public")))
+    .orderBy(desc(board.createdAt))
+    .limit(limit);
+}
+
 export async function updateBoardDetails(
   boardId: string,
   ownerId: string,
