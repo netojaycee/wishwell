@@ -3,8 +3,7 @@
 import { config } from "dotenv";
 config({ path: ".env.local", quiet: true });
 
-type Palette = { bg: string; surface: string; ink: string; accent: string; accentSoft: string };
-type FontPair = { heading: "fraunces" | "instrument-serif" | "playfair"; body: "geist" | "inter" };
+import type { Palette, FontPair } from "@/lib/theme/types";
 
 type OccasionSeed = {
   key: string;

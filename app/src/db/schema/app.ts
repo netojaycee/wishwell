@@ -12,6 +12,7 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { user } from "./auth";
+import type { Palette, FontPair } from "@/lib/theme/types";
 
 export const motionProfileEnum = pgEnum("motion_profile", ["celebratory", "warm", "solemn"]);
 export const boardModeEnum = pgEnum("board_mode", ["collaborative", "tribute"]);
@@ -39,9 +40,9 @@ export const theme = pgTable("theme", {
   // occasionTypeId is nullable: a theme with no occasion is a generic theme any board can pick.
   occasionTypeId: uuid("occasion_type_id").references(() => occasionType.id, { onDelete: "set null" }),
   isDefault: boolean("is_default").notNull().default(false),
-  palette: jsonb("palette").$type<{ bg: string; surface: string; ink: string; accent: string; accentSoft: string }>().notNull(),
+  palette: jsonb("palette").$type<Palette>().notNull(),
   backgroundUrl: text("background_url"),
-  fontPair: jsonb("font_pair").$type<{ heading: string; body: string }>().notNull(),
+  fontPair: jsonb("font_pair").$type<FontPair>().notNull(),
   particleEffect: text("particle_effect"), // e.g. "confetti" | "balloons" | "grain" | null
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
