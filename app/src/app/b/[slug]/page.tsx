@@ -69,6 +69,17 @@ export default async function BoardPage({ params }: Params) {
       ) : (
         <EmptyState slug={board.slug} mode={board.mode} profile={profile} />
       )}
+      {posts.length > 0 ? (
+        <div className="pb-16 text-center">
+          <Link
+            href={`/b/${board.slug}/slideshow`}
+            className="text-sm font-medium underline underline-offset-2"
+            style={{ color: "var(--board-accent)" }}
+          >
+            View as slideshow
+          </Link>
+        </div>
+      ) : null}
       <footer className="border-t border-[var(--board-ink)]/10 px-6 py-8 text-center text-sm text-[var(--board-ink)]/50">
         Made with{" "}
         <Link href="/" className="font-medium underline underline-offset-2">

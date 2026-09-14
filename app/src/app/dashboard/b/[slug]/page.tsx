@@ -27,9 +27,14 @@ export default async function ManageBoardPage({ params }: Params) {
         ← My boards
       </Link>
       <h1 className="mt-2 font-heading text-3xl">{board.title}</h1>
-      <Link href={`/b/${board.slug}`} className="text-sm underline underline-offset-2">
-        View the live board
-      </Link>
+      <div className="flex gap-4">
+        <Link href={`/b/${board.slug}`} className="text-sm underline underline-offset-2">
+          View the live board
+        </Link>
+        <Link href={`/b/${board.slug}/slideshow`} className="text-sm underline underline-offset-2">
+          Slideshow mode
+        </Link>
+      </div>
 
       <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[1fr_320px]">
         <div>
