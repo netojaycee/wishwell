@@ -2,10 +2,12 @@
 
 > Living file. The agent updates this after every meaningful change. Keep it short and true. Delete finished noise; this is a state file, not a changelog.
 
-**Last updated:** 2026-09-14
+**Last updated:** 2026-09-15
 **Phase:** Day-1 build — functionally complete end to end, not yet deployed
 **Live URL:** _(pending — not yet deployed to Vercel)_
-**Repo:** local git only (6 commits), no GitHub remote yet
+**Repo:** local git only, no GitHub remote yet. Flattened: the Next.js app used to live
+in an `app/` subdirectory; it's now at the repo root (no Root Directory override needed
+on Vercel).
 
 ## Now
 - [ ] Push to GitHub + import into Vercel (needs the user's accounts — see Blocked)
@@ -15,7 +17,7 @@
 
 ## Done
 Everything in `BUILD_PLAN.md` Hours 0-8 except the items above. Concretely:
-- Next.js 16 (App Router, Turbopack, Tailwind v4) in `app/`, shadcn/ui initialized
+- Next.js 16 (App Router, Turbopack, Tailwind v4) at the repo root, shadcn/ui initialized
 - Drizzle schema for Board/OccasionType/Theme/Post/Reaction/Invite/Report + Better Auth's
   own tables; local dev DB is DBngin Postgres (`wishwell_dev`), migrations applied
 - Seeded 10 occasion types x 3 themes each with real editorial palettes
@@ -74,8 +76,8 @@ RESEND_API_KEY=
 GIPHY_API_KEY=
 NEXT_PUBLIC_APP_URL=
 ```
-See `app/.env.example` for the authoritative list, and `app/README.md` for setup and
-Vercel deploy steps.
+See `.env.example` for the authoritative list, and `README.md` for setup and Vercel
+deploy steps.
 
 ## Known issues
 - Dev mode (Turbopack) shows a multi-second delay compiling a route's client chunk on

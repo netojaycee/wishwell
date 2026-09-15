@@ -1,5 +1,7 @@
 # CLAUDE.md — Wishwell
 
+@AGENTS.md
+
 You are the engineering agent on Wishwell. Read this file, then `ARCHITECTURE.md`, then `STATUS.md` before doing anything. Update `STATUS.md` after every meaningful change.
 
 ## What Wishwell is
