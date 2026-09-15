@@ -147,6 +147,15 @@ ballooned to half the screen; board-page `-z-10` ambient layers now sit inside a
 - *SEO:* BreadcrumbList JSON-LD on occasion pages and public boards; verification meta tags
   from env.
 - *Example boards:* `src/db/seed-demo.ts` (see Now for the owner step).
+- *Auth-aware routing:* `src/proxy.ts` (Next 16's renamed middleware, Node runtime) does a
+  real Better Auth session check on `/dashboard*`, `/sign-in`, `/sign-up` only: signed-in →
+  bounced off auth pages to `?redirectTo` or `/dashboard`; signed-out → `/sign-in?redirectTo=…`.
+  Stale/invalid cookies verified not to loop. `safeRedirect()` (`src/lib/redirect.ts`)
+  blocks open redirects. The marketing header reads the session client-side
+  (`components/marketing/header-auth.tsx`: "My boards"/"New board" vs "Sign in"/"Get
+  started") so marketing pages stay static/ISR; the create wizard hides the "create an
+  account" nudge when signed in. Pages/actions still call `requireSession` — proxy is the
+  first line, not the only one.
 - pnpm 11 note: `pnpm-workspace.yaml` → `allowBuilds.core-js: false` (posthog dependency;
   its install script is only a banner). An unanswered placeholder there blocks every
   `pnpm <script>` with ERR_PNPM_IGNORED_BUILDS.

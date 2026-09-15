@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { LogoMark } from "@/components/brand/logo-mark";
+import { HeaderAuth } from "./header-auth";
 
 export function SiteHeader() {
   return (
@@ -11,16 +12,7 @@ export function SiteHeader() {
           Fondly Held
         </Link>
         <nav className="flex items-center gap-4 text-sm font-medium whitespace-nowrap sm:gap-6">
-          <Link href="/create" className="hidden sm:inline">
-            Create a board
-          </Link>
-          <Link href="/sign-in">Sign in</Link>
-          <Link
-            href="/create"
-            className="rounded-full bg-[var(--brand-ink)] px-4 py-2 text-white transition-colors hover:bg-[var(--brand)]"
-          >
-            Get started
-          </Link>
+          <HeaderAuth />
         </nav>
       </div>
     </header>

@@ -11,6 +11,7 @@ import { OccasionArt } from "@/components/illustrations/occasion-art";
 import { boardThemeVars } from "@/lib/theme/vars";
 import { PHOTOS, showcaseFor } from "@/lib/content/moments";
 import { track } from "@/lib/analytics";
+import { useSession } from "@/lib/auth-client";
 import type { OccasionTypeRow, ThemeRow } from "@/lib/types";
 
 type OccasionWithThemes = OccasionTypeRow & { themes: ThemeRow[] };
@@ -40,6 +41,9 @@ export function CreateWizard({
   const [resultSlug, setResultSlug] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const reducedMotion = useReducedMotion();
+  // Signed-in owners' boards are saved to their account on creation (createBoardAction
+  // reads the session), so the "create an account to keep it" nudge is only for guests.
+  const { data: session } = useSession();
 
   // Arriving with ?occasion= (from an occasion landing page) skips step 0, so the funnel's
   // "start create" step is recorded here instead of in selectOccasion.
@@ -472,6 +476,27 @@ export function CreateWizard({
                 View your board
               </Link>
 
+              {session ? (
+                <div
+                  className="mt-10 rounded-2xl border-2 p-5 text-left"
+                  style={{ borderColor: "var(--brand-soft)", background: "var(--brand-soft)" }}
+                >
+                  <p className="font-heading text-lg" style={{ color: "var(--brand-ink)" }}>
+                    Saved to your account
+                  </p>
+                  <p className="mt-1.5 text-sm text-black/60">
+                    Moderate posts, invite people by email, and change the look any time from
+                    your dashboard.
+                  </p>
+                  <Link
+                    href={`/dashboard/b/${resultSlug}`}
+                    className="mt-3 inline-flex rounded-full px-5 py-2.5 text-sm font-semibold text-white"
+                    style={{ background: "var(--brand-ink)" }}
+                  >
+                    Manage this board
+                  </Link>
+                </div>
+              ) : (
               <div
                 className="mt-10 rounded-2xl border-2 p-5 text-left"
                 style={{ borderColor: "var(--brand-soft)", background: "var(--brand-soft)" }}
@@ -492,6 +517,7 @@ export function CreateWizard({
                   Create a free account
                 </Link>
               </div>
+              )}
             </motion.div>
           ) : null}
         </AnimatePresence>

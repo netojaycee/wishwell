@@ -6,6 +6,14 @@ import Link from "next/link";
 import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { track } from "@/lib/analytics";
+import { safeRedirect } from "@/lib/redirect";
+
+// Where to go after signing in: back to the page proxy.ts bounced them from
+// (?redirectTo=…), else the dashboard. Read at call time, not render time, so this
+// statically rendered page doesn't need a Suspense boundary for useSearchParams.
+function nextPath() {
+  return safeRedirect(new URLSearchParams(window.location.search).get("redirectTo")) ?? "/dashboard";
+}
 
 function FieldShell({
   icon,
@@ -49,7 +57,7 @@ export function AuthForm({ mode, hasGoogleAuth }: { mode: "sign-in" | "sign-up";
     }
 
     if (mode === "sign-up") track("owner_signed_up", { method: "email" });
-    router.push("/dashboard");
+    router.push(nextPath());
     router.refresh();
   };
 
@@ -128,7 +136,7 @@ export function AuthForm({ mode, hasGoogleAuth }: { mode: "sign-in" | "sign-up";
             <span className="h-px flex-1 bg-black/10" />
           </div>
           <button
-            onClick={() => authClient.signIn.social({ provider: "google", callbackURL: "/dashboard" })}
+            onClick={() => authClient.signIn.social({ provider: "google", callbackURL: nextPath() })}
             className="flex w-full items-center justify-center gap-2.5 rounded-full border border-black/10 bg-white px-6 py-3 text-sm font-semibold transition-colors hover:bg-black/[0.02]"
           >
             <GoogleG />
