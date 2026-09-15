@@ -10,6 +10,11 @@ old brand (renaming a GitHub repo is safe/non-breaking, GitHub redirects the old
 it's a deliberate choice; not done automatically here).
 
 ## Now
+- **Logo + desktop design pass shipped.** Custom logomark (open heart + held dot),
+  brand terracotta accent, richer home hero (gradient mesh + card collage), site-wide
+  grain texture, wider header/footer, branded 404 page. Verified in-browser.
+- [ ] Deploy to Vercel — everything is pushed and ready, just needs the user's account
+  (see Blocked below)
 - **Fixed: auth was broken (both email/password and Google).** Root cause: port 3000/3001
   are permanently occupied by another project on this machine, so `next dev` silently
   ran on a different port each time while `BETTER_AUTH_URL` stayed hardcoded to
