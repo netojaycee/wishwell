@@ -3,8 +3,11 @@
 > Living file. The agent updates this after every meaningful change. Keep it short and true. Delete finished noise; this is a state file, not a changelog.
 
 **Last updated:** 2026-09-15
-**Phase:** Day-1 build — functionally complete end to end, polished, not yet deployed
-**Live URL:** _(pending — not yet deployed to Vercel)_
+**Phase:** Day-1 build — live in production, polished, tester guide ready to send
+**Live URL:** https://fondlyheld.vercel.app — confirmed deployed and auto-deploying from
+`main` on every push (Vercel's git integration). Email/password sign-up verified working
+directly against production (not just locally). Production and local dev currently share
+the same Neon database, so boards created in either place show up in both.
 **Repo:** `github.com/netojaycee/wishwell` on `main`, fully pushed and up to date. Repo/
 Neon DB/R2 bucket names still say "wishwell" (the product was renamed mid-build — see
 Done) — left alone deliberately, internal identifiers only, no user-facing effect.
@@ -22,18 +25,16 @@ Done) — left alone deliberately, internal identifiers only, no user-facing eff
    machine, already diagnosed, documented there.
 
 ## Now (actually pending)
-- [ ] `TESTING.md` (repo root) is a tester guide, ready to share — **fill in the live
-  URL placeholder at its top before sending it out**, and confirm with the user whether
-  the app is actually deployed somewhere yet (they mentioned testing a live link in
-  WhatsApp, but this agent has no record of a completed Vercel deploy — worth clarifying
-  rather than assuming either way).
-- [ ] Deploy to Vercel — code is ready and pushed; needs the user's Vercel account
-  (dashboard import, no CLI access from this agent). See Blocked.
-- [ ] Add `http://localhost:3005/api/auth/callback/google` as an authorized redirect URI
-  in Google Cloud Console (email/password auth works now; Google sign-in doesn't until
-  this is added — confirmed via Google's own error page, not guessed)
-- [ ] Seed 3 real demo boards with real content, once the app is live somewhere shareable
-- [ ] Lighthouse pass on the board page once deployed
+- [x] `TESTING.md` (repo root) — live URL filled in (https://fondlyheld.vercel.app), ready
+  to send to testers as-is.
+- [ ] Add authorized redirect URIs in Google Cloud Console — needs **both**
+  `http://localhost:3005/api/auth/callback/google` (local dev) **and**
+  `https://fondlyheld.vercel.app/api/auth/callback/google` (production). Email/password
+  auth confirmed working in production already; Google sign-in not yet re-tested since
+  the redirect URI fix.
+- [ ] Seed 3 real demo boards with real content — production is live now, so this can
+  happen directly there
+- [ ] Lighthouse pass on the board page against the real production URL
 - [ ] About page needs the founder's real name + photo (placeholder + TODO comment there
   now — did not fabricate a persona)
 - [ ] Privacy/Terms are real, substantive, non-lorem policies but not lawyer-reviewed
@@ -99,12 +100,10 @@ force exactly 375px through the browser automation tool in this environment, but
 same mobile-first CSS path applies at any width below the 640px `sm` breakpoint).
 
 ## Blocked / needs a human decision
-- [ ] Vercel account — need `vercel login` or a dashboard import to actually deploy
+- [x] Vercel — deployed, live at https://fondlyheld.vercel.app, auto-deploys from `main`
 - [ ] Giphy API key is present but untested; GIF picker not click-tested this session
-- [ ] No domain yet — shipping on the Vercel-provided `*.vercel.app` URL is fully
-  functional. Flagged to the user: Vercel's Hobby plan is licensed for non-commercial use
-- [ ] Decide the Vercel project name/slug at import time (e.g. `fondly-held`) — check
-  it's free before committing
+- [ ] No custom domain yet — shipping on `fondlyheld.vercel.app` is fully functional.
+  Flagged to the user: Vercel's Hobby plan is licensed for non-commercial use
 - [ ] About page name/photo and Privacy/Terms legal review — see Now
 
 ## Environment

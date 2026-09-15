@@ -20,7 +20,7 @@ buttons work.
 
 ## The link to test on
 
-**Live URL:** `[ADD THE LIVE URL HERE]`
+**Live URL:** https://fondlyheld.vercel.app
 
 Please test on the real deployed site, not a local copy — we're specifically trying to
 catch things that only show up in production: real links shared over WhatsApp/iMessage,
