@@ -25,50 +25,17 @@ Done) — left alone deliberately, internal identifiers only, no user-facing eff
    machine, already diagnosed, documented there.
 
 ## Now (actually pending)
-- [ ] **Media upload (photo/video) is broken in both local and production** — traced via
-  a real browser test (uploaded a real file, read the actual network request), not
-  guessed. Two separate causes, both need the user's action in dashboards this agent
-  can't reach:
-  1. **R2 bucket CORS policy rejects the browser's upload preflight with 403**, in local
-     dev at minimum (same bucket is used in prod, so almost certainly there too once #2
-     is fixed). In the Cloudflare dashboard → R2 → the `wishwell-assets` bucket →
-     Settings → CORS Policy, add a rule allowing `PUT` (and `GET`) from
-     `http://localhost:3005` and `https://fondlyheld.vercel.app` (and any future custom
-     domain). Example policy:
-     ```json
-     [
-       {
-         "AllowedOrigins": ["http://localhost:3005", "https://fondlyheld.vercel.app"],
-         "AllowedMethods": ["PUT", "GET"],
-         "AllowedHeaders": ["*"],
-         "MaxAgeSeconds": 3600
-       }
-     ]
-     ```
-  2. **Production is missing R2 env vars entirely** — the "Add a photo or video" button
-     doesn't even render there (only "Add a GIF" shows), meaning `hasR2` evaluates false,
-     meaning one or more of `R2_ACCOUNT_ID`/`R2_ACCESS_KEY_ID`/`R2_SECRET_ACCESS_KEY`/
-     `R2_BUCKET`/`R2_PUBLIC_URL` isn't set in the Vercel project's environment variables.
-     Copy the current values from local `.env.local` into Vercel → Project → Settings →
-     Environment Variables, then redeploy.
-  Code-side, the silent-failure bug (an upload that failed still got treated as if it
-  succeeded, hence "blank" previews) is already fixed and pushed — uploads now correctly
-  show an error instead of pretending to work. GIFs were never affected (they're Giphy
-  URLs, no R2 involved) — that's why only GIF worked in the preview.
-- [x] `TESTING.md` (repo root) — live URL filled in (https://fondlyheld.vercel.app), ready
-  to send to testers **once the R2 issue above is fixed** — don't send it out with media
-  upload broken.
-- [ ] Add authorized redirect URIs in Google Cloud Console — needs **both**
-  `http://localhost:3005/api/auth/callback/google` (local dev) **and**
-  `https://fondlyheld.vercel.app/api/auth/callback/google` (production). Email/password
-  auth confirmed working in production already; Google sign-in not yet re-tested since
-  the redirect URI fix.
-- [ ] **Example boards have no owner yet.** `pnpm db:seed-demo` created the 3 examples
-  (`/b/tolu-turns-30`, `/b/farewell-rachel`, `/b/remembering-grandma-rose`, unlisted,
-  labelled as examples, linked from the home page "Every tone" section) but no account
-  exists for netojaycee@gmail.com. Sign up on production, then run
-  `EXAMPLE_OWNER_EMAIL=<your email> pnpm db:seed-demo` — it assigns the existing examples
-  to you so you can moderate them (until then nobody can hide posts on them).
+- [x] **Media upload fixed (2026-09-15)** — owner added the R2 CORS rule and the `R2_*`
+  env vars in Vercel. Verified: production renders "Add a photo or video", signs upload
+  URLs, and R2 answers the browser preflight with 204 + `Access-Control-Allow-Origin` for
+  both `https://fondlyheld.vercel.app` and `http://localhost:3005`. **When a custom domain
+  is added, add it to the R2 CORS `AllowedOrigins` too.**
+- [x] `TESTING.md` (repo root) — ready to send to testers now that uploads work.
+- [x] Google OAuth redirect URIs added by the owner (local + production). Add the custom
+  domain's `/api/auth/callback/google` too when one is attached.
+- [x] Example boards (`/b/tolu-turns-30`, `/b/farewell-rachel`,
+  `/b/remembering-grandma-rose` — unlisted, labelled, linked from the home page) are
+  claimed by the owner's account, so they're moderatable from the dashboard.
 - [ ] **Analytics need switching on (code is in):** enable Web Analytics in Vercel →
   Project → Analytics; create a free PostHog project and set `NEXT_PUBLIC_POSTHOG_KEY`
   (+ optional `NEXT_PUBLIC_POSTHOG_HOST`) in Vercel env vars, then redeploy. Funnel events:
@@ -79,8 +46,8 @@ Done) — left alone deliberately, internal identifiers only, no user-facing eff
   `BING_SITE_VERIFICATION` in Vercel to the meta-tag content values, redeploy, verify, then
   submit `/sitemap.xml` in both.
 - [ ] Lighthouse pass on the board page against the real production URL
-- [ ] About page needs the founder's real name + photo (placeholder + TODO comment there
-  now — did not fabricate a persona)
+- [x] About page shows the founder: John Chinonso Edeh, photo (`public/images/founder.webp`),
+  real email
 - [ ] Privacy/Terms are real, substantive, non-lorem policies but not lawyer-reviewed
 
 ## Done
@@ -202,7 +169,7 @@ unfocused, so rAF-driven entrance fades crawl in screenshots — not a real-worl
 - [ ] Giphy API key is present but untested; GIF picker not click-tested this session
 - [ ] No custom domain yet — shipping on `fondlyheld.vercel.app` is fully functional.
   Flagged to the user: Vercel's Hobby plan is licensed for non-commercial use
-- [ ] About page name/photo and Privacy/Terms legal review — see Now
+- [ ] Privacy/Terms legal review — see Now
 
 ## Environment
 `.env.local` (gitignored, not reproduced here) has real working values for

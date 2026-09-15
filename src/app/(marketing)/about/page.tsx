@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Gift, Infinity as InfinityIcon, ShieldCheck } from "lucide-react";
 import { BrandPanel } from "@/components/brand/brand-panel";
 import { Reveal } from "@/components/board/reveal";
@@ -34,11 +35,32 @@ export default function AboutPage() {
             campaign.
           </p>
           <p className="mt-4 leading-relaxed text-black/75">
-            {/* TODO(owner): replace with your real name and a photo before this page ships publicly — see STATUS.md */}
-            Fondly Held is built and run by a solo founder in Nigeria. If you have a question,
-            feedback, or a board you&apos;re proud of, reach out — a real person reads every
-            message.
+            Fondly Held is built and run by John Chinonso Edeh, a solo founder in Nigeria. If
+            you have a question, feedback, or a board you&apos;re proud of, reach out — I read and
+            answer every message myself.
           </p>
+
+          {/* GROWTH.md §3 trust: a named human with a photo and a real email. */}
+          <figure className="mt-8 flex items-center gap-5 rounded-3xl border border-black/5 bg-white/60 p-4 sm:p-5">
+            <div className="relative h-28 w-24 shrink-0 overflow-hidden rounded-2xl shadow-sm">
+              <Image
+                src="/images/founder.webp"
+                alt="John Chinonso Edeh, founder of Fondly Held"
+                fill
+                sizes="96px"
+                className="object-cover object-[50%_25%]"
+              />
+            </div>
+            <figcaption>
+              <p className="font-heading text-xl leading-tight" style={{ color: "var(--brand-ink)" }}>
+                John Chinonso Edeh
+              </p>
+              <p className="mt-0.5 text-sm text-black/55">Founder, Fondly Held · Nigeria</p>
+              <a href="mailto:netojaycee@gmail.com" className="mt-2 inline-block text-sm underline underline-offset-2">
+                netojaycee@gmail.com
+              </a>
+            </figcaption>
+          </figure>
 
           <ul className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-4">
             {PROMISES.map(({ icon: Icon, title, body }) => (
@@ -53,10 +75,6 @@ export default function AboutPage() {
               </li>
             ))}
           </ul>
-
-          <p className="mt-8 text-sm text-black/50">
-            Contact: <a href="mailto:netojaycee@gmail.com" className="underline underline-offset-2">netojaycee@gmail.com</a>
-          </p>
         </div>
       </Reveal>
 
