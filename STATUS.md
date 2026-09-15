@@ -3,112 +3,122 @@
 > Living file. The agent updates this after every meaningful change. Keep it short and true. Delete finished noise; this is a state file, not a changelog.
 
 **Last updated:** 2026-09-15
-**Phase:** Day-1 build — functionally complete end to end, not yet deployed
+**Phase:** Day-1 build — functionally complete end to end, polished, not yet deployed
 **Live URL:** _(pending — not yet deployed to Vercel)_
-**Repo:** pushed to `github.com/netojaycee/wishwell` on `main` — repo name is still the
-old brand (renaming a GitHub repo is safe/non-breaking, GitHub redirects the old URL, but
-it's a deliberate choice; not done automatically here).
+**Repo:** `github.com/netojaycee/wishwell` on `main`, fully pushed and up to date. Repo/
+Neon DB/R2 bucket names still say "wishwell" (the product was renamed mid-build — see
+Done) — left alone deliberately, internal identifiers only, no user-facing effect.
 
-## Now
-- **Logo + desktop design pass shipped.** Custom logomark (open heart + held dot),
-  brand terracotta accent, richer home hero (gradient mesh + card collage), site-wide
-  grain texture, wider header/footer, branded 404 page. Verified in-browser.
-- [ ] Deploy to Vercel — everything is pushed and ready, just needs the user's account
-  (see Blocked below)
-- **Fixed: auth was broken (both email/password and Google).** Root cause: port 3000/3001
-  are permanently occupied by another project on this machine, so `next dev` silently
-  ran on a different port each time while `BETTER_AUTH_URL` stayed hardcoded to
-  `:3000` — Better Auth rejects origin-mismatched requests. Fixed by pinning this
-  project's dev server to `:3005` (`package.json` dev script + `.env.example`).
-  Email/password sign-up/sign-in/sign-out all verified working in-browser. **Still
-  needs one manual step**: add `http://localhost:3005/api/auth/callback/google` as an
-  authorized redirect URI in Google Cloud Console — confirmed via the real Google
-  consent screen's error message, not guessed.
-- **Rebrand: Wishwell → Fondly Held.** wishwell.vercel.app was already taken; picked a
-  name with a confirmed-available `fondlyheld.com` (WHOIS-checked) and no direct product
-  conflicts found. All user-facing copy, page titles/metadata, JSON-LD, footer, legal
-  pages, occasion SEO copy, and `package.json` updated. **Deliberately NOT renamed:**
-  the Neon database (still named `wishwell`), the local DBngin database (`wishwell_dev`),
-  the R2 bucket (`wishwell-assets`), and the GitHub repo (`netojaycee/wishwell`) — these
-  are internal identifiers with real rename cost/risk and no user-facing benefit; only
-  cosmetic to leave as-is.
-- [ ] Decide the Vercel project name/slug (e.g. `fondly-held` or `fondlyheld`) when
-  importing — check it's free before committing.
-- [ ] Import into Vercel (pushed to GitHub already — see Repo above)
-- [ ] Once deployed, update `BETTER_AUTH_URL` / `NEXT_PUBLIC_APP_URL` to the real
-  `*.vercel.app` URL (or the real domain, if `fondlyheld.com` gets bought)
+## Orientation for a new agent (read this first)
+1. Read `CLAUDE.md` (product rules — **including free-for-all pricing policy**, now
+   codified there), then `ARCHITECTURE.md`, then this file, in that order.
+2. The whole app lives at the repo root (`src/`, `package.json`, etc. — not in a
+   subdirectory). `pnpm install && pnpm dev` — dev server is pinned to port **3005**
+   (see Known Issues for why).
+3. `.env.local` already has real, working credentials for Neon/R2/Resend/Google/Giphy —
+   ask the user before assuming you need new ones.
+4. Check "Known issues" below before debugging anything that looks like routing or auth
+   breaking mysteriously — there are two recurring environmental gotchas specific to this
+   machine, already diagnosed, documented there.
+
+## Now (actually pending)
+- [ ] Deploy to Vercel — code is ready and pushed; needs the user's Vercel account
+  (dashboard import, no CLI access from this agent). See Blocked.
+- [ ] Add `http://localhost:3005/api/auth/callback/google` as an authorized redirect URI
+  in Google Cloud Console (email/password auth works now; Google sign-in doesn't until
+  this is added — confirmed via Google's own error page, not guessed)
 - [ ] Seed 3 real demo boards with real content, once the app is live somewhere shareable
-- [ ] Lighthouse pass on the board page once deployed (can't meaningfully test prod
-  performance against local dev/Turbopack)
+- [ ] Lighthouse pass on the board page once deployed
+- [ ] About page needs the founder's real name + photo (placeholder + TODO comment there
+  now — did not fabricate a persona)
+- [ ] Privacy/Terms are real, substantive, non-lorem policies but not lawyer-reviewed
 
 ## Done
-Everything in `BUILD_PLAN.md` Hours 0-8 except the items above. Concretely:
-- Next.js 16 (App Router, Turbopack, Tailwind v4) at the repo root, shadcn/ui initialized
-- Drizzle schema for Board/OccasionType/Theme/Post/Reaction/Invite/Report + Better Auth's
-  own tables. `.env.local` now points at a real Neon Postgres project (database
-  `wishwell`) — migrated and seeded. (Local DBngin Postgres still works fine as an
-  alternative; just swap `DATABASE_URL` back to `postgresql://postgres@127.0.0.1:5432/wishwell_dev`.)
-- Seeded 10 occasion types x 3 themes each with real editorial palettes (seeded into Neon)
-- `/create` wizard (guest, no account) -> `/b/[slug]` themed board page -> `/b/[slug]/post`
-  anonymous contribution flow, all **verified end-to-end in-browser**, including that
-  memorial (solemn) boards never fire confetti while celebratory ones do
-- Owner auth (email/password + optional Google), `/dashboard` board list, `/dashboard/b/[slug]`
-  moderation (hide/unhide/pin/delete posts, edit title/headline/visibility, invite by
-  email, copy share link). Guest-created boards auto-claim to the owner's account on
-  first dashboard visit after signing up — verified in-browser
-- Marketing home page, all 10 `/occasions/[key]` SEO pages (statically generated, real
-  ~300+ word copy, FAQ + JSON-LD, live recent-boards), sitemap.xml, robots.txt,
-  Organization/WebSite JSON-LD, dynamic per-board OG image
-- About/Privacy/Terms/Contact pages with real (non-lorem) content — two TODOs left for
-  the user: swap in a real name/photo on About, and get Privacy/Terms reviewed by a
-  lawyer before commercial launch
-- `/b/[slug]/slideshow`: fullscreen autoplay, Ken Burns + cross-fade, keyboard nav
-- Rate limiting (Postgres-backed, no Redis dependency), honeypot + timing bot check,
-  HTML sanitization on all anonymous input, hashed (not raw) IPs
-- R2, Resend, Google OAuth, and Giphy keys are all now in `.env.local` — not yet
-  click-tested (no media upload, invite email, Google sign-in, or GIF picker flow run
-  against them in this session).
-- `pnpm lint`, `tsc --noEmit`, and `pnpm build` (production) all clean; checked mobile
-  layout in-browser at a sub-`sm`-breakpoint width (couldn't force exactly 375px through
-  the browser automation tool in this environment, but the same mobile-first CSS path
-  applies at any width below 640px)
+Everything in `BUILD_PLAN.md` Hours 0–9 except the items above, plus a full visual
+polish pass. Concretely, by area:
+
+**Core product** — Next.js 16 (App Router, Turbopack, Tailwind v4) at the repo root.
+Drizzle schema (Board/OccasionType/Theme/Post/Reaction/Invite/Report + Better Auth's own
+tables) against Neon Postgres, migrated and seeded (10 occasion types × 3 themes each,
+real editorial copy). `/create` wizard (guest, no account) → themed `/b/[slug]` board
+page → `/b/[slug]/post` anonymous contribution flow, all verified end-to-end in-browser,
+including that memorial (solemn) boards never fire confetti while celebratory ones do.
+`/b/[slug]/slideshow` fullscreen presentation mode.
+
+**Owner side** — Email/password + Google auth, `/dashboard` board list,
+`/dashboard/b/[slug]` moderation (hide/unhide/pin/delete, edit title/headline/
+visibility, invite by email, copy share link). Guest-created boards auto-claim to the
+owner's account on first dashboard visit after signing up.
+
+**SEO/marketing** — Home page, all 10 `/occasions/[key]` pages (statically generated,
+~300+ words real copy, FAQ + JSON-LD, live recent-boards), sitemap.xml, robots.txt,
+Organization/WebSite JSON-LD, dynamic per-board OG image, About/Privacy/Terms/Contact.
+
+**Design/brand** — Rebranded Wishwell → Fondly Held (wishwell.vercel.app was taken;
+`fondlyheld.com` confirmed available via WHOIS, no product conflicts — ~55 invented names
+tried and rejected first, the short-brandable-.com space is thoroughly squatted). Custom
+logomark (open heart + held dot, not a generic filled heart — reads warm without being
+romantic/cutesy, still appropriate on memorial boards), used as favicon/apple-icon/
+header/footer. Warm terracotta brand accent used consistently. Desktop-scale visual pass:
+gradient-mesh hero + card collage on the home page, site-wide grain texture, branded
+404 page. Split-screen sign-in/sign-up pages (were plain centered forms, looked bare next
+to the rest of the redesigned site). Post-contribution form redesigned with a **live
+preview card** that mirrors the actual board styling as the contributor types — the
+message textarea uses the board's own heading font so it feels like writing on the card,
+not filling out a generic form.
+
+**Safety/infra** — Postgres-backed rate limiting (no Redis dependency), honeypot +
+timing bot check, HTML sanitization on all anonymous input, hashed (not raw) IPs. R2
+presigned uploads and Resend invite email both confirmed working with real credentials
+(a real photo upload via R2 is live on a test board). Giphy and Google OAuth keys present;
+Giphy not yet click-tested, Google blocked on the redirect URI step above.
+
+**Checks** — `pnpm lint`, `tsc --noEmit`, `pnpm build` (production) all clean as of the
+last commit. Mobile layout checked in-browser at a sub-`sm`-breakpoint width (couldn't
+force exactly 375px through the browser automation tool in this environment, but the
+same mobile-first CSS path applies at any width below the 640px `sm` breakpoint).
 
 ## Blocked / needs a human decision
-- [x] Neon project + connection string — done, migrated and seeded
-- [x] R2 bucket + keys — present in `.env.local`, confirmed meant for this project
-  (`wishwell-assets` bucket, `cdn-ww.johnedeh.com`)
-- [x] Resend API key — present; still needs a verified sending domain for real delivery
-  to arbitrary recipients (sandbox mode only reaches the account owner's own address)
-- [x] Google OAuth client — present in `.env.local`
-- [x] GitHub repo — pushed, see Repo above
 - [ ] Vercel account — need `vercel login` or a dashboard import to actually deploy
-- [ ] Giphy API key (free, developers.giphy.com)
+- [ ] Giphy API key is present but untested; GIF picker not click-tested this session
 - [ ] No domain yet — shipping on the Vercel-provided `*.vercel.app` URL is fully
-  functional; flagged the Hobby-plan-is-non-commercial-use caveat to the user
-- [ ] About page needs the founder's real name + photo (currently a generic placeholder
-  with a TODO comment — did not fabricate a persona)
-- [ ] Privacy/Terms are real, substantive, non-lorem policies but are not lawyer-reviewed
+  functional. Flagged to the user: Vercel's Hobby plan is licensed for non-commercial use
+- [ ] Decide the Vercel project name/slug at import time (e.g. `fondly-held`) — check
+  it's free before committing
+- [ ] About page name/photo and Privacy/Terms legal review — see Now
 
 ## Environment
-`.env.local` (gitignored, not in this file) currently has: a real Neon `DATABASE_URL`,
-real R2 credentials, a real Resend API key, and empty `GOOGLE_CLIENT_ID`/`GIPHY_API_KEY`.
-See `.env.example` for the full variable list (template, no secrets, tracked in git),
-and `README.md` for setup and Vercel deploy steps.
+`.env.local` (gitignored, not reproduced here) has real working values for
+`DATABASE_URL` (Neon), `BETTER_AUTH_SECRET`/`URL`, `NEXT_PUBLIC_APP_URL`,
+`GOOGLE_CLIENT_ID`/`SECRET`, all `R2_*` vars, `RESEND_API_KEY`, and `GIPHY_API_KEY`.
+`BETTER_AUTH_URL` and `NEXT_PUBLIC_APP_URL` are pinned to `http://localhost:3005` — keep
+them matching the dev port (see Known Issues). See `.env.example` for the full variable
+list (template, no secrets, tracked in git) and `README.md` for setup + Vercel deploy
+steps.
 
 ## Known issues
-- Dev mode (Turbopack) shows a multi-second delay compiling a route's client chunk on
-  first visit — a page/step can sit at near-zero opacity briefly before its transition
-  plays. Confirmed dev-only compilation lag, not a production issue (also confirmed via
-  `pnpm build`).
-- Gotcha (resolved, noting for future reference): a root-level `app/` directory, even
-  if empty of page files, silently wins over `src/app/` for Next's App Router — every
-  route 404'd except `/_not-found` until that stray directory was removed. If routes
-  ever start vanishing again, `ls` the repo root for a stray `app/`.
-- Recurring gotcha: the user's editor has twice re-saved `.env.local` to the old
-  `app/.env.local` path (from before the repo flatten) after it was deleted, recreating
-  the stray `app/` directory above and breaking routing both times. If this happens
-  again: merge `app/.env.local`'s content into the real `.env.local`, `rm -rf app`, and
-  ask the user to close/reopen that file tab in their editor.
+- **Dev server is pinned to port 3005** (`package.json` → `"dev": "next dev -p 3005"`).
+  Do not remove this. Ports 3000 and 3001 are permanently occupied by another project on
+  this machine; without a pinned port, `next dev` silently drifts to whatever port is
+  free, `BETTER_AUTH_URL`/`NEXT_PUBLIC_APP_URL` fall out of sync with it, and Better Auth
+  rejects the origin mismatch — this broke both email/password and Google auth for a
+  while before it was diagnosed. If auth ever "just stops working" again, check the dev
+  server's actual port against `.env.local` first.
+- **A root-level `app/` directory silently wins over `src/app/`** for Next's App Router,
+  even if it's empty of page files — every route 404'd except `/_not-found` until this
+  was diagnosed once already. If routes vanish, `ls` the repo root for a stray `app/`
+  before anything else.
+- The above has recurred because the user's editor keeps a stale buffer for the old
+  `app/.env.local` path (from before the repo was flattened) and re-saves it there,
+  recreating the directory. If it happens again: merge that file's content into the real
+  `.env.local`, `rm -rf app`, and ask the user to close/reopen the file tab in their
+  editor so it points at the real path.
+- Turbopack dev mode has a multi-second first-compile delay per route — a page/step can
+  sit at near-zero opacity briefly before its entrance transition plays. Confirmed
+  dev-only (not present in `pnpm build`), not a real bug.
 
 ## Deferred (parked deliberately — do not pull forward without a decision)
-payments · print export · Slack/Teams · gifting · per-account custom domains · threaded comments · scheduled delivery · multi-admin · owner analytics · public API · Tier 2/3 SEO long-tail pages (relationship/milestone) · 3 seeded demo boards on the homepage
+payments (**product is 100% free right now — see CLAUDE.md rule 6, do not build pricing
+gates**) · print export · Slack/Teams · gifting · per-account custom domains · threaded
+comments · scheduled delivery · multi-admin · owner analytics · public API · Tier 2/3 SEO
+long-tail pages (relationship/milestone) · 3 seeded demo boards on the homepage

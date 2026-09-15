@@ -21,6 +21,7 @@ Fondly Held supports both as *modes* of the same object.
 3. **Tone follows occasion.** Memorial boards must never fire confetti. Every occasion type carries a `motionProfile` (`celebratory` | `warm` | `solemn`) and the UI must respect it. Getting this wrong is the worst possible bug in this product.
 4. **Beauty is the feature.** This ships against funded incumbents. If a screen is functional but plain, it is not done. See `DESIGN.md`.
 5. **Every board is a public, indexable, share-worthy page** unless the owner marks it private. Boards are the SEO and virality surface.
+6. **Everything is free right now — no payment, no gated/paid tier.** Every feature (media upload, invites, slideshow, unlimited boards/posts) is open to every user. Don't build pricing pages, plan checks, or feature flags that restrict functionality by tier. Payments are explicitly deferred (see `BUILD_PLAN.md` Deferred section) — this will be revisited deliberately, not implied by a stray check somewhere in the code.
 
 ## Working style
 
