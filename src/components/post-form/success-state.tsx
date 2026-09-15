@@ -8,6 +8,7 @@ import Link from "next/link";
 import { Reveal } from "@/components/board/reveal";
 import { ConfettiBurst } from "@/components/board/confetti-burst";
 import { OccasionArt } from "@/components/illustrations/occasion-art";
+import { track } from "@/lib/analytics";
 
 export function SuccessState({
   boardSlug,
@@ -34,6 +35,7 @@ export function SuccessState({
   const copyLink = async () => {
     await navigator.clipboard.writeText(`${window.location.origin}/b/${boardSlug}`);
     setCopied(true);
+    track("board_link_shared", { via: "contributor_copy" });
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -87,7 +89,11 @@ export function SuccessState({
             <p className="text-sm text-[var(--board-ink)]/60">
               Want a board like this for someone in your life?
             </p>
-            <Link href="/create" className="mt-2 inline-block text-sm font-semibold underline underline-offset-2">
+            <Link
+              href="/create"
+              onClick={() => track("create_cta_from_post")}
+              className="mt-2 inline-block text-sm font-semibold underline underline-offset-2"
+            >
               Create your own free board
             </Link>
           </div>

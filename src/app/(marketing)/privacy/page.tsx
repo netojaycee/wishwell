@@ -17,8 +17,12 @@ export default function PrivacyPage() {
       <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-black/70">
         <li>Account info for board owners: name, email, and an encrypted password (or your Google account, if you sign in that way).</li>
         <li>Board content: whatever you and your contributors post — names, messages, photos, and videos.</li>
-        <li>A hashed (not raw) IP address on each anonymous post, used only to enforce posting rate limits and reduce spam.</li>
-        <li>Basic usage analytics (page views, board views) to understand what&apos;s working.</li>
+        <li>A hashed (not raw) IP address on each anonymous post or report, used only to enforce rate limits and reduce spam.</li>
+        <li>
+          Basic usage analytics — page views (Vercel Web Analytics) and whether key steps like
+          creating a board or posting succeed (PostHog) — to understand what&apos;s working. These
+          never include the content of messages, names, or photos, and we don&apos;t record sessions.
+        </li>
       </ul>
 
       <h2 className="mt-8 font-heading text-xl">What we don&apos;t do</h2>

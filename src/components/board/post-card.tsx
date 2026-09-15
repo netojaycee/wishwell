@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { PostRow } from "@/lib/types";
+import { ReportButton } from "./report-button";
 
 // Deterministic tiny rotation from the post id — "reads handmade" (DESIGN.md) without
 // a client/server hydration mismatch (Math.random() would differ between the two).
@@ -15,7 +16,7 @@ export function PostCard({ post }: { post: PostRow }) {
 
   return (
     <article
-      className="group break-inside-avoid rounded-2xl border shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-md"
+      className="group relative break-inside-avoid rounded-2xl border shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-md"
       style={{
         background: hasMedia ? "var(--board-surface)" : "var(--board-accent-soft)",
         borderColor: "color-mix(in srgb, var(--board-ink) 10%, transparent)",
@@ -52,6 +53,7 @@ export function PostCard({ post }: { post: PostRow }) {
           — {post.authorName}
         </p>
       </div>
+      <ReportButton postId={post.id} />
     </article>
   );
 }

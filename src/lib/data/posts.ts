@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gte, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { board, post, report } from "@/db/schema";
 import { deleteMedia } from "@/lib/media";
@@ -30,9 +30,24 @@ export async function listPublishedPosts(boardId: string) {
     .orderBy(desc(post.pinned), desc(post.createdAt));
 }
 
-// Owner moderation view: everything, including hidden/pending, oldest problems first.
+// Owner moderation view: everything, including hidden/pending. Each post carries every
+// reason it was reported for, and reported posts are listed first, then oldest first.
 export async function listAllPostsForModeration(boardId: string) {
-  return db.select().from(post).where(eq(post.boardId, boardId)).orderBy(asc(post.createdAt));
+  const [rows, reports] = await Promise.all([
+    db.select().from(post).where(eq(post.boardId, boardId)).orderBy(asc(post.createdAt)),
+    db
+      .select({ postId: report.postId, reason: report.reason })
+      .from(report)
+      .innerJoin(post, eq(report.postId, post.id))
+      .where(eq(post.boardId, boardId))
+      .orderBy(asc(report.createdAt)),
+  ]);
+
+  const reasonsByPost = new Map<string, string[]>();
+  for (const r of reports) reasonsByPost.set(r.postId, [...(reasonsByPost.get(r.postId) ?? []), r.reason]);
+
+  const withReports = rows.map((p) => ({ ...p, reports: reasonsByPost.get(p.id) ?? [] }));
+  return [...withReports.filter((p) => p.reports.length > 0), ...withReports.filter((p) => p.reports.length === 0)];
 }
 
 export async function countPublishedPosts(boardId: string) {
@@ -81,6 +96,42 @@ export async function deletePost(postId: string, ownerId: string) {
   return true;
 }
 
-export async function reportPost(postId: string, reason: string) {
-  await db.insert(report).values({ postId, reason });
+const REPORTS_PER_IP_PER_DAY = 20;
+
+// Only published posts can be reported — hidden ones are already out of public view.
+export async function getReportablePost(postId: string) {
+  const [row] = await db
+    .select({ id: post.id })
+    .from(post)
+    .where(and(eq(post.id, postId), eq(post.status, "published")));
+  return row ?? null;
+}
+
+// One report per post per person, and a daily cap so the report button can't be used to
+// flood an owner's moderation queue.
+export async function checkReportRateLimit(ipHash: string, postId: string) {
+  const [{ count: already }] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(report)
+    .where(and(eq(report.postId, postId), eq(report.reporterIpHash, ipHash)));
+  if (already > 0) return { allowed: false as const, duplicate: true as const };
+
+  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const [{ count }] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(report)
+    .where(and(eq(report.reporterIpHash, ipHash), gte(report.createdAt, oneDayAgo)));
+  if (count >= REPORTS_PER_IP_PER_DAY) {
+    return {
+      allowed: false as const,
+      duplicate: false as const,
+      reason: "You've sent a lot of reports today — please try again tomorrow.",
+    };
+  }
+
+  return { allowed: true as const };
+}
+
+export async function reportPost(postId: string, reason: string, ipHash: string) {
+  await db.insert(report).values({ postId, reason, reporterIpHash: ipHash });
 }

@@ -63,6 +63,17 @@ export default async function OccasionLandingPage({ params }: Params) {
       }
     : null;
 
+  // GROWTH.md technical SEO checklist: BreadcrumbList JSON-LD (Home › occasion page).
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Fondly Held", item: `${appUrl}/` },
+      { "@type": "ListItem", position: 2, name: occasion.label, item: `${appUrl}/occasions/${occasion.key}` },
+    ],
+  };
+
   const cta = (
     <Link
       href={`/create?occasion=${occasion.key}`}
@@ -75,6 +86,7 @@ export default async function OccasionLandingPage({ params }: Params) {
 
   return (
     <div style={theme ? boardThemeVars(theme) : undefined}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       {faqJsonLd ? (
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
       ) : null}

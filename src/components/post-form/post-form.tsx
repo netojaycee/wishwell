@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { LogoMark } from "@/components/brand/logo-mark";
 import { OccasionArt } from "@/components/illustrations/occasion-art";
+import { track } from "@/lib/analytics";
 import { MediaUploader } from "./media-uploader";
 import { GifPicker } from "./gif-picker";
 import { SuccessState } from "./success-state";
@@ -88,6 +89,7 @@ export function PostForm({
       return;
     }
 
+    track("post_created", { occasion: occasionKey, media: media?.type ?? "none" });
     setSuccess(true);
   };
 

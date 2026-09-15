@@ -1,0 +1,1 @@
+ALTER TABLE "report" ADD COLUMN "reporter_ip_hash" text;

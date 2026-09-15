@@ -165,6 +165,15 @@ export const occasionShowcase: Record<string, Showcase> = {
   },
 };
 
+// The three example boards seeded by `pnpm db:seed-demo` (src/db/seed-demo.ts) and linked
+// from the home page — one per motion profile. Their slugs are the showcase slugs, so the
+// URL shown in each DemoBoard's window chrome is the real example page.
+export const EXAMPLE_BOARD_KEYS = ["birthday", "farewell", "memorial"] as const;
+
+export function exampleBoardSlug(occasionKey: string): string | undefined {
+  return (EXAMPLE_BOARD_KEYS as readonly string[]).includes(occasionKey) ? occasionShowcase[occasionKey]?.slug : undefined;
+}
+
 // Unknown keys (a newly added occasion row) fall back by motion profile, so a new solemn
 // occasion never borrows the birthday showcase's confetti-toned content.
 export function showcaseFor(occasionKey: string, profile?: "celebratory" | "warm" | "solemn"): Showcase {

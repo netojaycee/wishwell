@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Gift, Infinity as InfinityIcon, ShieldCheck } from "lucide-react";
 import { listOccasionsWithThemes } from "@/lib/data/occasions";
-import { PHOTOS, showcaseFor } from "@/lib/content/moments";
+import { PHOTOS, exampleBoardSlug, showcaseFor } from "@/lib/content/moments";
 import type { ThemeRow } from "@/lib/types";
 import { Reveal } from "@/components/board/reveal";
 import { OccasionArt } from "@/components/illustrations/occasion-art";
@@ -182,6 +182,15 @@ export default async function HomePage() {
                         {tone.name}
                       </p>
                       <p className="mt-1 text-sm text-black/60">{tone.caption}</p>
+                      {exampleBoardSlug(key) ? (
+                        <Link
+                          href={`/b/${exampleBoardSlug(key)}`}
+                          className="mt-2 inline-flex text-sm font-semibold underline underline-offset-4"
+                          style={{ color: theme.palette.accent }}
+                        >
+                          Open the example board →
+                        </Link>
+                      ) : null}
                     </div>
                   </Reveal>
                 </div>

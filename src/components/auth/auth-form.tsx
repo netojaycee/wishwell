@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
+import { track } from "@/lib/analytics";
 
 function FieldShell({
   icon,
@@ -47,6 +48,7 @@ export function AuthForm({ mode, hasGoogleAuth }: { mode: "sign-in" | "sign-up";
       return;
     }
 
+    if (mode === "sign-up") track("owner_signed_up", { method: "email" });
     router.push("/dashboard");
     router.refresh();
   };

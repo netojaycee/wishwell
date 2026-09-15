@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { sendInviteAction } from "@/app/actions/invites";
+import { track } from "@/lib/analytics";
 
 export function InviteForm({ slug }: { slug: string }) {
   const [email, setEmail] = useState("");
@@ -15,6 +16,7 @@ export function InviteForm({ slug }: { slug: string }) {
     await navigator.clipboard.writeText(url);
     setShareUrl(url);
     setCopied(true);
+    track("board_link_shared", { via: "dashboard_copy" });
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -27,7 +29,10 @@ export function InviteForm({ slug }: { slug: string }) {
     setMessage(
       result.ok ? { ok: true, text: `Invite sent to ${email}.` } : { ok: false, text: result.error }
     );
-    if (result.ok) setEmail("");
+    if (result.ok) {
+      setEmail("");
+      track("invite_sent");
+    }
   };
 
   return (

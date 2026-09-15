@@ -63,8 +63,21 @@ Done) — left alone deliberately, internal identifiers only, no user-facing eff
   `https://fondlyheld.vercel.app/api/auth/callback/google` (production). Email/password
   auth confirmed working in production already; Google sign-in not yet re-tested since
   the redirect URI fix.
-- [ ] Seed 3 real demo boards with real content — production is live now, so this can
-  happen directly there
+- [ ] **Example boards have no owner yet.** `pnpm db:seed-demo` created the 3 examples
+  (`/b/tolu-turns-30`, `/b/farewell-rachel`, `/b/remembering-grandma-rose`, unlisted,
+  labelled as examples, linked from the home page "Every tone" section) but no account
+  exists for netojaycee@gmail.com. Sign up on production, then run
+  `EXAMPLE_OWNER_EMAIL=<your email> pnpm db:seed-demo` — it assigns the existing examples
+  to you so you can moderate them (until then nobody can hide posts on them).
+- [ ] **Analytics need switching on (code is in):** enable Web Analytics in Vercel →
+  Project → Analytics; create a free PostHog project and set `NEXT_PUBLIC_POSTHOG_KEY`
+  (+ optional `NEXT_PUBLIC_POSTHOG_HOST`) in Vercel env vars, then redeploy. Funnel events:
+  `create_started`, `board_created`, `board_link_shared`, `invite_sent`, `post_created`,
+  `create_cta_from_post`, `owner_signed_up` (see `src/lib/analytics.ts`; no content, names
+  or slugs are ever sent). "Posts per board / 5+ posts" is best read straight from the DB.
+- [ ] **Search Console + Bing Webmaster:** set `GOOGLE_SITE_VERIFICATION` /
+  `BING_SITE_VERIFICATION` in Vercel to the meta-tag content values, redeploy, verify, then
+  submit `/sitemap.xml` in both.
 - [ ] Lighthouse pass on the board page against the real production URL
 - [ ] About page needs the founder's real name + photo (placeholder + TODO comment there
   now — did not fabricate a persona)
@@ -152,6 +165,25 @@ title); site header wrapped onto two lines at 375px; split-shell mobile header r
 ballooned to half the screen; board-page `-z-10` ambient layers now sit inside an
 `isolate` wrapper so warm drift / solemn grain actually render.
 
+**Finishing pass (2026-09-15)** —
+- *Production images were all broken:* Vercel's Hobby Image Optimization quota ran out, so
+  every `/_next/image` request returned 402. `next.config.ts` now sets
+  `images.unoptimized: true`; curated photos are pre-sized 720px WebP. Keep it that way
+  unless a paid plan or a custom loader (e.g. Cloudflare Images) is added.
+- *Global report button* (CLAUDE.md guardrail): flag on every post card → dialog with
+  reasons → `POST /api/posts/[id]/report` (zod, honeypot, 1 report per post per person,
+  20/day per hashed IP; migration `0001` added nullable `report.reporter_ip_hash`, applied).
+  Owner dashboard lists reported posts first with their reasons.
+- *Analytics:* Vercel `<Analytics />` in the root layout + PostHog in
+  `src/instrumentation-client.ts` (no autocapture, no session recording) behind
+  `track()` in `src/lib/analytics.ts`. Privacy page updated to name both.
+- *SEO:* BreadcrumbList JSON-LD on occasion pages and public boards; verification meta tags
+  from env.
+- *Example boards:* `src/db/seed-demo.ts` (see Now for the owner step).
+- pnpm 11 note: `pnpm-workspace.yaml` → `allowBuilds.core-js: false` (posthog dependency;
+  its install script is only a banner). An unanswered placeholder there blocks every
+  `pnpm <script>` with ERR_PNPM_IGNORED_BUILDS.
+
 **Auth mobile + About/Contact chrome** — the dark story panel is now one component,
 `components/brand/brand-panel.tsx` (variants: `column` desktop auth, `band` mobile auth,
 `card` About/Contact). Sign-in/up on mobile show it as a short top band with the form on
@@ -206,4 +238,4 @@ steps.
 payments (**product is 100% free right now — see CLAUDE.md rule 6, do not build pricing
 gates**) · print export · Slack/Teams · gifting · per-account custom domains · threaded
 comments · scheduled delivery · multi-admin · owner analytics · public API · Tier 2/3 SEO
-long-tail pages (relationship/milestone) · 3 seeded demo boards on the homepage
+long-tail pages (relationship/milestone)

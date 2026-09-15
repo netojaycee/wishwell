@@ -112,6 +112,8 @@ export const report = pgTable("report", {
   id: uuid("id").primaryKey().defaultRandom(),
   postId: uuid("post_id").notNull().references(() => post.id, { onDelete: "cascade" }),
   reason: text("reason").notNull(),
+  // Hashed (not raw) reporter IP — only for rate-limiting anonymous reports, like post.authorIpHash.
+  reporterIpHash: text("reporter_ip_hash"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

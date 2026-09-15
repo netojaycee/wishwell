@@ -59,6 +59,22 @@ export default async function BoardPage({ params }: Params) {
 
   const profile = board.occasionType.motionProfile;
 
+  // BreadcrumbList JSON-LD (Home › occasion › board) — public boards only, since
+  // unlisted/private ones are noindexed anyway.
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
+  const breadcrumbJsonLd =
+    board.visibility === "public"
+      ? {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Fondly Held", item: `${appUrl}/` },
+            { "@type": "ListItem", position: 2, name: board.occasionType.label, item: `${appUrl}/occasions/${board.occasionType.key}` },
+            { "@type": "ListItem", position: 3, name: board.title, item: `${appUrl}/b/${board.slug}` },
+          ],
+        }
+      : null;
+
   return (
     // `isolate` makes this a stacking context so BoardAmbient's -z-10 layers paint above
     // this div's own background instead of disappearing behind it.
@@ -70,6 +86,9 @@ export default async function BoardPage({ params }: Params) {
         fontFamily: "var(--board-font-body)",
       }}
     >
+      {breadcrumbJsonLd ? (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+      ) : null}
       <BoardAmbient
         motionProfile={profile}
         accent={board.theme.palette.accent}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
@@ -10,6 +10,7 @@ import { LogoMark } from "@/components/brand/logo-mark";
 import { OccasionArt } from "@/components/illustrations/occasion-art";
 import { boardThemeVars } from "@/lib/theme/vars";
 import { PHOTOS, showcaseFor } from "@/lib/content/moments";
+import { track } from "@/lib/analytics";
 import type { OccasionTypeRow, ThemeRow } from "@/lib/types";
 
 type OccasionWithThemes = OccasionTypeRow & { themes: ThemeRow[] };
@@ -40,6 +41,13 @@ export function CreateWizard({
   const [copied, setCopied] = useState(false);
   const reducedMotion = useReducedMotion();
 
+  // Arriving with ?occasion= (from an occasion landing page) skips step 0, so the funnel's
+  // "start create" step is recorded here instead of in selectOccasion.
+  const preselectedKey = preselected?.key;
+  useEffect(() => {
+    if (preselectedKey) track("create_started", { occasion: preselectedKey, via: "occasion_page" });
+  }, [preselectedKey]);
+
   const occasion = occasions.find((o) => o.key === occasionKey);
   const previewTheme = occasion ? (occasion.themes.find((t) => t.id === themeId) ?? occasion.themes[0]) : undefined;
   const showcase = occasion ? showcaseFor(occasion.key) : undefined;
@@ -47,6 +55,7 @@ export function CreateWizard({
 
   const selectOccasion = (key: string) => {
     setOccasionKey(key);
+    track("create_started", { occasion: key });
     const o = occasions.find((oc) => oc.key === key)!;
     setTitle(`${o.label} Board`);
     const defaultTheme = o.themes.find((t) => t.isDefault) ?? o.themes[0];
@@ -78,6 +87,7 @@ export function CreateWizard({
       return;
     }
 
+    track("board_created", { occasion: occasion.key });
     setResultSlug(result.slug);
     setStep(3);
   };
@@ -92,6 +102,7 @@ export function CreateWizard({
     if (!shareUrl) return;
     await navigator.clipboard.writeText(shareUrl);
     setCopied(true);
+    track("board_link_shared", { via: "copy" });
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -100,6 +111,7 @@ export function CreateWizard({
     if (typeof navigator !== "undefined" && "share" in navigator) {
       try {
         await navigator.share({ title, text: shareText, url: shareUrl });
+        track("board_link_shared", { via: "native_share" });
       } catch {
         // user cancelled the native share sheet — not an error
       }

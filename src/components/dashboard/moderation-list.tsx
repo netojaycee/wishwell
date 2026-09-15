@@ -4,7 +4,10 @@ import { useState, useTransition } from "react";
 import { hidePostAction, unhidePostAction, pinPostAction, deletePostAction } from "@/app/actions/moderation";
 import type { PostRow } from "@/lib/types";
 
-export function ModerationList({ posts, slug }: { posts: PostRow[]; slug: string }) {
+// Posts arrive with the reasons anyone reported them for (reported posts sorted first).
+type ModerationPost = PostRow & { reports: string[] };
+
+export function ModerationList({ posts, slug }: { posts: ModerationPost[]; slug: string }) {
   const [items, setItems] = useState(posts);
   const [isPending, startTransition] = useTransition();
 
@@ -15,7 +18,10 @@ export function ModerationList({ posts, slug }: { posts: PostRow[]; slug: string
   return (
     <ul className="mt-4 space-y-3">
       {items.map((post) => (
-        <li key={post.id} className="rounded-xl border border-black/10 p-4">
+        <li
+          key={post.id}
+          className={`rounded-xl border p-4 ${post.reports.length > 0 ? "border-red-200 bg-red-50/40" : "border-black/10"}`}
+        >
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-sm">{post.body}</p>
@@ -34,6 +40,12 @@ export function ModerationList({ posts, slug }: { posts: PostRow[]; slug: string
                 </span>
                 {post.pinned ? " · pinned" : ""}
               </p>
+              {post.reports.length > 0 ? (
+                <p className="mt-2 rounded-lg bg-red-50 px-2.5 py-1.5 text-xs text-red-700">
+                  Reported {post.reports.length} {post.reports.length === 1 ? "time" : "times"}:{" "}
+                  {Array.from(new Set(post.reports)).join(" · ")}
+                </p>
+              ) : null}
             </div>
           </div>
           <div className="mt-3 flex gap-3 text-xs font-medium">

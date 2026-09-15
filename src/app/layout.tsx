@@ -6,6 +6,7 @@ import {
   Instrument_Serif,
   Playfair_Display,
 } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 // Body sans — clean, quiet, does not compete with the theme's headline serif.
@@ -69,6 +70,12 @@ export const metadata: Metadata = {
     title: TITLE,
     description: DESCRIPTION,
   },
+  // Search Console / Bing Webmaster ownership tags (GROWTH.md technical SEO checklist) —
+  // set the env vars to the tags' content values, redeploy, then verify in each console.
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION || undefined,
+    other: process.env.BING_SITE_VERIFICATION ? { "msvalidate.01": process.env.BING_SITE_VERIFICATION } : undefined,
+  },
 };
 
 const organizationJsonLd = {
@@ -99,6 +106,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }} />
         {children}
+        {/* Page views (GROWTH.md §6). No-op until Web Analytics is enabled in the Vercel project. */}
+        <Analytics />
       </body>
     </html>
   );
