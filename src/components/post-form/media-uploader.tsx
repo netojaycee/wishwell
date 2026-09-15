@@ -33,19 +33,28 @@ export function MediaUploader({
       return;
     }
 
-    await new Promise<void>((resolve, reject) => {
+    const uploadSucceeded = await new Promise<boolean>((resolve) => {
       const xhr = new XMLHttpRequest();
       xhr.open("PUT", signed.uploadUrl);
       xhr.setRequestHeader("Content-Type", file.type);
       xhr.upload.onprogress = (e) => {
         if (e.lengthComputable) setProgress(Math.round((e.loaded / e.total) * 100));
       };
-      xhr.onload = () => (xhr.status < 300 ? resolve() : reject(new Error("Upload failed")));
-      xhr.onerror = () => reject(new Error("Upload failed"));
+      xhr.onload = () => resolve(xhr.status < 300);
+      xhr.onerror = () => resolve(false);
       xhr.send(file);
-    }).catch(() => setError("Upload failed — try a smaller file or a different format."));
+    });
 
     setProgress(null);
+
+    // Previously this proceeded to show a "preview" even when the PUT above failed
+    // (its rejection was swallowed) — the URL looked fine but nothing was ever actually
+    // at it, so the image/video rendered blank everywhere it was used.
+    if (!uploadSucceeded) {
+      setError("Upload failed — try a smaller file or a different format.");
+      return;
+    }
+
     const media: Media = { url: signed.publicUrl, type: signed.mediaType };
     setPreview(media);
     onChange(media);
