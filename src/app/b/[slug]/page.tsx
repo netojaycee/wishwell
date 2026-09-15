@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   if (!board) return {};
 
   const title = `${board.title} — a ${board.occasionType.label.toLowerCase()} board for ${board.recipientName}`;
-  const description = board.headline ?? `Add your message to ${board.recipientName}'s board on Wishwell.`;
+  const description = board.headline ?? `Add your message to ${board.recipientName}'s board on Fondly Held.`;
   const noindex = board.visibility !== "public";
 
   return {
@@ -83,7 +83,7 @@ export default async function BoardPage({ params }: Params) {
       <footer className="border-t border-[var(--board-ink)]/10 px-6 py-8 text-center text-sm text-[var(--board-ink)]/50">
         Made with{" "}
         <Link href="/" className="font-medium underline underline-offset-2">
-          Wishwell
+          Fondly Held
         </Link>
       </footer>
     </div>

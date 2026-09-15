@@ -1,4 +1,4 @@
-# DESIGN.md — Wishwell
+# DESIGN.md — Fondly Held
 
 The product is competing on feel. Kudoboard is functional and corporate. ForeverMissed is dated. The opening is: **make the most beautiful version of this that exists.**
 

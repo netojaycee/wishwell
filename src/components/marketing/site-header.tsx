@@ -5,7 +5,7 @@ export function SiteHeader() {
     <header className="border-b border-black/5">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
         <Link href="/" className="font-heading text-xl">
-          Wishwell
+          Fondly Held
         </Link>
         <nav className="flex items-center gap-6 text-sm font-medium">
           <Link href="/create" className="hidden sm:inline">

@@ -61,7 +61,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
           {board.title}
         </div>
         <div style={{ display: "flex", marginTop: 28, fontSize: 30, color: accent }}>
-          {postCount} {postCount === 1 ? "message" : "messages"} · Wishwell
+          {postCount} {postCount === 1 ? "message" : "messages"} · Fondly Held
         </div>
       </div>
     ),

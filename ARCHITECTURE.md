@@ -1,4 +1,4 @@
-# ARCHITECTURE.md — Wishwell
+# ARCHITECTURE.md — Fondly Held
 
 ## Stack
 

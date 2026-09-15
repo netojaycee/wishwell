@@ -25,7 +25,7 @@ const occasions: OccasionSeed[] = [
     motionProfile: "celebratory",
     promptText: "Share a birthday memory or wish",
     ctaText: "Start their birthday board",
-    seoTitle: "Free Online Birthday Cards — Group Birthday Board | Wishwell",
+    seoTitle: "Free Online Birthday Cards — Group Birthday Board | Fondly Held",
     seoDescription:
       "Create a free group birthday card in seconds. Invite friends and family to add messages, photos and videos to one beautiful page — no signup required to post.",
     themes: [
@@ -57,7 +57,7 @@ const occasions: OccasionSeed[] = [
     motionProfile: "celebratory",
     promptText: "Say congratulations",
     ctaText: "Start a congratulations board",
-    seoTitle: "Free Online Congratulations Cards — Group Card | Wishwell",
+    seoTitle: "Free Online Congratulations Cards — Group Card | Fondly Held",
     seoDescription:
       "Celebrate a graduation, promotion or big win with a group congratulations card. Everyone adds a message or photo to one link — free, no signup to post.",
     themes: [
@@ -89,7 +89,7 @@ const occasions: OccasionSeed[] = [
     motionProfile: "celebratory",
     promptText: "Share your wishes for the happy couple",
     ctaText: "Start a wedding guestbook",
-    seoTitle: "Free Online Wedding Guestbook Cards | Wishwell",
+    seoTitle: "Free Online Wedding Guestbook Cards | Fondly Held",
     seoDescription:
       "A digital wedding guestbook guests can sign from anywhere. Collect messages, photos and videos on one beautiful page and keep it forever.",
     themes: [
@@ -121,7 +121,7 @@ const occasions: OccasionSeed[] = [
     motionProfile: "celebratory",
     promptText: "Welcome the new arrival",
     ctaText: "Start a new baby board",
-    seoTitle: "Free Online New Baby Cards — Group Card | Wishwell",
+    seoTitle: "Free Online New Baby Cards — Group Card | Fondly Held",
     seoDescription:
       "Welcome a new baby with a group card everyone can sign online. Collect messages, photos and well-wishes on one page, free — no signup required to post.",
     themes: [
@@ -153,7 +153,7 @@ const occasions: OccasionSeed[] = [
     motionProfile: "celebratory",
     promptText: "Celebrate a work milestone",
     ctaText: "Start a work anniversary board",
-    seoTitle: "Free Online Work Anniversary Cards for Teams | Wishwell",
+    seoTitle: "Free Online Work Anniversary Cards for Teams | Fondly Held",
     seoDescription:
       "Celebrate a coworker's work anniversary with a group card the whole team can sign. Free, beautiful, and no signup required for teammates to post.",
     themes: [
@@ -185,7 +185,7 @@ const occasions: OccasionSeed[] = [
     motionProfile: "warm",
     promptText: "Share a farewell message",
     ctaText: "Start a farewell board",
-    seoTitle: "Free Online Farewell Cards for Coworkers | Wishwell",
+    seoTitle: "Free Online Farewell Cards for Coworkers | Fondly Held",
     seoDescription:
       "Send a coworker off with a group farewell card. Everyone adds a message, photo or memory to one page — free, no signup required to contribute.",
     themes: [
@@ -217,7 +217,7 @@ const occasions: OccasionSeed[] = [
     motionProfile: "warm",
     promptText: "Share a retirement wish or memory",
     ctaText: "Start a retirement board",
-    seoTitle: "Free Online Retirement Cards for Coworkers | Wishwell",
+    seoTitle: "Free Online Retirement Cards for Coworkers | Fondly Held",
     seoDescription:
       "Celebrate a well-earned retirement with a group card. Collect messages, memories and photos from coworkers and friends on one lasting page.",
     themes: [
@@ -249,7 +249,7 @@ const occasions: OccasionSeed[] = [
     motionProfile: "warm",
     promptText: "Send get-well wishes",
     ctaText: "Start a get-well board",
-    seoTitle: "Free Online Get Well Soon Cards — Group Card | Wishwell",
+    seoTitle: "Free Online Get Well Soon Cards — Group Card | Fondly Held",
     seoDescription:
       "Send comfort and encouragement with a group get-well-soon card. Friends and family add messages and photos to one page — free, gentle, no signup to post.",
     themes: [
@@ -281,7 +281,7 @@ const occasions: OccasionSeed[] = [
     motionProfile: "warm",
     promptText: "Say thank you",
     ctaText: "Start a thank-you board",
-    seoTitle: "Free Online Thank You Cards — Group Card | Wishwell",
+    seoTitle: "Free Online Thank You Cards — Group Card | Fondly Held",
     seoDescription:
       "Show appreciation with a group thank-you card. Everyone adds a message or photo to one beautiful page — free, no signup required to contribute.",
     themes: [
@@ -313,7 +313,7 @@ const occasions: OccasionSeed[] = [
     motionProfile: "solemn",
     promptText: "Share a memory",
     ctaText: "Start a memorial page",
-    seoTitle: "Free Online Memorial Pages & Tribute Cards | Wishwell",
+    seoTitle: "Free Online Memorial Pages & Tribute Cards | Fondly Held",
     seoDescription:
       "Create a lasting online memorial page to honor someone's memory. Family and friends can share memories, photos and condolences on one page, kept forever, free.",
     themes: [

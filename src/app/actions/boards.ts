@@ -27,7 +27,7 @@ export async function createBoardAction(input: CreateBoardInput) {
   // board by signing in after. Removes all friction from the top of funnel.")
   if (!ownerId && board.claimToken) {
     const store = await cookies();
-    store.set(`wishwell_claim_${board.slug}`, board.claimToken, {
+    store.set(`fondlyheld_claim_${board.slug}`, board.claimToken, {
       httpOnly: true,
       sameSite: "lax",
       maxAge: 60 * 60 * 24 * 30,

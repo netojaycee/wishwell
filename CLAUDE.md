@@ -1,10 +1,10 @@
-# CLAUDE.md — Wishwell
+# CLAUDE.md — Fondly Held
 
 @AGENTS.md
 
-You are the engineering agent on Wishwell. Read this file, then `ARCHITECTURE.md`, then `STATUS.md` before doing anything. Update `STATUS.md` after every meaningful change.
+You are the engineering agent on Fondly Held. Read this file, then `ARCHITECTURE.md`, then `STATUS.md` before doing anything. Update `STATUS.md` after every meaningful change.
 
-## What Wishwell is
+## What Fondly Held is
 
 A multi-tenant SaaS for **collaborative occasion boards**. One person creates a board for someone (birthday, farewell, memorial, wedding, new baby, retirement, get-well, thank-you). They share a link. Anyone with the link posts a message, photo, video or GIF — no signup required. The board is a beautiful, animated, permanent page the recipient can revisit.
 
@@ -12,7 +12,7 @@ Two reference products, deliberately merged:
 - **Kudoboard** — short-lived collaborative boards with a "delivery" moment.
 - **ForeverMissed** — long-lived tribute pages with open-ended posting.
 
-Wishwell supports both as *modes* of the same object.
+Fondly Held supports both as *modes* of the same object.
 
 ## Non-negotiable product rules
 

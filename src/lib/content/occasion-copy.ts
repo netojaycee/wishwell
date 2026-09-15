@@ -10,7 +10,7 @@ export type OccasionCopy = {
 export const occasionCopy: Record<string, OccasionCopy> = {
   birthday: {
     intro: [
-      "A birthday card that everyone signs in the hallway before handing it over is a nice tradition, but it only reaches the people in the building that day. A Wishwell birthday board does the same thing for everyone who couldn't be there — the coworker who moved teams, the college roommate three time zones away, the grandparent who isn't on the group chat.",
+      "A birthday card that everyone signs in the hallway before handing it over is a nice tradition, but it only reaches the people in the building that day. A Fondly Held birthday board does the same thing for everyone who couldn't be there — the coworker who moved teams, the college roommate three time zones away, the grandparent who isn't on the group chat.",
       "You create the board, pick a theme, and share one link. Anyone who gets it can add a message, a photo, or a short video in under a minute — no account, no app to download. The board fills up over the days before the birthday, and you can reveal it all at once or let people watch it grow.",
     ],
     tips: [
@@ -46,7 +46,7 @@ export const occasionCopy: Record<string, OccasionCopy> = {
   },
   wedding: {
     intro: [
-      "A physical guestbook only reaches the people standing in the room, and it usually goes straight into a drawer afterward. A Wishwell wedding board captures well-wishes from everyone — guests at the venue, family who couldn't travel, friends watching from afar — and it stays somewhere the couple will actually revisit.",
+      "A physical guestbook only reaches the people standing in the room, and it usually goes straight into a drawer afterward. A Fondly Held wedding board captures well-wishes from everyone — guests at the venue, family who couldn't travel, friends watching from afar — and it stays somewhere the couple will actually revisit.",
       "Set the board up before the big day and share the link in the invitation or the group chat. It works as a running guestbook that keeps collecting messages for weeks or months afterward, not just during the event itself, so latecomers and out-of-town relatives don't miss the window.",
     ],
     tips: [
@@ -173,7 +173,7 @@ export const occasionCopy: Record<string, OccasionCopy> = {
   memorial: {
     intro: [
       "When someone dies, the people who loved them are often spread across cities, time zones, and stages of their lives — coworkers who never met the childhood friends, family who never met the college roommates. A memorial page gives all of them one place to leave a memory, so the family is left with something to hold onto that's fuller than any single eulogy could be.",
-      "This is deliberately the quietest, most understated theme in Wishwell — no confetti, no bouncing animation, nothing that could feel out of place. It's built to hold weight, not to entertain. The page stays open indefinitely; there's no expiry date on grief or on remembering someone.",
+      "This is deliberately the quietest, most understated theme in Fondly Held — no confetti, no bouncing animation, nothing that could feel out of place. It's built to hold weight, not to entertain. The page stays open indefinitely; there's no expiry date on grief or on remembering someone.",
     ],
     tips: [
       "A specific memory, however small, is usually more meaningful than a general statement of loss.",

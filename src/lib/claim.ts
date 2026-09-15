@@ -1,6 +1,6 @@
 "use server";
 
-// Attaches any guest-created boards (identified by a `wishwell_claim_<slug>` cookie set
+// Attaches any guest-created boards (identified by a `fondlyheld_claim_<slug>` cookie set
 // in the create-board Server Action) to the now-signed-in owner. A Server Action (not a
 // plain server-side function) because it deletes cookies, which Next only allows from a
 // Server Action or Route Handler — called client-side once the dashboard mounts.
@@ -8,7 +8,7 @@
 import { cookies } from "next/headers";
 import { claimBoard } from "@/lib/data/boards";
 
-const CLAIM_PREFIX = "wishwell_claim_";
+const CLAIM_PREFIX = "fondlyheld_claim_";
 
 export async function claimPendingBoards(ownerId: string) {
   const store = await cookies();

@@ -1,4 +1,4 @@
-# GROWTH.md — Wishwell: being seen and being trusted
+# GROWTH.md — Fondly Held: being seen and being trusted
 
 The code is the easy half. This is the half that decides whether it exists.
 
@@ -18,7 +18,7 @@ Posts without an account → sees "create your own board" at the success moment
 Some fraction become owners
 ```
 
-Every product decision is judged against this loop. Signup walls for contributors would kill it. The OG image, the success-state CTA, and the footer "Made with Wishwell" on every public board are the three highest-leverage growth surfaces in the entire product — treat them as core features, not decoration.
+Every product decision is judged against this loop. Signup walls for contributors would kill it. The OG image, the success-state CTA, and the footer "Made with Fondly Held" on every public board are the three highest-leverage growth surfaces in the entire product — treat them as core features, not decoration.
 
 Board slugs must be shareable and pretty. The link *is* the ad.
 
@@ -110,14 +110,14 @@ Product Hunt (Tuesday–Thursday launch), BetaList, Indie Hackers, Hacker News S
 
 ## 5. Positioning against the incumbents
 
-| | Kudoboard | ForeverMissed | **Wishwell** |
+| | Kudoboard | ForeverMissed | **Fondly Held** |
 |---|---|---|---|
 | Occasions | corporate-first | memorial only | every occasion, one product |
 | Pricing | from $5.99/board | subscription | generous free tier |
 | Design | functional | dated | the reason people choose it |
 | Feel | HR tool | somber | made with care |
 
-**One-liner:** *Wishwell — beautiful group cards and tribute pages for every occasion. One link, everyone contributes, they keep it forever.*
+**One-liner:** *Fondly Held — beautiful group cards and tribute pages for every occasion. One link, everyone contributes, they keep it forever.*
 
 Lead with **beauty** and **free**. Those are the two things the incumbents cannot quickly match.
 

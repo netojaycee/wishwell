@@ -14,7 +14,7 @@ export function SiteFooter() {
           <Link href="/terms">Terms</Link>
           <Link href="/contact">Contact</Link>
         </div>
-        <p className="mt-6 text-xs text-black/30">© {new Date().getFullYear()} Wishwell.</p>
+        <p className="mt-6 text-xs text-black/30">© {new Date().getFullYear()} Fondly Held.</p>
       </div>
     </footer>
   );

@@ -45,8 +45,8 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   title: {
-    default: "Wishwell — beautiful group cards for every occasion",
-    template: "%s · Wishwell",
+    default: "Fondly Held — beautiful group cards for every occasion",
+    template: "%s · Fondly Held",
   },
   description:
     "One link, everyone contributes. Beautiful group cards and tribute pages for every occasion — free, no signup required to post.",
@@ -55,14 +55,14 @@ export const metadata: Metadata = {
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "Wishwell",
+  name: "Fondly Held",
   url: process.env.NEXT_PUBLIC_APP_URL,
 };
 
 const websiteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "Wishwell",
+  name: "Fondly Held",
   url: process.env.NEXT_PUBLIC_APP_URL,
 };
 

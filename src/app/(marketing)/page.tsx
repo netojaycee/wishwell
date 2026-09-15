@@ -4,7 +4,7 @@ import { listOccasionsWithThemes } from "@/lib/data/occasions";
 import { Reveal } from "@/components/board/reveal";
 
 export const metadata: Metadata = {
-  title: "Wishwell — beautiful group cards for every occasion",
+  title: "Fondly Held — beautiful group cards for every occasion",
   description:
     "One link, everyone contributes. Beautiful group cards and tribute pages for every occasion — free, no signup required to post.",
 };

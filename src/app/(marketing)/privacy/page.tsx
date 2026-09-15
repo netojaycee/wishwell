@@ -9,7 +9,7 @@ export default function PrivacyPage() {
       <p className="mt-2 text-sm text-black/50">Last updated: September 2026</p>
 
       <p className="mt-6 leading-relaxed text-black/75">
-        This policy explains what Wishwell collects, why, and what you can do about it.
+        This policy explains what Fondly Held collects, why, and what you can do about it.
         {/* TODO(owner): have this reviewed by a lawyer before commercial launch */}
       </p>
 

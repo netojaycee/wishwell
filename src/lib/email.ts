@@ -18,7 +18,7 @@ export async function sendBoardInviteEmail({
 
   const resend = new Resend(env.RESEND_API_KEY);
   const { error } = await resend.emails.send({
-    from: "Wishwell <onboarding@resend.dev>",
+    from: "Fondly Held <onboarding@resend.dev>",
     to,
     subject: `You're invited to sign ${boardTitle}`,
     html: `<p>You've been invited to add a message to <strong>${boardTitle}</strong>.</p><p><a href="${boardUrl}">Open the board</a></p>`,

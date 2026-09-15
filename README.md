@@ -1,4 +1,4 @@
-# Wishwell
+# Fondly Held
 
 Beautiful group cards and tribute pages for every occasion. See `ARCHITECTURE.md`,
 `BUILD_PLAN.md`, and `DESIGN.md` for product context.
