@@ -22,6 +22,11 @@ Done) — left alone deliberately, internal identifiers only, no user-facing eff
    machine, already diagnosed, documented there.
 
 ## Now (actually pending)
+- [ ] `TESTING.md` (repo root) is a tester guide, ready to share — **fill in the live
+  URL placeholder at its top before sending it out**, and confirm with the user whether
+  the app is actually deployed somewhere yet (they mentioned testing a live link in
+  WhatsApp, but this agent has no record of a completed Vercel deploy — worth clarifying
+  rather than assuming either way).
 - [ ] Deploy to Vercel — code is ready and pushed; needs the user's Vercel account
   (dashboard import, no CLI access from this agent). See Blocked.
 - [ ] Add `http://localhost:3005/api/auth/callback/google` as an authorized redirect URI
@@ -72,6 +77,21 @@ timing bot check, HTML sanitization on all anonymous input, hashed (not raw) IPs
 presigned uploads and Resend invite email both confirmed working with real credentials
 (a real photo upload via R2 is live on a test board). Giphy and Google OAuth keys present;
 Giphy not yet click-tested, Google blocked on the redirect URI step above.
+
+**Second polish pass** — Fixed a real bug: `b/[slug]`'s `generateMetadata` set
+`openGraph.images` to an explicit `undefined` for any board without a `coverImageUrl`
+(nearly all of them), which suppresses Next's auto-detected `opengraph-image.tsx` for
+that route — very likely why board links weren't showing previews in WhatsApp. Added a
+site-wide default `opengraph-image.tsx` + `openGraph`/`twitter`/`metadataBase` to the
+root layout (previously only board pages had any OG image at all). `components/brand/
+split-shell.tsx` generalizes the auth split-screen layout, now also used by About/Contact
+(moved out of the `(marketing)` group) and given a mobile-only header — auth/about/contact
+pages had **zero branding and no way home on a phone** before this. The "board is live"
+step in `/create` now has copy-to-clipboard (with feedback) and a Web Share API button
+with occasion-personalized share text, plus a calm (non-growth-hacky, memorial-safe)
+"keep this board safe" card nudging guest creators toward an account instead of one line
+of small text. `/create`'s occasion and theme cards now have permanent visible borders
+(previously only visible on hover/selection).
 
 **Checks** — `pnpm lint`, `tsc --noEmit`, `pnpm build` (production) all clean as of the
 last commit. Mobile layout checked in-browser at a sub-`sm`-breakpoint width (couldn't
