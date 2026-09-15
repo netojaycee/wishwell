@@ -30,7 +30,17 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     openGraph: {
       title,
       description,
-      images: board.coverImageUrl ? [{ url: board.coverImageUrl }] : undefined,
+      // Only set `images` when there's a real cover photo — an explicit `images:
+      // undefined` key (even though the value is undefined) suppresses Next's
+      // auto-detected opengraph-image.tsx for this route, which was the actual bug:
+      // almost no boards have coverImageUrl set, so nearly every board link was
+      // silently losing its OG image.
+      ...(board.coverImageUrl ? { images: [{ url: board.coverImageUrl }] } : {}),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
     },
   };
 }

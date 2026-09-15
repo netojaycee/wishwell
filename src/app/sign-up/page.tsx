@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { hasGoogleAuth } from "@/lib/env";
 import { AuthForm } from "@/components/auth/auth-form";
-import { AuthShell } from "@/components/auth/auth-shell";
+import { SplitShell } from "@/components/brand/split-shell";
 
 export const metadata: Metadata = { title: "Create your account" };
 
 export default function SignUpPage() {
   return (
-    <AuthShell>
+    <SplitShell>
       <AuthForm mode="sign-up" hasGoogleAuth={hasGoogleAuth} />
-    </AuthShell>
+    </SplitShell>
   );
 }

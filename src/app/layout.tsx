@@ -43,13 +43,32 @@ const playfair = Playfair_Display({
   style: ["normal", "italic"],
 });
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+const TITLE = "Fondly Held — beautiful group cards for every occasion";
+const DESCRIPTION =
+  "One link, everyone contributes. Beautiful group cards and tribute pages for every occasion — free, no signup required to post.";
+
 export const metadata: Metadata = {
+  // Without this, relative OG image URLs (like the ones next/og generates) can't
+  // resolve to absolute URLs, and crawlers (WhatsApp, Slack, iMessage) may fail to
+  // fetch the preview image at all.
+  metadataBase: APP_URL ? new URL(APP_URL) : undefined,
   title: {
-    default: "Fondly Held — beautiful group cards for every occasion",
+    default: TITLE,
     template: "%s · Fondly Held",
   },
-  description:
-    "One link, everyone contributes. Beautiful group cards and tribute pages for every occasion — free, no signup required to post.",
+  description: DESCRIPTION,
+  openGraph: {
+    type: "website",
+    siteName: "Fondly Held",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 };
 
 const organizationJsonLd = {

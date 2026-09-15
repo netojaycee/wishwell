@@ -7,9 +7,31 @@ const PANEL_CARDS = [
   { body: "Thinking of you today and always. She would be so proud.", author: "Aunty Blessing", bg: "#F7F6F4", accent: "#6B675E", rotate: 4 },
 ] as const;
 
-export function AuthShell({ children }: { children: React.ReactNode }) {
+// Reused by sign-in/sign-up and by short, personal marketing pages (About, Contact) that
+// want the same warm split-screen treatment instead of the full SiteHeader/SiteFooter
+// marketing chrome. Long text pages (Privacy/Terms) intentionally stay single-column —
+// a decorative panel next to a wall of legal text hurts readability rather than helping it.
+export function SplitShell({
+  children,
+  tagline = "One link. Everyone contributes. Nothing to manage but the memory.",
+  contentClassName = "max-w-sm",
+}: {
+  children: React.ReactNode;
+  tagline?: string;
+  contentClassName?: string;
+}) {
   return (
     <div className="grid min-h-full flex-1 lg:grid-cols-2">
+      {/* Mobile-only header — the desktop panel below (with the only logo) is hidden
+          under lg, so without this, auth/about/contact pages had zero branding and no
+          way back to the homepage on a phone. */}
+      <div className="flex items-center border-b border-black/5 px-6 py-4 lg:hidden">
+        <Link href="/" className="flex items-center gap-2 font-heading text-lg" style={{ color: "var(--brand-ink)" }}>
+          <LogoMark className="h-5 w-5 shrink-0" color="var(--brand)" />
+          Fondly Held
+        </Link>
+      </div>
+
       <div className="relative hidden overflow-hidden bg-[var(--brand-ink)] lg:flex lg:flex-col lg:justify-between lg:p-12">
         <div
           aria-hidden
@@ -26,9 +48,7 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
         </Link>
 
         <div className="relative">
-          <p className="max-w-sm font-heading text-3xl leading-snug text-white">
-            One link. Everyone contributes. Nothing to manage but the memory.
-          </p>
+          <p className="max-w-sm font-heading text-3xl leading-snug text-white">{tagline}</p>
 
           <div className="relative mt-12 h-40">
             {PANEL_CARDS.map((card, i) => (
@@ -55,8 +75,8 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
         <p className="relative text-xs text-white/50">Free while we&apos;re growing. Every feature, no account required to post.</p>
       </div>
 
-      <div className="flex items-center justify-center bg-[var(--background)] px-6 py-16">
-        <div className="w-full max-w-sm">{children}</div>
+      <div className="flex items-center justify-center bg-[var(--background)] px-6 py-12 lg:py-16">
+        <div className={`w-full ${contentClassName}`}>{children}</div>
       </div>
     </div>
   );

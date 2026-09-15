@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
+import { SplitShell } from "@/components/brand/split-shell";
 
 export const metadata: Metadata = { title: "About" };
 
 export default function AboutPage() {
   return (
-    <div className="mx-auto max-w-2xl px-6 py-16">
-      <h1 className="font-heading text-3xl">About Fondly Held</h1>
+    <SplitShell tagline="Made for every occasion — including the ones that aren't easy to celebrate." contentClassName="max-w-md">
+      <h1 className="font-heading text-3xl" style={{ color: "var(--brand-ink)" }}>
+        About Fondly Held
+      </h1>
       <p className="mt-5 leading-relaxed text-black/75">
         Fondly Held exists because the two products that already do this well have picked
         opposite lanes — one built for corporate celebrations, the other for grief — and
@@ -28,6 +31,6 @@ export default function AboutPage() {
       <p className="mt-6 text-sm text-black/50">
         Contact: <a href="mailto:netojaycee@gmail.com" className="underline">netojaycee@gmail.com</a>
       </p>
-    </div>
+    </SplitShell>
   );
 }

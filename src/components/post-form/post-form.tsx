@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { LogoMark } from "@/components/brand/logo-mark";
 import { MediaUploader } from "./media-uploader";
 import { GifPicker } from "./gif-picker";
 import { SuccessState } from "./success-state";
@@ -82,8 +84,20 @@ export function PostForm({
   const remaining = MAX_LENGTH - body.length;
 
   return (
-    <div className="mx-auto grid max-w-4xl grid-cols-1 gap-10 px-6 py-16 lg:grid-cols-[1fr_320px] lg:items-start lg:gap-16">
-      <form onSubmit={handleSubmit}>
+    <div>
+      <div className="px-6 pt-8">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 text-sm font-medium opacity-60 transition-opacity hover:opacity-100"
+          style={{ color: "var(--board-ink)" }}
+        >
+          <LogoMark className="h-4 w-4 shrink-0" color="currentColor" />
+          Fondly Held
+        </Link>
+      </div>
+
+      <div className="mx-auto grid max-w-4xl grid-cols-1 gap-10 px-6 py-10 lg:grid-cols-[1fr_320px] lg:items-start lg:gap-16">
+        <form onSubmit={handleSubmit}>
         <h1
           className="text-3xl"
           style={{ fontFamily: "var(--board-font-heading)", color: "var(--board-ink)" }}
@@ -193,6 +207,14 @@ export function PostForm({
           <PostPreviewCard authorName={authorName} body={body} media={media} accent={accent} accentSoft={accentSoft} />
         </div>
       </div>
+      </div>
+
+      <footer className="border-t border-[var(--board-ink)]/10 px-6 py-6 text-center text-sm opacity-50" style={{ color: "var(--board-ink)" }}>
+        Made with{" "}
+        <Link href="/" className="font-medium underline underline-offset-2">
+          Fondly Held
+        </Link>
+      </footer>
     </div>
   );
 }
