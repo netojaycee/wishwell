@@ -10,6 +10,15 @@ old brand (renaming a GitHub repo is safe/non-breaking, GitHub redirects the old
 it's a deliberate choice; not done automatically here).
 
 ## Now
+- **Fixed: auth was broken (both email/password and Google).** Root cause: port 3000/3001
+  are permanently occupied by another project on this machine, so `next dev` silently
+  ran on a different port each time while `BETTER_AUTH_URL` stayed hardcoded to
+  `:3000` — Better Auth rejects origin-mismatched requests. Fixed by pinning this
+  project's dev server to `:3005` (`package.json` dev script + `.env.example`).
+  Email/password sign-up/sign-in/sign-out all verified working in-browser. **Still
+  needs one manual step**: add `http://localhost:3005/api/auth/callback/google` as an
+  authorized redirect URI in Google Cloud Console — confirmed via the real Google
+  consent screen's error message, not guessed.
 - **Rebrand: Wishwell → Fondly Held.** wishwell.vercel.app was already taken; picked a
   name with a confirmed-available `fondlyheld.com` (WHOIS-checked) and no direct product
   conflicts found. All user-facing copy, page titles/metadata, JSON-LD, footer, legal
