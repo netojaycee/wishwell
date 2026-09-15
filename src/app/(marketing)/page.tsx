@@ -1,13 +1,11 @@
 import Link from "next/link";
-import type { Metadata } from "next";
 import { listOccasionsWithThemes } from "@/lib/data/occasions";
 import { Reveal } from "@/components/board/reveal";
 
-export const metadata: Metadata = {
-  title: "Fondly Held — beautiful group cards for every occasion",
-  description:
-    "One link, everyone contributes. Beautiful group cards and tribute pages for every occasion — free, no signup required to post.",
-};
+// No metadata export here on purpose: this page's title/description were identical to
+// root layout's `default` — setting them again just applies root's title template on
+// top, producing a doubled "Fondly Held ... · Fondly Held". Inheriting the default
+// avoids that.
 
 export const revalidate = 3600;
 
