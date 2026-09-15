@@ -22,8 +22,19 @@ export function SiteFooter() {
           <Link href="/contact" className="hover:text-[var(--brand)]">Contact</Link>
         </div>
       </div>
-      <div className="border-t border-black/5 px-6 py-4 text-center text-xs text-black/30">
-        © {new Date().getFullYear()} Fondly Held.
+      <div className="flex flex-col items-center gap-1 border-t border-black/5 px-6 py-4 text-center text-xs text-black/30 sm:flex-row sm:justify-center sm:gap-3">
+        <span>© {new Date().getFullYear()} Fondly Held.</span>
+        <span className="hidden sm:inline" aria-hidden>·</span>
+        <span>
+          Photos from{" "}
+          <a href="https://unsplash.com" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-black/60">
+            Unsplash
+          </a>{" "}
+          · GIFs via{" "}
+          <a href="https://giphy.com" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-black/60">
+            GIPHY
+          </a>
+        </span>
       </div>
     </footer>
   );

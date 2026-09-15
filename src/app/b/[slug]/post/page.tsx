@@ -34,6 +34,9 @@ export default async function PostPage({ params }: Params) {
         motionProfile={board.occasionType.motionProfile}
         accent={board.theme.palette.accent}
         accentSoft={board.theme.palette.accentSoft}
+        ink={board.theme.palette.ink}
+        surface={board.theme.palette.surface}
+        occasionKey={board.occasionType.key}
         mediaEnabled={hasR2}
         gifEnabled={hasGiphy}
         promptText={board.occasionType.promptText}

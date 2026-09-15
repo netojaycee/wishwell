@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Reveal } from "./reveal";
 import { LiveCounter } from "./live-counter";
+import { OccasionArt } from "@/components/illustrations/occasion-art";
 import type { BoardWithRelations } from "@/lib/types";
 
 export function BoardHero({ board, postCount }: { board: BoardWithRelations; postCount: number }) {
@@ -24,6 +25,12 @@ export function BoardHero({ board, postCount }: { board: BoardWithRelations; pos
 
       <div className="mx-auto max-w-3xl px-6 pt-20 pb-14 text-center sm:pt-28 sm:pb-20">
         <Reveal profile={profile}>
+          <OccasionArt
+            occasionKey={board.occasionType.key}
+            profile={profile}
+            palette={board.theme.palette}
+            className="mx-auto mb-4 h-16 w-16 sm:h-20 sm:w-20"
+          />
           <span
             className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium tracking-wide uppercase"
             style={{ background: "var(--board-accent-soft)", color: "var(--board-accent)" }}

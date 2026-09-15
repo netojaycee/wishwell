@@ -125,10 +125,38 @@ with occasion-personalized share text, plus a calm (non-growth-hacky, memorial-s
 of small text. `/create`'s occasion and theme cards now have permanent visible borders
 (previously only visible on hover/selection).
 
-**Checks** — `pnpm lint`, `tsc --noEmit`, `pnpm build` (production) all clean as of the
-last commit. Mobile layout checked in-browser at a sub-`sm`-breakpoint width (couldn't
-force exactly 375px through the browser automation tool in this environment, but the
-same mobile-first CSS path applies at any width below the 640px `sm` breakpoint).
+**Pictorial/motion pass (2026-09-15)** — the site read as too plain/text-only; it now
+carries real photos, GIFs, illustrations and profile-aware animation on every surface.
+Shared layer (reuse these, don't reinvent):
+- `src/lib/content/moments.ts` — registry of 19 curated photos (Unsplash licence,
+  self-hosted as WebP in `public/images/moments/`, ~1.4MB total), 5 illustrated GIFs
+  (hotlinked from GIPHY, credited in the footer), and per-occasion demo showcases.
+  **Illustrative demo content only — never present it as testimonials/real users.**
+  `showcaseFor(key, profile)` falls back by motion profile for unknown occasion keys.
+- `src/components/illustrations/occasion-art.tsx` — one hand-drawn SVG per occasion,
+  coloured from the theme palette; celebratory bobs/twinkles, warm drifts, solemn
+  (memorial) never animates. Unknown keys → generic envelope (no deploy per occasion).
+- `src/components/showcase/demo-card.tsx` / `demo-board.tsx` — static themed post card /
+  mini board used for marketing.
+- `fh-*` keyframes/classes in `globals.css`; all stop under `prefers-reduced-motion`.
+Applied to: home (photo hero collage incl. mobile, photo occasion tiles, "every tone"
+three-board section, animated how-it-works, GIF/photo marquee, trust band, closing CTA),
+occasion pages (themed hero + demo board, note-card tips), board page (occasion art,
+illustrated empty state with ghost cards, rising balloons / falling confetti ambient on
+celebratory boards only, keyed off `theme.particleEffect`), post form + success state
+(solemn success is still, calm copy, no "create your own" nudge), create wizard
+(illustrated occasion cards, live preview, mini-board theme previews), dashboard,
+split-shell panel (photo cards), 404, footer credits. Also fixed along the way:
+occasion-page H1/title showed "… | Fondly Held" (and doubled the brand in the tab
+title); site header wrapped onto two lines at 375px; split-shell mobile header row
+ballooned to half the screen; board-page `-z-10` ambient layers now sit inside an
+`isolate` wrapper so warm drift / solemn grain actually render.
+
+**Checks** — `pnpm lint`, `tsc --noEmit`, `pnpm build` (production) all clean. True
+375px checks are possible here by loading pages inside a 375px-wide same-origin iframe
+(the automation window can't shrink below ~756px) — home, occasion, create, post,
+board pages verified with no horizontal overflow. Note: the automation Chrome window is
+unfocused, so rAF-driven entrance fades crawl in screenshots — not a real-world bug.
 
 ## Blocked / needs a human decision
 - [x] Vercel — deployed, live at https://fondlyheld.vercel.app, auto-deploys from `main`

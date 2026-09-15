@@ -7,6 +7,7 @@ import { listAllPostsForModeration } from "@/lib/data/posts";
 import { ModerationList } from "@/components/dashboard/moderation-list";
 import { BoardSettingsForm } from "@/components/dashboard/board-settings-form";
 import { InviteForm } from "@/components/dashboard/invite-form";
+import { OccasionArt } from "@/components/illustrations/occasion-art";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -26,7 +27,15 @@ export default async function ManageBoardPage({ params }: Params) {
       <Link href="/dashboard" className="text-sm text-black/50 hover:text-black">
         ← My boards
       </Link>
-      <h1 className="mt-2 font-heading text-3xl">{board.title}</h1>
+      <div className="mt-2 flex items-center gap-3">
+        <OccasionArt
+          occasionKey={board.occasionType.key}
+          profile={board.occasionType.motionProfile}
+          palette={board.theme.palette}
+          className="h-12 w-12 shrink-0"
+        />
+        <h1 className="font-heading text-3xl">{board.title}</h1>
+      </div>
       <div className="flex gap-4">
         <Link href={`/b/${board.slug}`} className="text-sm underline underline-offset-2">
           View the live board

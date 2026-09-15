@@ -60,8 +60,10 @@ export default async function BoardPage({ params }: Params) {
   const profile = board.occasionType.motionProfile;
 
   return (
+    // `isolate` makes this a stacking context so BoardAmbient's -z-10 layers paint above
+    // this div's own background instead of disappearing behind it.
     <div
-      className="relative min-h-screen"
+      className="relative isolate min-h-screen"
       style={{
         ...boardThemeVars(board.theme),
         background: "var(--board-bg)",
@@ -72,12 +74,19 @@ export default async function BoardPage({ params }: Params) {
         motionProfile={profile}
         accent={board.theme.palette.accent}
         accentSoft={board.theme.palette.accentSoft}
+        particleEffect={board.theme.particleEffect}
       />
       <BoardHero board={board} postCount={postCount} />
       {posts.length > 0 ? (
         <PostGrid posts={posts} profile={profile} />
       ) : (
-        <EmptyState slug={board.slug} mode={board.mode} profile={profile} />
+        <EmptyState
+          slug={board.slug}
+          mode={board.mode}
+          profile={profile}
+          occasionKey={board.occasionType.key}
+          palette={board.theme.palette}
+        />
       )}
       {posts.length > 0 ? (
         <div className="pb-16 text-center">

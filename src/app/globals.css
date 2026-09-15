@@ -148,3 +148,114 @@
     transform: translate(-2%, 2%) scale(1.05);
   }
 }
+
+/* ---------------------------------------------------------------------------------
+   Decorative motion vocabulary (`fh-*`). Used by illustrations, showcase collages and
+   board ambience. Which of these an element gets is decided by motion profile in code
+   (solemn never receives any). All of them stop under prefers-reduced-motion — the
+   element simply renders in its resting pose, content is never hidden.
+   --------------------------------------------------------------------------------- */
+@keyframes fh-bob {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-6px) rotate(2deg); }
+}
+@keyframes fh-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+@keyframes fh-sway {
+  0%, 100% { transform: rotate(-4deg); }
+  50% { transform: rotate(4deg); }
+}
+@keyframes fh-twinkle {
+  0%, 100% { opacity: 0.25; transform: scale(0.7); }
+  50% { opacity: 1; transform: scale(1); }
+}
+@keyframes fh-flicker {
+  0%, 100% { transform: scale(1, 1); }
+  30% { transform: scale(0.94, 1.06); }
+  60% { transform: scale(1.05, 0.9); }
+}
+@keyframes fh-steam {
+  0% { transform: translateY(4px); opacity: 0; }
+  30% { opacity: 0.7; }
+  100% { transform: translateY(-10px); opacity: 0; }
+}
+@keyframes fh-rise {
+  from { transform: translate3d(0, 0, 0) rotate(-3deg); }
+  to { transform: translate3d(0, -130vh, 0) rotate(3deg); }
+}
+@keyframes fh-fall {
+  from { transform: translate3d(0, -10vh, 0) rotate(0deg); }
+  to { transform: translate3d(0, 120vh, 0) rotate(540deg); }
+}
+@keyframes fh-marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+/* A "someone just posted" toast that appears, holds, and leaves — loops. */
+@keyframes fh-toast {
+  0%, 6% { opacity: 0; transform: translateY(10px) scale(0.96); }
+  12%, 78% { opacity: 1; transform: translateY(0) scale(1); }
+  86%, 100% { opacity: 0; transform: translateY(-6px) scale(1); }
+}
+/* A card dropping onto a board, holding, then resetting — loops (how-it-works). */
+@keyframes fh-drop-in {
+  0%, 10% { opacity: 0; transform: translateY(-14px) rotate(-4deg) scale(0.9); }
+  22%, 85% { opacity: 1; transform: translateY(0) rotate(var(--fh-rot, 0deg)) scale(1); }
+  95%, 100% { opacity: 0; transform: translateY(0) rotate(var(--fh-rot, 0deg)) scale(1); }
+}
+/* A chat bubble arriving — loops (how-it-works "share the link" step). */
+@keyframes fh-bubble {
+  0%, 12% { opacity: 0; transform: translateY(8px) scale(0.92); }
+  22%, 85% { opacity: 1; transform: translateY(0) scale(1); }
+  95%, 100% { opacity: 0; }
+}
+
+.fh-bob { animation: fh-bob 3.2s ease-in-out infinite; }
+.fh-float { animation: fh-float 4s ease-in-out infinite; }
+.fh-float-slow { animation: fh-float 7s ease-in-out infinite; }
+.fh-sway { animation: fh-sway 3.6s ease-in-out infinite; }
+.fh-sway-slow { animation: fh-sway 7s ease-in-out infinite; }
+.fh-twinkle { animation: fh-twinkle 2.4s ease-in-out infinite; }
+.fh-flicker { animation: fh-flicker 1.6s ease-in-out infinite; }
+.fh-flicker-slow { animation: fh-flicker 3.2s ease-in-out infinite; }
+.fh-steam { animation: fh-steam 3.4s ease-out infinite; }
+.fh-marquee { animation: fh-marquee 60s linear infinite; }
+.fh-toast { animation: fh-toast 7s ease-in-out infinite; }
+.fh-drop-in { animation: fh-drop-in 6s ease-out infinite; }
+.fh-bubble { animation: fh-bubble 6s ease-out infinite; }
+
+/* SVG parts rotate/scale around their own box, not the SVG origin. */
+.fh-bob, .fh-float, .fh-float-slow, .fh-sway, .fh-sway-slow, .fh-twinkle,
+.fh-flicker, .fh-flicker-slow, .fh-steam {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* Illustrations that only animate while their `.group` parent is hovered/focused. */
+.fh-hover-only .fh-bob, .fh-hover-only .fh-float, .fh-hover-only .fh-float-slow,
+.fh-hover-only .fh-sway, .fh-hover-only .fh-sway-slow, .fh-hover-only .fh-twinkle,
+.fh-hover-only .fh-flicker, .fh-hover-only .fh-flicker-slow, .fh-hover-only .fh-steam {
+  animation-play-state: paused;
+}
+.group:hover .fh-hover-only *, .group:focus-visible .fh-hover-only * {
+  animation-play-state: running;
+}
+
+.fh-ambient-piece { will-change: transform; }
+
+/* Marquee pauses on hover so people can actually read a card. */
+.fh-marquee-wrap:hover .fh-marquee { animation-play-state: paused; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fh-bob, .fh-float, .fh-float-slow, .fh-sway, .fh-sway-slow, .fh-twinkle,
+  .fh-flicker, .fh-flicker-slow, .fh-steam, .fh-marquee, .fh-toast, .fh-drop-in,
+  .fh-bubble, .fh-ambient-piece {
+    animation: none !important;
+  }
+  /* Looping entrance keyframes start at opacity 0 — show the resting state instead. */
+  .fh-toast, .fh-drop-in, .fh-bubble { opacity: 1; transform: none; }
+  /* Ambient pieces are pure decoration that only makes sense moving. */
+  .fh-ambient-piece { display: none; }
+}

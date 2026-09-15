@@ -2,10 +2,14 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Copy, Check, Share2 } from "lucide-react";
 import { createBoardAction } from "@/app/actions/boards";
 import { LogoMark } from "@/components/brand/logo-mark";
+import { OccasionArt } from "@/components/illustrations/occasion-art";
+import { boardThemeVars } from "@/lib/theme/vars";
+import { PHOTOS, showcaseFor } from "@/lib/content/moments";
 import type { OccasionTypeRow, ThemeRow } from "@/lib/types";
 
 type OccasionWithThemes = OccasionTypeRow & { themes: ThemeRow[] };
@@ -37,6 +41,9 @@ export function CreateWizard({
   const reducedMotion = useReducedMotion();
 
   const occasion = occasions.find((o) => o.key === occasionKey);
+  const previewTheme = occasion ? (occasion.themes.find((t) => t.id === themeId) ?? occasion.themes[0]) : undefined;
+  const showcase = occasion ? showcaseFor(occasion.key) : undefined;
+  const sampleText = showcase?.posts.find((p) => !p.photo && !p.gif);
 
   const selectOccasion = (key: string) => {
     setOccasionKey(key);
@@ -139,20 +146,30 @@ export function CreateWizard({
             <motion.div key="step0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={transition}>
               <h1 className="text-center font-heading text-2xl sm:text-left sm:text-3xl">What&apos;s the occasion?</h1>
               <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
-                {occasions.map((o) => (
-                  <button
-                    key={o.key}
-                    onClick={() => selectOccasion(o.key)}
-                    className="rounded-2xl border-2 p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md active:scale-[0.98]"
-                    style={{ background: o.themes[0]?.palette.bg, borderColor: o.themes[0]?.palette.accentSoft }}
-                  >
-                    <span
-                      className="inline-block h-3.5 w-3.5 rounded-full"
-                      style={{ background: o.themes[0]?.palette.accent }}
-                    />
-                    <p className="mt-2.5 text-sm font-medium">{o.label}</p>
-                  </button>
-                ))}
+                {occasions.map((o) => {
+                  const t = o.themes.find((th) => th.isDefault) ?? o.themes[0];
+                  return (
+                    <button
+                      key={o.key}
+                      onClick={() => selectOccasion(o.key)}
+                      className="group flex flex-col items-start rounded-2xl border-2 p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 active:scale-[0.98]"
+                      style={{ background: t?.palette.bg, borderColor: t?.palette.accentSoft }}
+                    >
+                      {t ? (
+                        <OccasionArt
+                          occasionKey={o.key}
+                          profile={o.motionProfile}
+                          palette={t.palette}
+                          animate="hover"
+                          className="h-14 w-14 sm:h-16 sm:w-16"
+                        />
+                      ) : null}
+                      <p className="mt-3 text-sm font-medium" style={{ color: t?.palette.ink }}>
+                        {o.label}
+                      </p>
+                    </button>
+                  );
+                })}
               </div>
             </motion.div>
           ) : null}
@@ -163,7 +180,54 @@ export function CreateWizard({
                 ← Change occasion
               </button>
               <h1 className="font-heading text-2xl sm:text-3xl">Tell us about them</h1>
-              <div className="mt-6 space-y-4">
+              <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-[1fr_220px] sm:items-start">
+              {/* Live preview of the board's hero — updates as they type, so the details
+                  step already feels like making the page, not filling a form. */}
+              {previewTheme ? (
+                <div
+                  aria-hidden
+                  className="flex items-center gap-4 rounded-2xl border p-4 shadow-sm sm:order-last sm:flex-col sm:gap-0 sm:p-5 sm:text-center"
+                  style={{
+                    ...boardThemeVars(previewTheme),
+                    background: "var(--board-bg)",
+                    borderColor: "color-mix(in srgb, var(--board-ink) 8%, transparent)",
+                  }}
+                >
+                  <OccasionArt
+                    occasionKey={occasion.key}
+                    profile={occasion.motionProfile}
+                    palette={previewTheme.palette}
+                    className="h-14 w-14 shrink-0 sm:h-20 sm:w-20"
+                  />
+                  <div className="min-w-0 sm:mt-3">
+                    <span
+                      className="inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wider uppercase"
+                      style={{ background: "var(--board-accent-soft)", color: "var(--board-accent)" }}
+                    >
+                      {occasion.label}
+                    </span>
+                    <p
+                      className="mt-1.5 text-lg leading-tight break-words sm:text-xl"
+                      style={{ fontFamily: "var(--board-font-heading)", color: "var(--board-ink)" }}
+                    >
+                      {title.trim() || `${occasion.label} Board`}
+                    </p>
+                    <p className="mt-1 truncate text-xs" style={{ color: "color-mix(in srgb, var(--board-ink) 55%, transparent)" }}>
+                      for {recipientName.trim() || "someone special"}
+                    </p>
+                    <div className="mt-4 hidden grid-cols-2 gap-1.5 sm:grid">
+                      {[0, 1].map((i) => (
+                        <span
+                          key={i}
+                          className="h-10 rounded-lg border border-dashed"
+                          style={{ borderColor: "color-mix(in srgb, var(--board-accent) 35%, transparent)" }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+              <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium">Recipient&apos;s name</label>
                   <input
@@ -202,6 +266,7 @@ export function CreateWizard({
                   Continue
                 </button>
               </div>
+              </div>
             </motion.div>
           ) : null}
 
@@ -224,9 +289,56 @@ export function CreateWizard({
                         boxShadow: selected ? `0 0 0 3px ${t.palette.accentSoft}` : undefined,
                       }}
                     >
-                      <div className="flex h-24 items-end p-3" style={{ background: t.palette.bg }}>
+                      {/* A tiny board in this theme — heading font, a photo card and a
+                          text card — so people pick a look by seeing it, not by swatches. */}
+                      <div
+                        className="relative h-40 overflow-hidden px-3 pt-3"
+                        style={{ ...boardThemeVars(t), background: "var(--board-bg)" }}
+                      >
+                        <p
+                          className="truncate text-center text-[15px] leading-tight"
+                          style={{ fontFamily: "var(--board-font-heading)", color: "var(--board-ink)" }}
+                        >
+                          {title.trim() || `${occasion.label} Board`}
+                        </p>
+                        <div className="mt-2.5 grid grid-cols-2 gap-2">
+                          {showcase ? (
+                            <div
+                              className="overflow-hidden rounded-lg shadow-sm"
+                              style={{ background: "var(--board-surface)", transform: "rotate(-2deg)" }}
+                            >
+                              <div className="relative aspect-[4/3]">
+                                <Image
+                                  src={PHOTOS[showcase.cover].src}
+                                  alt=""
+                                  fill
+                                  sizes="120px"
+                                  className="object-cover"
+                                />
+                              </div>
+                              <div className="space-y-1 p-1.5">
+                                <span className="block h-1 w-4/5 rounded-full" style={{ background: "color-mix(in srgb, var(--board-ink) 18%, transparent)" }} />
+                                <span className="block h-1 w-1/2 rounded-full" style={{ background: "var(--board-accent)" }} />
+                              </div>
+                            </div>
+                          ) : null}
+                          <div
+                            className="rounded-lg p-2 shadow-sm"
+                            style={{ background: "var(--board-accent-soft)", transform: "rotate(1.5deg)" }}
+                          >
+                            <p
+                              className="line-clamp-3 text-[10.5px] leading-snug"
+                              style={{ fontFamily: "var(--board-font-heading)", color: "var(--board-ink)" }}
+                            >
+                              {sampleText?.body ?? "A few words from the heart."}
+                            </p>
+                            <p className="mt-1 text-[9px] font-medium" style={{ color: "var(--board-accent)" }}>
+                              — {sampleText?.author ?? "A friend"}
+                            </p>
+                          </div>
+                        </div>
                         <span
-                          className="rounded-full px-2 py-1 text-[11px] font-medium"
+                          className="absolute bottom-2.5 left-3 rounded-full px-2 py-1 text-[11px] font-medium shadow-sm"
                           style={{ background: t.palette.accentSoft, color: t.palette.accent }}
                         >
                           {t.name}
@@ -267,7 +379,40 @@ export function CreateWizard({
 
           {step === 3 && resultSlug ? (
             <motion.div key="step3" initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={transition} className="text-center">
-              <h1 className="font-heading text-2xl sm:text-3xl">Your board is live</h1>
+              {occasion && previewTheme ? (
+                // Entrance follows the occasion's motion profile: a spring pop for
+                // celebratory, a soft rise for warm, a slow plain fade for solemn.
+                <motion.div
+                  initial={
+                    reducedMotion || occasion.motionProfile === "solemn"
+                      ? { opacity: 0 }
+                      : occasion.motionProfile === "celebratory"
+                        ? { opacity: 0, scale: 0.6, rotate: -8 }
+                        : { opacity: 0, y: 12 }
+                  }
+                  animate={{ opacity: 1, scale: 1, rotate: 0, y: 0 }}
+                  transition={
+                    reducedMotion
+                      ? { duration: 0.2 }
+                      : occasion.motionProfile === "celebratory"
+                        ? { type: "spring", stiffness: 260, damping: 16, delay: 0.1 }
+                        : occasion.motionProfile === "warm"
+                          ? { duration: 0.6, ease: "easeOut", delay: 0.1 }
+                          : { duration: 0.9, ease: "easeInOut" }
+                  }
+                  className="mx-auto mb-5 h-28 w-28 sm:h-32 sm:w-32"
+                >
+                  <OccasionArt
+                    occasionKey={occasion.key}
+                    profile={occasion.motionProfile}
+                    palette={previewTheme.palette}
+                    className="h-full w-full"
+                  />
+                </motion.div>
+              ) : null}
+              <h1 className="font-heading text-2xl sm:text-3xl">
+                {occasion?.motionProfile === "solemn" ? "The page is ready" : "Your board is live"}
+              </h1>
               <p className="mt-3 text-black/60">Share this link with anyone you want to contribute — no account needed.</p>
               <p className="mt-6 rounded-xl border-2 border-black/10 bg-black/[0.02] px-4 py-3 font-mono text-sm break-all">
                 {typeof window !== "undefined" ? window.location.host : ""}/b/{resultSlug}

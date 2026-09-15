@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { LogoMark } from "@/components/brand/logo-mark";
+import { OccasionArt } from "@/components/illustrations/occasion-art";
 import { MediaUploader } from "./media-uploader";
 import { GifPicker } from "./gif-picker";
 import { SuccessState } from "./success-state";
@@ -17,6 +18,9 @@ export function PostForm({
   motionProfile,
   accent,
   accentSoft,
+  ink,
+  surface,
+  occasionKey,
   mediaEnabled,
   gifEnabled,
   promptText,
@@ -26,6 +30,9 @@ export function PostForm({
   motionProfile: "celebratory" | "warm" | "solemn";
   accent: string;
   accentSoft: string;
+  ink: string;
+  surface: string;
+  occasionKey: string;
   mediaEnabled: boolean;
   gifEnabled: boolean;
   promptText: string;
@@ -47,6 +54,9 @@ export function PostForm({
         motionProfile={motionProfile}
         accent={accent}
         accentSoft={accentSoft}
+        ink={ink}
+        surface={surface}
+        occasionKey={occasionKey}
       />
     );
   }
@@ -98,6 +108,12 @@ export function PostForm({
 
       <div className="mx-auto grid max-w-4xl grid-cols-1 gap-10 px-6 py-10 lg:grid-cols-[1fr_320px] lg:items-start lg:gap-16">
         <form onSubmit={handleSubmit}>
+        <OccasionArt
+          occasionKey={occasionKey}
+          profile={motionProfile}
+          palette={{ accent, accentSoft, ink, surface }}
+          className="mb-4 h-14 w-14"
+        />
         <h1
           className="text-3xl"
           style={{ fontFamily: "var(--board-font-heading)", color: "var(--board-ink)" }}

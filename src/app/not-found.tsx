@@ -1,17 +1,24 @@
 import Link from "next/link";
-import { LogoMark } from "@/components/brand/logo-mark";
+import { OccasionArt } from "@/components/illustrations/occasion-art";
 
+// Calm, warm-profile illustration only — people can land here from a board link that
+// was made private, including memorial pages, so nothing playful or celebratory.
 export default function NotFound() {
   return (
     <div className="flex min-h-full flex-1 flex-col items-center justify-center bg-[#fdf8ee] px-6 py-20 text-center">
-      <LogoMark className="h-10 w-10" color="#c4713f" />
+      <OccasionArt
+        occasionKey="not-found"
+        profile="warm"
+        palette={{ accent: "#c4713f", accentSoft: "#f2e4bc", ink: "#241c0a" }}
+        className="h-32 w-32 sm:h-40 sm:w-40"
+      />
       <h1 className="mt-6 font-heading text-3xl text-[#241c0a]">This page isn&apos;t here</h1>
       <p className="mt-3 max-w-sm text-[#241c0a]/60">
         The link might be mistyped, or the board may have been made private by its owner.
       </p>
       <Link
         href="/"
-        className="mt-8 rounded-full bg-[#241c0a] px-6 py-3 text-sm font-semibold text-white"
+        className="mt-8 rounded-full bg-[#241c0a] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#c4713f]"
       >
         Go home
       </Link>
