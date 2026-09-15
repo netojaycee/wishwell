@@ -25,8 +25,39 @@ Done) — left alone deliberately, internal identifiers only, no user-facing eff
    machine, already diagnosed, documented there.
 
 ## Now (actually pending)
+- [ ] **Media upload (photo/video) is broken in both local and production** — traced via
+  a real browser test (uploaded a real file, read the actual network request), not
+  guessed. Two separate causes, both need the user's action in dashboards this agent
+  can't reach:
+  1. **R2 bucket CORS policy rejects the browser's upload preflight with 403**, in local
+     dev at minimum (same bucket is used in prod, so almost certainly there too once #2
+     is fixed). In the Cloudflare dashboard → R2 → the `wishwell-assets` bucket →
+     Settings → CORS Policy, add a rule allowing `PUT` (and `GET`) from
+     `http://localhost:3005` and `https://fondlyheld.vercel.app` (and any future custom
+     domain). Example policy:
+     ```json
+     [
+       {
+         "AllowedOrigins": ["http://localhost:3005", "https://fondlyheld.vercel.app"],
+         "AllowedMethods": ["PUT", "GET"],
+         "AllowedHeaders": ["*"],
+         "MaxAgeSeconds": 3600
+       }
+     ]
+     ```
+  2. **Production is missing R2 env vars entirely** — the "Add a photo or video" button
+     doesn't even render there (only "Add a GIF" shows), meaning `hasR2` evaluates false,
+     meaning one or more of `R2_ACCOUNT_ID`/`R2_ACCESS_KEY_ID`/`R2_SECRET_ACCESS_KEY`/
+     `R2_BUCKET`/`R2_PUBLIC_URL` isn't set in the Vercel project's environment variables.
+     Copy the current values from local `.env.local` into Vercel → Project → Settings →
+     Environment Variables, then redeploy.
+  Code-side, the silent-failure bug (an upload that failed still got treated as if it
+  succeeded, hence "blank" previews) is already fixed and pushed — uploads now correctly
+  show an error instead of pretending to work. GIFs were never affected (they're Giphy
+  URLs, no R2 involved) — that's why only GIF worked in the preview.
 - [x] `TESTING.md` (repo root) — live URL filled in (https://fondlyheld.vercel.app), ready
-  to send to testers as-is.
+  to send to testers **once the R2 issue above is fixed** — don't send it out with media
+  upload broken.
 - [ ] Add authorized redirect URIs in Google Cloud Console — needs **both**
   `http://localhost:3005/api/auth/callback/google` (local dev) **and**
   `https://fondlyheld.vercel.app/api/auth/callback/google` (production). Email/password
