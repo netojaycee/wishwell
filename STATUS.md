@@ -152,6 +152,13 @@ title); site header wrapped onto two lines at 375px; split-shell mobile header r
 ballooned to half the screen; board-page `-z-10` ambient layers now sit inside an
 `isolate` wrapper so warm drift / solemn grain actually render.
 
+**Auth mobile + About/Contact chrome** — the dark story panel is now one component,
+`components/brand/brand-panel.tsx` (variants: `column` desktop auth, `band` mobile auth,
+`card` About/Contact). Sign-in/up on mobile show it as a short top band with the form on
+a rounded sheet rising over it (was a bare form). About and Contact moved into the
+`(marketing)` route group (URLs unchanged) so they get the real SiteHeader/SiteFooter,
+with BrandPanel as a side card; `SplitShell` is now auth-only.
+
 **Checks** — `pnpm lint`, `tsc --noEmit`, `pnpm build` (production) all clean. True
 375px checks are possible here by loading pages inside a 375px-wide same-origin iframe
 (the automation window can't shrink below ~756px) — home, occasion, create, post,
