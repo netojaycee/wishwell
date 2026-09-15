@@ -3,8 +3,29 @@ import Image from "next/image";
 import { Gift, Infinity as InfinityIcon, ShieldCheck } from "lucide-react";
 import { BrandPanel } from "@/components/brand/brand-panel";
 import { Reveal } from "@/components/board/reveal";
+import { BRAND } from "@/lib/brand";
 
-export const metadata: Metadata = { title: "About" };
+export const metadata: Metadata = {
+  title: "About",
+  description: `${BRAND.name} is built and run by ${BRAND.founder.name}, a solo founder in Nigeria — beautiful group cards and tribute pages for every occasion, free.`,
+  alternates: { canonical: "/about" },
+};
+
+// Founder as a schema.org Person linked to the Organization in the root layout — a named,
+// real human behind the product (GROWTH.md §3 trust), readable by search engines too.
+const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
+const personJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "@id": `${appUrl}/about#founder`,
+  name: BRAND.founder.name,
+  jobTitle: BRAND.founder.jobTitle,
+  image: `${appUrl}${BRAND.founder.image}`,
+  email: `mailto:${BRAND.email}`,
+  url: `${appUrl}/about`,
+  homeLocation: { "@type": "Country", name: BRAND.founder.country },
+  worksFor: { "@id": `${appUrl}/#organization` },
+};
 
 const PROMISES = [
   { icon: InfinityIcon, title: "Your board is yours forever", body: "No expiry dates and no archive fees." },
@@ -15,6 +36,7 @@ const PROMISES = [
 export default function AboutPage() {
   return (
     <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-6 py-12 sm:py-16 lg:grid-cols-[minmax(0,1fr)_440px] lg:items-start lg:gap-16 lg:py-20">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }} />
       <Reveal profile="warm">
         <div className="max-w-xl">
           <p className="text-xs font-medium tracking-wide text-black/40 uppercase">About</p>

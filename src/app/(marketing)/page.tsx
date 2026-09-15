@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { Gift, Infinity as InfinityIcon, ShieldCheck } from "lucide-react";
@@ -11,10 +12,10 @@ import { HeroCollage } from "@/components/marketing/hero-collage";
 import { BoardStepArt, CreateStepArt, ShareStepArt } from "@/components/marketing/how-it-works-art";
 import { MediaMarquee } from "@/components/marketing/media-marquee";
 
-// No metadata export here on purpose: this page's title/description were identical to
-// root layout's `default` — setting them again just applies root's title template on
-// top, producing a doubled "Fondly Held ... · Fondly Held". Inheriting the default
-// avoids that.
+// Title/description deliberately NOT set here: they're identical to root layout's
+// `default`, and setting them again applies root's title template on top, producing a
+// doubled "Fondly Held ... · Fondly Held". Only the canonical URL is added.
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 export const revalidate = 3600;
 

@@ -156,6 +156,14 @@ ballooned to half the screen; board-page `-z-10` ambient layers now sit inside a
   started") so marketing pages stay static/ISR; the create wizard hides the "create an
   account" nudge when signed in. Pages/actions still call `requireSession` — proxy is the
   first line, not the only one.
+- *Search/AI discoverability:* brand facts live in `src/lib/brand.ts` (single source) and
+  feed the root Organization + WebSite JSON-LD (logo `/logo.png` 512px PNG, description,
+  founder, alternate spelling "FondlyHeld"), a Person JSON-LD on `/about`, and
+  `/llms.txt` (factual summary for AI assistants, generated from the occasion table).
+  Home has a canonical URL. **When official social profiles exist, add their URLs to
+  `BRAND.socialProfiles`** — they become `sameAs`. As of 2026-09-15 a web search for
+  "fondlyheld" returns nothing of ours yet (site is days old) — expected; request
+  indexing in Search Console and do the directory/backlink launch in GROWTH.md §4.
 - pnpm 11 note: `pnpm-workspace.yaml` → `allowBuilds.core-js: false` (posthog dependency;
   its install script is only a banner). An unanswered placeholder there blocks every
   `pnpm <script>` with ERR_PNPM_IGNORED_BUILDS.

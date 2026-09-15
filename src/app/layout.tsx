@@ -7,6 +7,7 @@ import {
   Playfair_Display,
 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { BRAND } from "@/lib/brand";
 import "./globals.css";
 
 // Body sans — clean, quiet, does not compete with the theme's headline serif.
@@ -78,18 +79,34 @@ export const metadata: Metadata = {
   },
 };
 
+// Brand entity for search engines and AI assistants: name (+ the one-word spelling people
+// type), logo, description, founder and — once they exist — official profiles (sameAs).
+// Facts live in src/lib/brand.ts so the About page and /llms.txt say exactly the same.
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "Fondly Held",
-  url: process.env.NEXT_PUBLIC_APP_URL,
+  "@id": `${APP_URL}/#organization`,
+  name: BRAND.name,
+  alternateName: BRAND.alternateNames,
+  url: `${APP_URL}/`,
+  logo: { "@type": "ImageObject", url: `${APP_URL}/logo.png`, width: 512, height: 512 },
+  description: BRAND.description,
+  email: BRAND.email,
+  founder: { "@type": "Person", "@id": `${APP_URL}/about#founder`, name: BRAND.founder.name },
+  foundingLocation: { "@type": "Place", name: BRAND.founder.country },
+  ...(BRAND.socialProfiles.length > 0 ? { sameAs: BRAND.socialProfiles } : {}),
 };
 
 const websiteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "Fondly Held",
-  url: process.env.NEXT_PUBLIC_APP_URL,
+  "@id": `${APP_URL}/#website`,
+  name: BRAND.name,
+  alternateName: BRAND.alternateNames,
+  url: `${APP_URL}/`,
+  description: BRAND.description,
+  inLanguage: "en",
+  publisher: { "@id": `${APP_URL}/#organization` },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
