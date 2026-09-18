@@ -129,3 +129,44 @@ export async function updateBoardDetails(
     .returning();
   return row ?? null;
 }
+
+// Permanently deletes a board and everything on it, including every file in R2
+// (CLAUDE.md: media deletion must actually delete from object storage). Posts, invites,
+// reactions and reports go with the row via ON DELETE CASCADE.
+export async function deleteBoardWithMedia(boardId: string, ownerId: string) {
+  const [target] = await db
+    .select({ id: board.id, slug: board.slug, cover: board.coverImageUrl, photos: board.recipientPhotos })
+    .from(board)
+    .where(and(eq(board.id, boardId), eq(board.ownerId, ownerId)));
+  if (!target) return null;
+
+  const media = await db.select({ url: post.mediaUrl }).from(post).where(eq(post.boardId, boardId));
+  const urls = [target.cover, ...target.photos, ...media.map((m) => m.url)].filter((u): u is string => Boolean(u));
+
+  await db.delete(board).where(eq(board.id, boardId));
+  // After the row is gone: a storage hiccup must not leave a half-deleted board. Anything
+  // missed here is unreferenced now, so the daily orphan sweep catches it.
+  const { deleteMedia } = await import("@/lib/media");
+  await Promise.all(urls.map((u) => deleteMedia(u).catch(() => undefined)));
+  return target;
+}
+
+export async function deleteAllBoardsForOwner(ownerId: string) {
+  const owned = await db.select({ id: board.id }).from(board).where(eq(board.ownerId, ownerId));
+  for (const b of owned) await deleteBoardWithMedia(b.id, ownerId);
+  return owned.length;
+}
+
+// Collaborative boards only: schedule when posting closes, deliver now, or reopen.
+export async function setBoardDelivery(
+  boardId: string,
+  ownerId: string,
+  change: { deliverAt?: Date | null; status?: "collecting" | "delivered"; closedAt?: Date | null }
+) {
+  const [row] = await db
+    .update(board)
+    .set({ ...change, updatedAt: new Date() })
+    .where(and(eq(board.id, boardId), eq(board.ownerId, ownerId), eq(board.mode, "collaborative")))
+    .returning();
+  return row ?? null;
+}

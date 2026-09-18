@@ -10,7 +10,17 @@ function rotationFor(id: string) {
   return ((hash % 5) - 2) * 0.6; // -1.2deg .. 1.2deg
 }
 
-export function PostCard({ post }: { post: PostRow }) {
+// `onOpen` makes the photo and message open the lightbox; video controls, reactions
+// (`footer`) and the report flag stay separate controls, never nested inside that button.
+export function PostCard({
+  post,
+  onOpen,
+  footer,
+}: {
+  post: PostRow;
+  onOpen?: () => void;
+  footer?: React.ReactNode;
+}) {
   const rotation = rotationFor(post.id);
   const hasMedia = post.mediaType !== "none" && (post.mediaUrl || post.gifUrl);
 
@@ -27,33 +37,48 @@ export function PostCard({ post }: { post: PostRow }) {
         <div className="overflow-hidden rounded-t-2xl bg-black/5">
           {post.mediaType === "video" && post.mediaUrl ? (
             <video src={post.mediaUrl} controls className="w-full" />
-          ) : post.mediaType === "gif" && post.gifUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element -- animated GIFs must not be re-encoded
-            <img src={post.gifUrl} alt="" className="w-full" loading="lazy" />
-          ) : post.mediaUrl ? (
-            <Image
-              src={post.mediaUrl}
-              alt=""
-              width={600}
-              height={450}
-              className="h-auto w-full object-cover"
-            />
-          ) : null}
+          ) : (
+            <OpenArea onOpen={onOpen} label={`Open ${post.authorName}'s photo`}>
+              {post.mediaType === "gif" && post.gifUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element -- animated GIFs must not be re-encoded
+                <img src={post.gifUrl} alt="" className="w-full" loading="lazy" />
+              ) : post.mediaUrl ? (
+                <Image src={post.mediaUrl} alt="" width={600} height={450} className="h-auto w-full object-cover" />
+              ) : null}
+            </OpenArea>
+          )}
         </div>
       ) : null}
 
-      <div className={hasMedia ? "p-5" : "p-7"}>
-        <p
-          className={hasMedia ? "text-[15px] leading-relaxed" : "text-lg leading-relaxed"}
-          style={{ color: "var(--board-ink)" }}
-        >
-          {post.body}
-        </p>
-        <p className="mt-4 text-sm font-medium" style={{ color: "var(--board-accent)" }}>
-          {post.authorName}
-        </p>
-      </div>
+      <OpenArea onOpen={onOpen} label={`Open the message from ${post.authorName}`}>
+        <div className={hasMedia ? "p-5" : "p-7"}>
+          <p
+            className={`line-clamp-[12] whitespace-pre-line ${hasMedia ? "text-[15px] leading-relaxed" : "text-lg leading-relaxed"}`}
+            style={{ color: "var(--board-ink)" }}
+          >
+            {post.body}
+          </p>
+          <p className="mt-4 text-sm font-medium" style={{ color: "var(--board-accent)" }}>
+            {post.authorName}
+          </p>
+        </div>
+      </OpenArea>
+      {footer ? <div className={hasMedia ? "px-5 pb-4" : "px-7 pb-5"}>{footer}</div> : null}
       <ReportButton postId={post.id} />
     </article>
+  );
+}
+
+function OpenArea({ onOpen, label, children }: { onOpen?: () => void; label: string; children: React.ReactNode }) {
+  if (!onOpen) return <>{children}</>;
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      aria-label={label}
+      className="block w-full cursor-zoom-in text-left focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--board-accent)]"
+    >
+      {children}
+    </button>
   );
 }

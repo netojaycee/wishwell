@@ -3,6 +3,9 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { getBoardBySlug } from "@/lib/data/boards";
+import { canViewBoard } from "@/lib/access";
+import { isGiphyUrl, isPostMediaUrl } from "@/lib/media";
+import { isPostingClosed } from "@/lib/board-state";
 import { createPost } from "@/lib/data/posts";
 import { checkPostRateLimit } from "@/lib/rate-limit";
 import { sanitizePostBody, sanitizePlainText } from "@/lib/sanitize";
@@ -15,8 +18,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ slu
   if (!board) {
     return NextResponse.json({ ok: false, error: "Board not found." }, { status: 404 });
   }
-  if (board.status === "archived") {
-    return NextResponse.json({ ok: false, error: "This board is no longer accepting posts." }, { status: 403 });
+  if (!(await canViewBoard(board))) {
+    return NextResponse.json({ ok: false, error: "This board is private." }, { status: 403 });
+  }
+  if (isPostingClosed(board)) {
+    return NextResponse.json(
+      { ok: false, error: "This board has been delivered and isn't taking new messages." },
+      { status: 403 }
+    );
   }
 
   const json = await request.json().catch(() => null);
@@ -36,6 +45,20 @@ export async function POST(request: Request, { params }: { params: Promise<{ slu
   }
   if (Date.now() - input.renderedAt < MIN_SUBMIT_MS) {
     return NextResponse.json({ ok: true });
+  }
+
+  // Media must be ours (R2 posts/) or GIPHY's, and match its declared type.
+  const mediaOk =
+    input.mediaType === "none"
+      ? !input.mediaUrl && !input.gifUrl
+      : input.mediaType === "gif"
+        ? Boolean(input.gifUrl && isGiphyUrl(input.gifUrl)) && !input.mediaUrl
+        : Boolean(input.mediaUrl && isPostMediaUrl(input.mediaUrl)) && !input.gifUrl;
+  if (!mediaOk) {
+    return NextResponse.json(
+      { ok: false, error: "That attachment didn't upload properly. Please remove it and try again." },
+      { status: 400 }
+    );
   }
 
   const ip = requestIp(request.headers);

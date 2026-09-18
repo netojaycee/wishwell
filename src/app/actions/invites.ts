@@ -23,13 +23,20 @@ export async function sendInviteAction(slug: string, rawEmail: string) {
     return { ok: false as const, error: "Enter a valid email address." };
   }
 
-  const boardUrl = `${env.NEXT_PUBLIC_APP_URL}/b/${board.slug}`;
-  const result = await sendBoardInviteEmail({ to: parsed.data, boardTitle: board.title, boardUrl });
+  // The token doubles as the key to a private board: /b/<slug>?invite=<token> (see proxy.ts).
+  const token = crypto.randomUUID();
+  const boardUrl = `${env.NEXT_PUBLIC_APP_URL}/b/${board.slug}?invite=${token}`;
+  const result = await sendBoardInviteEmail({
+    to: parsed.data,
+    boardTitle: board.title,
+    boardUrl,
+    isPrivate: board.visibility === "private",
+  });
 
   await db.insert(invite).values({
     boardId: board.id,
     email: parsed.data,
-    token: crypto.randomUUID(),
+    token,
     sentAt: result.ok ? new Date() : null,
   });
 

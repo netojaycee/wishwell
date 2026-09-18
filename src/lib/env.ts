@@ -15,6 +15,7 @@ const envSchema = z.object({
   R2_PUBLIC_URL: z.string().optional(),
   RESEND_API_KEY: z.string().optional(),
   GIPHY_API_KEY: z.string().optional(),
+  CRON_SECRET: z.string().optional(),
 });
 
 export const env = envSchema.parse({
@@ -31,6 +32,7 @@ export const env = envSchema.parse({
   R2_PUBLIC_URL: process.env.R2_PUBLIC_URL,
   RESEND_API_KEY: process.env.RESEND_API_KEY,
   GIPHY_API_KEY: process.env.GIPHY_API_KEY,
+  CRON_SECRET: process.env.CRON_SECRET,
 });
 
 export const hasR2 = Boolean(

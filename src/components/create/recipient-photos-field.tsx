@@ -91,7 +91,7 @@ export function RecipientPhotosField({
         {value.map((url, i) => (
           <li key={url} className="group relative aspect-square overflow-hidden rounded-xl bg-black/5 shadow-sm">
             {/* eslint-disable-next-line @next/next/no-img-element -- small preview of an uploaded photo */}
-            <img src={url} alt={i === 0 ? `Main photo of ${who}` : `Photo ${i + 1} of ${who}`} className="h-full w-full object-cover" />
+            <img src={url} alt={i === 0 ? `Main photo of ${who}` : `Photo ${i + 1} of ${who}`} className="h-full w-full object-cover object-[50%_30%]" />
             {i === 0 ? (
               <span className="absolute bottom-1 left-1 rounded-full bg-black/60 px-1.5 py-0.5 text-[10px] font-semibold text-white">
                 Main

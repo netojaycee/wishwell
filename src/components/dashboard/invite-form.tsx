@@ -12,7 +12,7 @@ const inviteSchema = z.object({
 });
 type InviteValues = z.infer<typeof inviteSchema>;
 
-export function InviteForm({ slug }: { slug: string }) {
+export function InviteForm({ slug, isPrivate }: { slug: string; isPrivate: boolean }) {
   const {
     register,
     handleSubmit,
@@ -53,6 +53,12 @@ export function InviteForm({ slug }: { slug: string }) {
       >
         {copied ? "Link copied" : "Copy share link"}
       </button>
+      {isPrivate ? (
+        <p className="mt-2 text-xs leading-relaxed text-black/50">
+          This board is private: the plain link only works for you. Invite people by email below,
+          each invite is their personal key to the board.
+        </p>
+      ) : null}
 
       <form noValidate onSubmit={handleSubmit(onInvite)} className="mt-4">
         <label htmlFor={`invite-${slug}`} className="block text-xs font-medium text-black/60">

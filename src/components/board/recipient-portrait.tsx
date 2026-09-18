@@ -38,7 +38,7 @@ export function RecipientPortrait({
       style={{ borderColor: "var(--board-surface)", transform: `rotate(${tilt(i)}deg)` }}
     >
       {/* eslint-disable-next-line @next/next/no-img-element -- user photo from R2; image optimization is off site-wide */}
-      <img src={url} alt={`${name}, photo ${i + 2}`} loading="lazy" className="h-full w-full object-cover" />
+      <img src={url} alt={`${name}, photo ${i + 2}`} loading="lazy" className="h-full w-full object-cover object-[50%_30%]" />
     </div>
   );
 
@@ -53,7 +53,7 @@ export function RecipientPortrait({
           style={{ borderColor: "var(--board-surface)" }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element -- user photo from R2; image optimization is off site-wide */}
-          <img src={main} alt={name} fetchPriority="high" className="h-full w-full object-cover" />
+          <img src={main} alt={name} fetchPriority="high" className="h-full w-full object-cover object-[50%_30%]" />
         </div>
         {children}
       </div>

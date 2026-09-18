@@ -63,7 +63,8 @@ Rule: no occasion-specific columns, ever. If an occasion needs a field, it goes 
 ```
 /dashboard                    my boards
 /dashboard/b/[slug]           edit theme, moderate posts, invite, share
-/dashboard/settings
+/dashboard/settings           account, reset password, delete account
+/forgot-password /reset-password
 ```
 
 **API / actions**
@@ -72,7 +73,13 @@ POST /api/boards              create
 POST /api/boards/:id/posts    anonymous post (rate limited by IP + fingerprint)
 POST /api/upload/sign         presigned R2 URL, MIME + size validated
 POST /api/invites             send batch invites
+POST /api/posts/:id/reactions anonymous emoji toggle (rate limited)
+GET  /api/cron/cleanup-media  daily orphaned-R2 sweep (Vercel Cron, Bearer CRON_SECRET)
 ```
+
+**Access:** `private` boards open only for the owner or an invite token
+(`?invite=` → cookie via `src/proxy.ts`, checked by `canViewBoard()` in `src/lib/access.ts`).
+**Posting closes** when `isPostingClosed()` says so (`src/lib/board-state.ts`).
 
 Prefer Server Actions for owner mutations; keep route handlers for anonymous/public writes so rate limiting is explicit.
 

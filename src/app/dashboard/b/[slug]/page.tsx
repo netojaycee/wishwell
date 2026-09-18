@@ -7,6 +7,8 @@ import { listAllPostsForModeration } from "@/lib/data/posts";
 import { ModerationList } from "@/components/dashboard/moderation-list";
 import { BoardSettingsForm } from "@/components/dashboard/board-settings-form";
 import { InviteForm } from "@/components/dashboard/invite-form";
+import { DeleteBoard } from "@/components/dashboard/delete-board";
+import { DeliveryCard } from "@/components/dashboard/delivery-card";
 import { OccasionArt } from "@/components/illustrations/occasion-art";
 import { hasR2 } from "@/lib/env";
 
@@ -53,8 +55,10 @@ export default async function ManageBoardPage({ params }: Params) {
         </div>
 
         <div className="space-y-8">
+          {board.mode === "collaborative" ? <DeliveryCard board={board} /> : null}
           <BoardSettingsForm board={board} mediaEnabled={hasR2} />
-          <InviteForm slug={board.slug} />
+          <InviteForm slug={board.slug} isPrivate={board.visibility === "private"} />
+          <DeleteBoard boardId={board.id} title={board.title} postCount={posts.length} />
         </div>
       </div>
     </div>

@@ -14,6 +14,30 @@ export default async function Image({ params }: { params: Promise<{ slug: string
   if (!board) {
     return new ImageResponse(<div style={{ width: "100%", height: "100%", background: "#fff" }} />, size);
   }
+  // Link previews are fetched by crawlers without the viewer's invite cookie, so a private
+  // board's preview never shows whose board it is.
+  if (board.visibility === "private") {
+    return new ImageResponse(
+      (
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "#fdf8ee",
+            color: "#241c0a",
+          }}
+        >
+          <div style={{ display: "flex", fontSize: 64 }}>A private board</div>
+          <div style={{ display: "flex", marginTop: 20, fontSize: 30, color: "#c4713f" }}>Fondly Held</div>
+        </div>
+      ),
+      size
+    );
+  }
 
   const postCount = await countPublishedPosts(board.id);
   const { bg, ink, accent, accentSoft, surface } = board.theme.palette;
@@ -41,7 +65,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
             alt=""
             width={330}
             height={420}
-            style={{ objectFit: "cover", borderRadius: 36, border: `10px solid ${surface}`, transform: "rotate(-3deg)" }}
+            style={{ objectFit: "cover", objectPosition: "50% 30%", borderRadius: 36, border: `10px solid ${surface}`, transform: "rotate(-3deg)" }}
           />
         ) : null}
         <div

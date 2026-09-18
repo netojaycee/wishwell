@@ -79,16 +79,19 @@ export function BoardAmbient({
   accent,
   accentSoft,
   particleEffect = null,
+  entranceBurst = true,
 }: {
   motionProfile: "celebratory" | "warm" | "solemn";
   accent: string;
   accentSoft: string;
   particleEffect?: string | null;
+  // False while the recipient reveal is showing; the curtain fires its own burst on open.
+  entranceBurst?: boolean;
 }) {
   if (motionProfile === "celebratory") {
     return (
       <>
-        <ConfettiBurst accent={accent} accentSoft={accentSoft} />
+        {entranceBurst ? <ConfettiBurst accent={accent} accentSoft={accentSoft} /> : null}
         <CelebratoryLayer particleEffect={particleEffect} accent={accent} accentSoft={accentSoft} />
       </>
     );

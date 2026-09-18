@@ -3,7 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { requireSession } from "@/lib/session";
 import * as posts from "@/lib/data/posts";
-import { getBoardById, updateBoardDetails } from "@/lib/data/boards";
+import { redirect } from "next/navigation";
+import { deleteBoardWithMedia, getBoardById, setBoardDelivery, updateBoardDetails } from "@/lib/data/boards";
 import { deleteMedia, isRecipientPhotoUrl } from "@/lib/media";
 import { sanitizePlainText } from "@/lib/sanitize";
 import { boardSettingsSchema, type BoardSettingsValues } from "@/lib/validation/board";
@@ -72,5 +73,41 @@ export async function updateBoardAction(boardId: string, slug: string, input: Bo
 
   await revalidateBoardBySlug(slug);
   revalidatePath("/dashboard");
+  return { ok: true as const };
+}
+
+export async function deleteBoardAction(boardId: string) {
+  const session = await requireSession();
+  const deleted = await deleteBoardWithMedia(boardId, session.user.id);
+  if (!deleted) return { ok: false as const, error: "We couldn't find that board. It may already be deleted." };
+  revalidatePath(`/b/${deleted.slug}`);
+  revalidatePath("/dashboard");
+  redirect("/dashboard?deleted=1");
+}
+
+// Delivery moment (collaborative boards). "schedule" sets or clears the date posting
+// closes; "deliver" closes posting now; "reopen" takes new messages again.
+export async function updateDeliveryAction(
+  boardId: string,
+  slug: string,
+  input: { kind: "schedule"; deliverAt: string | null } | { kind: "deliver" } | { kind: "reopen" }
+) {
+  const session = await requireSession();
+  let change: Parameters<typeof setBoardDelivery>[2];
+  if (input.kind === "schedule") {
+    const when = input.deliverAt ? new Date(input.deliverAt) : null;
+    if (when && Number.isNaN(when.getTime())) return { ok: false as const, error: "That date doesn't look right." };
+    if (when && when.getTime() <= Date.now()) {
+      return { ok: false as const, error: "Pick a time in the future, or use Deliver now." };
+    }
+    change = { deliverAt: when };
+  } else if (input.kind === "deliver") {
+    change = { status: "delivered", closedAt: new Date() };
+  } else {
+    change = { status: "collecting", closedAt: null, deliverAt: null };
+  }
+  const updated = await setBoardDelivery(boardId, session.user.id, change);
+  if (!updated) return { ok: false as const, error: "We couldn't update this board. Please try again." };
+  await revalidateBoardBySlug(slug);
   return { ok: true as const };
 }

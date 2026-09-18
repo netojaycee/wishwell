@@ -9,6 +9,7 @@ import { boardThemeVars } from "@/lib/theme/vars";
 import { Reveal } from "@/components/board/reveal";
 import { OccasionArt } from "@/components/illustrations/occasion-art";
 import { DemoBoard } from "@/components/showcase/demo-board";
+import { JsonLd } from "@/components/seo/json-ld";
 
 export const revalidate = 3600;
 
@@ -86,9 +87,9 @@ export default async function OccasionLandingPage({ params }: Params) {
 
   return (
     <div style={theme ? boardThemeVars(theme) : undefined}>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+      <JsonLd data={breadcrumbJsonLd} />
       {faqJsonLd ? (
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+        <JsonLd data={faqJsonLd} />
       ) : null}
 
       <section className="relative overflow-hidden">

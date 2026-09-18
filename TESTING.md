@@ -103,6 +103,20 @@ Go through these roughly in order, the flow is designed to be used in this seque
 - Edit the board's title, headline, bio, photos and visibility (public/unlisted/private)
 - Try "Invite by email" and "Copy share link"
 
+### 5b. The newer owner features
+- **Private boards:** set a board to Private, then open its plain link in a private/incognito
+  window. You should see "This board is private", not the board. Invite yourself by email and
+  open the link from that email: it should open the board and let you post
+- **Delivery (group boards, not memorials):** on the manage page, set a "close messages" date
+  or press **Deliver now**, then check the board says it's delivered and posting is closed.
+  Press **Copy recipient link** and open it: you should get a reveal screen with their photo
+  that opens onto the board
+- **Reactions and the big view:** tap a message or photo on any board. It should open large;
+  use the arrows (or swipe on a phone) to move through, and try the emoji reactions. On a
+  memorial board the reactions should be quiet ones only (no party emoji)
+- **Forgot password** on the sign-in page, and **Account settings** from the profile menu
+- **Delete a board** (use a test board): it should ask you to confirm, then disappear
+
 ### 6. Mobile, specifically
 This product is meant to be used mobile-first (most contributors arrive from a WhatsApp
 link on a phone), so please spend real time on an actual phone, not just a resized

@@ -133,6 +133,14 @@ export function AuthForm({ mode, hasGoogleAuth }: { mode: "sign-in" | "sign-up";
           </button>
         </FieldShell>
 
+        {mode === "sign-in" ? (
+          <p className="-mt-1 text-right text-sm">
+            <Link href="/forgot-password" className="text-black/50 hover:text-[var(--brand)]">
+              Forgot password?
+            </Link>
+          </p>
+        ) : null}
+
         {error ? (
           <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
         ) : null}

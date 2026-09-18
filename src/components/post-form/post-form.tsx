@@ -138,7 +138,7 @@ export function PostForm({
             <img
               src={recipientPhoto}
               alt={recipientName}
-              className="h-20 w-16 shrink-0 rounded-2xl object-cover shadow-md sm:h-24 sm:w-20"
+              className="h-20 w-16 shrink-0 rounded-2xl object-cover object-[50%_30%] shadow-md sm:h-24 sm:w-20"
             />
           ) : (
             <OccasionArt
@@ -287,7 +287,6 @@ export function PostForm({
         </div>
       </div>
       </div>
-
       <footer className="border-t border-[var(--board-ink)]/10 px-6 py-6 text-center text-sm opacity-50" style={{ color: "var(--board-ink)" }}>
         Made with{" "}
         <Link href="/" className="font-medium underline underline-offset-2">

@@ -9,6 +9,7 @@ import {
 import { Analytics } from "@vercel/analytics/next";
 import { BRAND } from "@/lib/brand";
 import "./globals.css";
+import { JsonLd } from "@/components/seo/json-ld";
 
 // Body sans, clean, quiet, does not compete with the theme's headline serif.
 const geistSans = Geist({
@@ -120,8 +121,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <body> before hydration, which otherwise surfaces as a dev "hydration mismatch".
           Only affects this element's own attributes, not its children. */}
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }} />
+        <JsonLd data={organizationJsonLd} />
+        <JsonLd data={websiteJsonLd} />
         {children}
         {/* Page views (GROWTH.md §6). No-op until Web Analytics is enabled in the Vercel project. */}
         <Analytics />

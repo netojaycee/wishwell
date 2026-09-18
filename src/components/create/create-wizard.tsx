@@ -288,7 +288,7 @@ export function CreateWizard({
                     <img
                       src={mainPhoto}
                       alt=""
-                      className="h-16 w-14 shrink-0 rounded-2xl border-[3px] object-cover shadow-md sm:h-28 sm:w-24"
+                      className="h-16 w-14 shrink-0 rounded-2xl border-[3px] object-cover object-[50%_30%] shadow-md sm:h-28 sm:w-24"
                       style={{ borderColor: "var(--board-surface)" }}
                     />
                   ) : (
@@ -453,7 +453,7 @@ export function CreateWizard({
                                   alt=""
                                   fill
                                   sizes="120px"
-                                  className="object-cover"
+                                  className="object-cover object-[50%_30%]"
                                 />
                               </div>
                               <div className="space-y-1 p-1.5">

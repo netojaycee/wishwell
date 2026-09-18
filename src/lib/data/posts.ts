@@ -1,6 +1,6 @@
-import { and, asc, desc, eq, gte, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gte, inArray, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { board, post, report } from "@/db/schema";
+import { board, occasionType, post, reaction, report } from "@/db/schema";
 import { deleteMedia } from "@/lib/media";
 import type { CreatePostInput } from "@/lib/validation/post";
 
@@ -134,4 +134,45 @@ export async function checkReportRateLimit(ipHash: string, postId: string) {
 
 export async function reportPost(postId: string, reason: string, ipHash: string) {
   await db.insert(report).values({ postId, reason, reporterIpHash: ipHash });
+}
+
+// Reaction totals for a set of posts: { postId: { emoji: count } }.
+export async function listReactionCounts(postIds: string[]) {
+  const out: Record<string, Record<string, number>> = {};
+  if (postIds.length === 0) return out;
+  const rows = await db
+    .select({ postId: reaction.postId, emoji: reaction.emoji, count: sql<number>`count(*)::int` })
+    .from(reaction)
+    .where(inArray(reaction.postId, postIds))
+    .groupBy(reaction.postId, reaction.emoji);
+  for (const r of rows) (out[r.postId] ??= {})[r.emoji] = r.count;
+  return out;
+}
+
+// What a reaction needs to be validated: the post must be published, and we need its
+// board (for the private check) and motion profile (for the allowed emoji).
+export async function getReactablePost(postId: string) {
+  const [row] = await db
+    .select({
+      postId: post.id,
+      board: { id: board.id, slug: board.slug, ownerId: board.ownerId, visibility: board.visibility },
+      profile: occasionType.motionProfile,
+    })
+    .from(post)
+    .innerJoin(board, eq(post.boardId, board.id))
+    .innerJoin(occasionType, eq(board.occasionTypeId, occasionType.id))
+    .where(and(eq(post.id, postId), eq(post.status, "published")));
+  return row ?? null;
+}
+
+// Adds the reaction, or removes it if this person already left that emoji.
+export async function toggleReaction(postId: string, emoji: string, fingerprint: string) {
+  const removed = await db
+    .delete(reaction)
+    .where(and(eq(reaction.postId, postId), eq(reaction.emoji, emoji), eq(reaction.fingerprint, fingerprint)))
+    .returning({ id: reaction.id });
+  if (removed.length === 0) {
+    await db.insert(reaction).values({ postId, emoji, fingerprint }).onConflictDoNothing();
+  }
+  return (await listReactionCounts([postId]))[postId] ?? {};
 }

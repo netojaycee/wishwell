@@ -3,7 +3,7 @@
 // guardrails: "Rate-limit anonymous posting endpoints").
 import { and, eq, gte, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { post } from "@/db/schema";
+import { post, rateEvent } from "@/db/schema";
 
 const PER_BOARD_PER_HOUR = 5;
 const GLOBAL_PER_DAY = 20;
@@ -31,4 +31,17 @@ export async function checkPostRateLimit(ipHash: string, boardId: string) {
   }
 
   return { allowed: true as const };
+}
+
+// Counts this key's events in the window and, if under the limit, records one more.
+// Not strictly atomic, which is fine for abuse throttling (a burst can overshoot by a few).
+export async function consumeRateLimit(bucket: string, key: string, limit: number, windowMs: number) {
+  const since = new Date(Date.now() - windowMs);
+  const [{ count }] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(rateEvent)
+    .where(and(eq(rateEvent.bucket, bucket), eq(rateEvent.key, key), gte(rateEvent.createdAt, since)));
+  if (count >= limit) return false;
+  await db.insert(rateEvent).values({ bucket, key });
+  return true;
 }

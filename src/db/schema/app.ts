@@ -2,6 +2,7 @@
 import { relations } from "drizzle-orm";
 import {
   boolean,
+  index,
   integer,
   jsonb,
   pgEnum,
@@ -120,6 +121,19 @@ export const report = pgTable("report", {
   reporterIpHash: text("reporter_ip_hash"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+// Generic sliding-window rate limit events for anonymous endpoints that don't create a row
+// of their own to count (upload signing, reactions). Old rows are swept by the daily cron.
+export const rateEvent = pgTable(
+  "rate_event",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    bucket: text("bucket").notNull(), // e.g. "upload-sign", "reaction"
+    key: text("key").notNull(), // hashed IP
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("rate_event_bucket_key_created").on(t.bucket, t.key, t.createdAt)]
+);
 
 export const occasionTypeRelations = relations(occasionType, ({ many }) => ({
   themes: many(theme),

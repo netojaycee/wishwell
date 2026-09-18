@@ -6,17 +6,11 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Menu } from "@base-ui/react/menu";
-import { ChevronDown, LayoutGrid, LogOut, Plus } from "lucide-react";
+import { ChevronDown, LayoutGrid, LogOut, Plus, Settings } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
+import { initialsFor } from "@/lib/initials";
 
 type MenuUser = { name?: string | null; email: string; image?: string | null };
-
-export function initialsFor(user: MenuUser) {
-  const source = user.name?.trim() || user.email.split("@")[0];
-  const parts = source.split(/[\s._-]+/).filter(Boolean);
-  const letters = parts.length > 1 ? parts[0][0] + parts[parts.length - 1][0] : source.slice(0, 2);
-  return letters.toUpperCase();
-}
 
 function Avatar({ user, className = "" }: { user: MenuUser; className?: string }) {
   return user.image ? (
@@ -73,6 +67,9 @@ export function UserMenu({ user }: { user: MenuUser }) {
             </Menu.LinkItem>
             <Menu.LinkItem className={ITEM} render={<Link href="/create" />}>
               <Plus size={16} strokeWidth={1.75} /> New board
+            </Menu.LinkItem>
+            <Menu.LinkItem className={ITEM} render={<Link href="/dashboard/settings" />}>
+              <Settings size={16} strokeWidth={1.75} /> Account settings
             </Menu.LinkItem>
             <Menu.Separator className="mx-1.5 my-1.5 h-px bg-black/5" />
             <Menu.Item className={ITEM} onClick={signOut}>

@@ -4,6 +4,7 @@ import { Gift, Infinity as InfinityIcon, ShieldCheck } from "lucide-react";
 import { BrandPanel } from "@/components/brand/brand-panel";
 import { Reveal } from "@/components/board/reveal";
 import { BRAND } from "@/lib/brand";
+import { JsonLd } from "@/components/seo/json-ld";
 
 export const metadata: Metadata = {
   title: "About",
@@ -36,7 +37,7 @@ const PROMISES = [
 export default function AboutPage() {
   return (
     <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-6 py-12 sm:py-16 lg:grid-cols-[minmax(0,1fr)_440px] lg:items-start lg:gap-16 lg:py-20">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }} />
+      <JsonLd data={personJsonLd} />
       <Reveal profile="warm">
         <div className="max-w-xl">
           <p className="text-xs font-medium tracking-wide text-black/40 uppercase">About</p>

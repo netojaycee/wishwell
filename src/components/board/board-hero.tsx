@@ -4,9 +4,18 @@ import { Reveal } from "./reveal";
 import { LiveCounter } from "./live-counter";
 import { OccasionArt } from "@/components/illustrations/occasion-art";
 import { RecipientPortrait } from "./recipient-portrait";
+import { LocalDate } from "@/components/ui/local-date";
 import type { BoardWithRelations } from "@/lib/types";
 
-export function BoardHero({ board, postCount }: { board: BoardWithRelations; postCount: number }) {
+export function BoardHero({
+  board,
+  postCount,
+  closed,
+}: {
+  board: BoardWithRelations;
+  postCount: number;
+  closed: boolean;
+}) {
   const profile = board.occasionType.motionProfile;
   const photos = board.recipientPhotos ?? [];
 
@@ -96,13 +105,29 @@ export function BoardHero({ board, postCount }: { board: BoardWithRelations; pos
 
         <Reveal profile={profile} delay={0.24}>
           <div className="mt-8 flex flex-col items-center gap-4">
-            <Link
-              href={`/b/${board.slug}/post`}
-              className="rounded-full px-6 py-3 text-sm font-semibold text-white shadow-lg transition-transform hover:scale-[1.03] active:scale-[0.98]"
-              style={{ background: "var(--board-accent)" }}
-            >
-              {board.mode === "tribute" ? "Share a memory" : "Add your message"}
-            </Link>
+            {closed ? (
+              <p
+                className="rounded-full px-5 py-2.5 text-sm font-medium"
+                style={{ background: "var(--board-accent-soft)", color: "var(--board-accent)" }}
+              >
+                {board.status === "delivered" ? `Delivered to ${board.recipientName}` : "Messages are closed"}
+              </p>
+            ) : (
+              <>
+                <Link
+                  href={`/b/${board.slug}/post`}
+                  className="rounded-full px-6 py-3 text-sm font-semibold text-white shadow-lg transition-transform hover:scale-[1.03] active:scale-[0.98]"
+                  style={{ background: "var(--board-accent)" }}
+                >
+                  {board.mode === "tribute" ? "Share a memory" : "Add your message"}
+                </Link>
+                {board.mode === "collaborative" && board.deliverAt ? (
+                  <p className="-mt-1 text-xs text-[var(--board-ink)]/55">
+                    Add yours before <LocalDate value={board.deliverAt} />
+                  </p>
+                ) : null}
+              </>
+            )}
             <LiveCounter
               count={postCount}
               label={

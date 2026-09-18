@@ -36,38 +36,24 @@ Done), left alone deliberately, internal identifiers only, no user-facing effect
 - [x] Example boards (`/b/tolu-turns-30`, `/b/farewell-rachel`,
   `/b/remembering-grandma-rose`, unlisted, labelled, linked from the home page) are
   claimed by the owner's account, so they're moderatable from the dashboard.
-- [ ] **Analytics need switching on (code is in):** enable Web Analytics in Vercel →
-  Project → Analytics; create a free PostHog project and set `NEXT_PUBLIC_POSTHOG_KEY`
-  (+ optional `NEXT_PUBLIC_POSTHOG_HOST`) in Vercel env vars, then redeploy. Funnel events:
-  `create_started`, `board_created`, `board_link_shared`, `invite_sent`, `post_created`,
-  `create_cta_from_post`, `owner_signed_up` (see `src/lib/analytics.ts`; no content, names
-  or slugs are ever sent). "Posts per board / 5+ posts" is best read straight from the DB.
-- [ ] **Search Console + Bing Webmaster:** set `GOOGLE_SITE_VERIFICATION` /
-  `BING_SITE_VERIFICATION` in Vercel to the meta-tag content values, redeploy, verify, then
-  submit `/sitemap.xml` in both.
+- [x] **Analytics live (2026-09-18):** Vercel Web Analytics enabled and PostHog connected by
+  the owner. Funnel events: `create_started`, `board_created`, `board_link_shared` (incl.
+  `via: "recipient_reveal"`), `invite_sent`, `post_created`, `create_cta_from_post`,
+  `owner_signed_up` (see `src/lib/analytics.ts`; no content, names or slugs are ever sent).
+- [x] **Search Console + Bing Webmaster verified, sitemaps submitted (2026-09-18).**
+- [ ] **Set `CRON_SECRET` in Vercel** (any long random string, e.g. `openssl rand -hex 32`),
+  then redeploy. Until it's set, the daily orphaned-media sweep refuses to run (401).
 - [ ] Lighthouse pass on the board page against the real production URL
 - [x] About page shows the founder: John Chinonso Edeh, photo (`public/images/founder.webp`),
   real email
 - [ ] Privacy/Terms are real, substantive, non-lorem policies but not lawyer-reviewed
 
-### Code gaps still open (verified 2026-09-18, roughly in priority order)
-- [ ] **Private boards are not enforced.** Settings promise "owner and invitees only", but
-  `/b/[slug]` (and `/post`, `/slideshow`, the OG image) never check `visibility`; anyone with
-  the link sees a private board. Needs an access rule: owner session or a valid invite token.
-- [ ] **Upload + media hardening:** `/api/upload/sign` has no rate limit (anyone can mint
-  presigned URLs), and `POST /api/boards/[slug]/posts` accepts any `mediaUrl`, not only our
-  R2 `posts/` URLs (recipient photos already do this check, see `isRecipientPhotoUrl`).
-- [ ] **Orphaned R2 objects:** photos removed in `/create` before the board exists, and
-  uploads abandoned mid-form, are never deleted. Needs a periodic sweep of unreferenced keys.
-- [ ] **Delete a board** (owner, incl. all its R2 media) and **delete account**. GROWTH.md
-  trust list promises "a working delete button".
-- [ ] **Password reset** ("forgot password") for email/password owners. Not built.
-- [ ] **Post lightbox** with keyboard nav on the board (BUILD_PLAN hours 2–4). Not built.
-- [ ] **Delivery moment** for collaborative boards (`deliverAt`/`closedAt`, "reveal" to the
-  recipient, close posting). Columns exist, no UI or logic.
-- [ ] Reactions (table exists, no UI). Not Day 1, decide whether it's wanted.
-- [ ] Pre-existing dev-only hydration warning: root layout JSON-LD `<script>` type
-  attribute differs server vs client (`src/app/layout.tsx`). Harmless, but noisy.
+### Known limitations (not bugs)
+- Invite and password-reset emails send from Resend's shared `onboarding@resend.dev`
+  sender, which only delivers to the Resend account's own address. Verify a sending domain
+  in Resend (needs the custom domain) before real users rely on either email.
+- The one-time "claim" of guest boards and invite-based access both live in cookies, so they
+  are per-browser: an invitee who opens their link on a second device just opens it again.
 
 ## Done
 Everything in `BUILD_PLAN.md` Hours 0–9 except the items above, plus a full visual
@@ -186,6 +172,62 @@ ballooned to half the screen; board-page `-z-10` ambient layers now sit inside a
 - pnpm 11 note: `pnpm-workspace.yaml` → `allowBuilds.core-js: false` (posthog dependency;
   its install script is only a banner). An unanswered placeholder there blocks every
   `pnpm <script>` with ERR_PNPM_IGNORED_BUILDS.
+
+**Dashboard card + footer placement (2026-09-18)**
+- *Footer placement (decided by the owner):* SiteFooter is on the marketing pages, the
+  dashboard, `/create`, the 404 and the private-board notice; boards and the post page keep
+  the themed "Made with Fondly Held" line. Auth pages (sign-in/up, password reset) and the
+  slideshow deliberately have no footer. A site-wide footer was tried and reverted.
+- *Dashboard board card* (`components/dashboard/board-card.tsx`): portraits used as a wide,
+  washed-out banner cropped faces to the chest. The header now uses the board's palette with
+  "for {name}" and the photos as a small fan of prints (occasion art as a seal), falling back
+  to the occasion art. All recipient photos use face-first framing (`object-position: 50% 30%`).
+
+**Access, safety and the board's finishing features (2026-09-18, second pass)**
+- *Private boards enforced:* `src/lib/access.ts` `canViewBoard()`: owner session, or an
+  invite token. Invite emails link to `/b/<slug>?invite=<token>`; `src/proxy.ts` turns that
+  into an httpOnly `fh_inv_<slug>` cookie and redirects to the clean URL (opening is recorded
+  in `invite.opened_at`). Checked on the board, post and slideshow pages, the posting and
+  reaction APIs; metadata and the OG image never reveal a private board's title or name.
+  Non-invitees see `board/private-board-notice.tsx`.
+- *Upload hardening:* generic Postgres limiter `consumeRateLimit()` over new table
+  `rate_event` (migration `0003`, applied). `/api/upload/sign` is capped at 40/hour per IP.
+  Post media must be our R2 `posts/` URL (`isPostMediaUrl`) or a GIPHY CDN URL
+  (`isGiphyUrl`), matching the declared media type.
+- *Orphaned media sweep:* `/api/cron/cleanup-media`, daily via `vercel.json` (03:30 UTC),
+  Bearer `CRON_SECRET`. Deletes R2 objects under `posts/`/`boards/` that are over 24h old
+  and referenced by no post, board photo or cover; trims `rate_event` rows older than 2
+  days. Keys are read from URL paths (host-independent), `?dry=1` reports without
+  deleting, and it refuses if over half the bucket looks orphaned (misconfiguration guard).
+  Dry run on 2026-09-18: 5 objects, 4 referenced, 1 orphan.
+- *Delete board / delete account:* danger zone on `/dashboard/b/[slug]` (Base UI
+  AlertDialog, `components/ui/confirm-dialog.tsx`) → `deleteBoardWithMedia()` removes the
+  row (posts/invites/reactions/reports cascade) then every R2 file. New
+  `/dashboard/settings` (linked from the profile menu): account info, reset password,
+  delete account via Better Auth `user.deleteUser` whose `beforeDelete` deletes all the
+  owner's boards + media. Password accounts confirm with password; Google accounts need a
+  sign-in from the last 24h (Better Auth `freshAge`).
+- *Password reset:* "Forgot password?" on sign-in → `/forgot-password` →
+  email (Better Auth `sendResetPassword`, `src/lib/email.ts`) → `/reset-password?token=…`.
+  Same response whether or not the email exists; all sessions revoked on reset.
+- *Post lightbox:* `board/post-grid.tsx` is now a client component; tapping a photo or
+  message opens a Base UI Dialog rendered inside the board (keeps theme vars): ←/→, swipe,
+  buttons, Esc, "3 of 12", wraps around. Solemn boards only cross-fade.
+- *Delivery moment (collaborative boards):* Delivery card on the manage page: optional
+  "close messages on" date, Deliver now, Reopen. `isPostingClosed()` (`src/lib/board-state.ts`)
+  is the one rule (delivered/archived/closedAt/past deliverAt) used by the hero, the post page
+  and the posting API. "Copy recipient link" gives `/b/<slug>?reveal=1`, which opens with
+  `board/reveal-curtain.tsx`: photo, "N messages, all for you", curtain parts on tap
+  (confetti only on celebratory; solemn fades; reduced motion honoured; can't strand anyone
+  behind it). Tribute boards stay open-ended.
+- *Reactions:* profile-specific emoji (`src/lib/reactions.ts`; memorial gets 🤍 🙏 🕊️, never
+  🎉) on every card and in the lightbox, anonymous toggle via `POST /api/posts/[id]/reactions`
+  (120/hour per IP, fingerprint = hash of a random per-browser id).
+- *Security fix:* JSON-LD was `JSON.stringify`'d raw into `<script>`; a board title
+  containing `</script>` was stored XSS on public boards. All structured data now goes
+  through `components/seo/json-ld.tsx` (escapes `<`). Invite email HTML now escapes the
+  board title. The dev "hydration mismatch" on those scripts was a browser extension
+  rewriting `type` (server output verified correct); suppressed on that element only.
 
 **Recipient profiles, forms, profile menu (2026-09-18)**
 - *Recipient profile:* board has `recipient_bio` (text) + `recipient_photos` (jsonb string

@@ -3,21 +3,28 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { after } from "next/server";
 import { getBoardBySlug, incrementBoardView } from "@/lib/data/boards";
-import { listPublishedPosts, countPublishedPosts } from "@/lib/data/posts";
+import { listPublishedPosts, countPublishedPosts, listReactionCounts } from "@/lib/data/posts";
+import { isPostingClosed } from "@/lib/board-state";
+import { RevealCurtain } from "@/components/board/reveal-curtain";
 import { boardThemeVars } from "@/lib/theme/vars";
 import { BoardHero } from "@/components/board/board-hero";
 import { PostGrid } from "@/components/board/post-grid";
 import { EmptyState } from "@/components/board/empty-state";
 import { BoardAmbient } from "@/components/board/board-ambient";
+import { PrivateBoardNotice } from "@/components/board/private-board-notice";
+import { canViewBoard } from "@/lib/access";
+import { JsonLd } from "@/components/seo/json-ld";
 
 export const revalidate = 60;
 
 type Params = { params: Promise<{ slug: string }> };
+type PageProps = Params & { searchParams: Promise<{ reveal?: string }> };
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const board = await getBoardBySlug(slug);
   if (!board) return {};
+  if (board.visibility === "private") return { title: "A private board", robots: { index: false, follow: false } };
 
   const title = `${board.title}, a ${board.occasionType.label.toLowerCase()} board for ${board.recipientName}`;
   const description = board.headline ?? `Add your message to ${board.recipientName}'s board on Fondly Held.`;
@@ -45,15 +52,19 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   };
 }
 
-export default async function BoardPage({ params }: Params) {
+export default async function BoardPage({ params, searchParams }: PageProps) {
   const { slug } = await params;
+  const { reveal } = await searchParams;
   const board = await getBoardBySlug(slug);
   if (!board) notFound();
+  if (!(await canViewBoard(board))) return <PrivateBoardNotice slug={board.slug} />;
 
   const [posts, postCount] = await Promise.all([
     listPublishedPosts(board.id),
     countPublishedPosts(board.id),
   ]);
+  const reactions = await listReactionCounts(posts.map((p) => p.id));
+  const closed = isPostingClosed(board);
 
   after(() => incrementBoardView(board.id));
 
@@ -87,17 +98,29 @@ export default async function BoardPage({ params }: Params) {
       }}
     >
       {breadcrumbJsonLd ? (
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+        <JsonLd data={breadcrumbJsonLd} />
+      ) : null}
+      {reveal ? (
+        <RevealCurtain
+          recipientName={board.recipientName}
+          photo={board.recipientPhotos[0] ?? null}
+          postCount={postCount}
+          mode={board.mode}
+          profile={profile}
+          accent={board.theme.palette.accent}
+          accentSoft={board.theme.palette.accentSoft}
+        />
       ) : null}
       <BoardAmbient
         motionProfile={profile}
         accent={board.theme.palette.accent}
         accentSoft={board.theme.palette.accentSoft}
         particleEffect={board.theme.particleEffect}
+        entranceBurst={!reveal}
       />
-      <BoardHero board={board} postCount={postCount} />
+      <BoardHero board={board} postCount={postCount} closed={closed} />
       {posts.length > 0 ? (
-        <PostGrid posts={posts} profile={profile} />
+        <PostGrid posts={posts} profile={profile} reactions={reactions} />
       ) : (
         <EmptyState
           slug={board.slug}
