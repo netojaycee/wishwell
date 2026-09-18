@@ -1,5 +1,6 @@
 // Resend client. No-ops until RESEND_API_KEY is set, see .env.example. Real delivery to
-// arbitrary recipients additionally needs a verified sending domain on Resend's side.
+// arbitrary recipients needs a verified sending domain on Resend's side; the sender is
+// EMAIL_FROM (defaults to an address on mail.johnedeh.com, verified in Resend).
 import { Resend } from "resend";
 import { env, hasResend } from "@/lib/env";
 
@@ -25,7 +26,7 @@ export async function sendBoardInviteEmail({
 
   const resend = new Resend(env.RESEND_API_KEY);
   const { error } = await resend.emails.send({
-    from: "Fondly Held <onboarding@resend.dev>",
+    from: env.EMAIL_FROM,
     to,
     subject: `You're invited to sign ${boardTitle}`,
     html: `<p>You've been invited to add a message to <strong>${escapeHtml(boardTitle)}</strong>.</p><p><a href="${escapeHtml(boardUrl)}">Open the board</a></p>${
@@ -44,7 +45,7 @@ export async function sendPasswordResetEmail({ to, url }: { to: string; url: str
   if (!hasResend) return { ok: false as const, error: "Email delivery isn't configured yet." };
   const resend = new Resend(env.RESEND_API_KEY);
   const { error } = await resend.emails.send({
-    from: "Fondly Held <onboarding@resend.dev>",
+    from: env.EMAIL_FROM,
     to,
     subject: "Reset your Fondly Held password",
     html: `<p>Someone asked to reset the password for your Fondly Held account.</p><p><a href="${escapeHtml(url)}">Choose a new password</a></p><p>The link works for one hour. If this wasn't you, you can ignore this email and nothing will change.</p>`,

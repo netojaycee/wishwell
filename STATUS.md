@@ -49,9 +49,11 @@ Done), left alone deliberately, internal identifiers only, no user-facing effect
 - [ ] Privacy/Terms are real, substantive, non-lorem policies but not lawyer-reviewed
 
 ### Known limitations (not bugs)
-- Invite and password-reset emails send from Resend's shared `onboarding@resend.dev`
-  sender, which only delivers to the Resend account's own address. Verify a sending domain
-  in Resend (needs the custom domain) before real users rely on either email.
+- Invite and password-reset emails send from `EMAIL_FROM`, default
+  `Fondly Held <fondlyheld@mail.johnedeh.com>`: the owner's own domain, `mail.johnedeh.com`
+  is verified on the Resend account behind `RESEND_API_KEY` (checked 2026-09-18). Note it's
+  the `mail.` subdomain that's verified, not `johnedeh.com` itself. When fondlyheld.com
+  exists, verify it in Resend and set `EMAIL_FROM` to an address on it.
 - The one-time "claim" of guest boards and invite-based access both live in cookies, so they
   are per-browser: an invitee who opens their link on a second device just opens it again.
 

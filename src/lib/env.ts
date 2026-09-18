@@ -14,6 +14,9 @@ const envSchema = z.object({
   R2_BUCKET: z.string().optional(),
   R2_PUBLIC_URL: z.string().optional(),
   RESEND_API_KEY: z.string().optional(),
+  // Must be on a domain verified in Resend. mail.johnedeh.com is verified; swap to
+  // fondlyheld.com once that domain exists and is verified.
+  EMAIL_FROM: z.string().min(1).default("Fondly Held <fondlyheld@mail.johnedeh.com>"),
   GIPHY_API_KEY: z.string().optional(),
   CRON_SECRET: z.string().optional(),
 });
@@ -31,6 +34,7 @@ export const env = envSchema.parse({
   R2_BUCKET: process.env.R2_BUCKET,
   R2_PUBLIC_URL: process.env.R2_PUBLIC_URL,
   RESEND_API_KEY: process.env.RESEND_API_KEY,
+  EMAIL_FROM: process.env.EMAIL_FROM || undefined,
   GIPHY_API_KEY: process.env.GIPHY_API_KEY,
   CRON_SECRET: process.env.CRON_SECRET,
 });
