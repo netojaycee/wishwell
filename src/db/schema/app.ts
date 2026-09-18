@@ -1,4 +1,4 @@
-// Domain schema — one Board model, occasion is configuration (see ARCHITECTURE.md).
+// Domain schema, one Board model, occasion is configuration (see ARCHITECTURE.md).
 import { relations } from "drizzle-orm";
 import {
   boolean,
@@ -23,7 +23,7 @@ export const mediaTypeEnum = pgEnum("media_type", ["none", "image", "video", "gi
 
 export const occasionType = pgTable("occasion_type", {
   id: uuid("id").primaryKey().defaultRandom(),
-  key: text("key").notNull().unique(), // e.g. "birthday" — used in /occasions/[key]
+  key: text("key").notNull().unique(), // e.g. "birthday", used in /occasions/[key]
   label: text("label").notNull(),
   category: text("category").notNull(),
   motionProfile: motionProfileEnum("motion_profile").notNull(),
@@ -58,6 +58,10 @@ export const board = pgTable("board", {
   recipientName: text("recipient_name").notNull(),
   title: text("title").notNull(),
   headline: text("headline"),
+  // Who the board is for, shown on the board and the post page so contributors know who
+  // they're writing to. Photos are R2 public URLs, first one is the main portrait (max 4).
+  recipientBio: text("recipient_bio"),
+  recipientPhotos: jsonb("recipient_photos").$type<string[]>().notNull().default([]),
   coverImageUrl: text("cover_image_url"),
   themeId: uuid("theme_id").notNull().references(() => theme.id),
   visibility: boardVisibilityEnum("visibility").notNull().default("public"),
@@ -112,7 +116,7 @@ export const report = pgTable("report", {
   id: uuid("id").primaryKey().defaultRandom(),
   postId: uuid("post_id").notNull().references(() => post.id, { onDelete: "cascade" }),
   reason: text("reason").notNull(),
-  // Hashed (not raw) reporter IP — only for rate-limiting anonymous reports, like post.authorIpHash.
+  // Hashed (not raw) reporter IP, only for rate-limiting anonymous reports, like post.authorIpHash.
   reporterIpHash: text("reporter_ip_hash"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });

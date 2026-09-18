@@ -1,4 +1,4 @@
-// Ambient background per motion profile — the single switch point for "never confetti
+// Ambient background per motion profile, the single switch point for "never confetti
 // on solemn" (CLAUDE.md's worst-possible-bug rule). Warm/solemn are pure CSS (no JS,
 // no bundle cost); celebratory mounts the one-shot confetti client component plus a
 // CSS-only layer of slowly rising balloons or drifting confetti, chosen by the theme's
@@ -6,7 +6,7 @@
 import type { CSSProperties } from "react";
 import { ConfettiBurst } from "./confetti-burst";
 
-// Deterministic placements — no Math.random, so server and client render identically.
+// Deterministic placements, no Math.random, so server and client render identically.
 // Negative delays start each piece mid-flight so the layer isn't empty on first paint.
 const BALLOONS = [
   { left: "5%", size: 34, duration: 22, delay: -4, opacity: 0.45 },
@@ -106,7 +106,7 @@ export function BoardAmbient({
     );
   }
 
-  // solemn: still, faint grain only — never movement, never scale.
+  // solemn: still, faint grain only, never movement, never scale.
   return (
     <div
       aria-hidden

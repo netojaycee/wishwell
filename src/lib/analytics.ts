@@ -3,7 +3,7 @@
 // so call sites don't care which provider is configured: PostHog when
 // NEXT_PUBLIC_POSTHOG_KEY is set (initialised in src/instrumentation-client.ts), otherwise
 // a no-op. Page views come from Vercel Analytics in the root layout. Never send message
-// text, names, emails or board slugs (slugs contain recipients' names) — only coarse,
+// text, names, emails or board slugs (slugs contain recipients' names), only coarse,
 // non-identifying properties like occasion keys.
 import posthog from "posthog-js";
 

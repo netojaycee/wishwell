@@ -1,4 +1,4 @@
-// Better Auth server instance. Only board OWNERS have accounts — contributors never authenticate.
+// Better Auth server instance. Only board OWNERS have accounts, contributors never authenticate.
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@/db";

@@ -15,7 +15,7 @@ export default function ContactPage() {
             Talk to a real person
           </h1>
           <p className="mt-6 leading-relaxed text-black/75">
-            Question about a board, a bug to report, or feedback on Fondly Held? Email directly —
+            Question about a board, a bug to report, or feedback on Fondly Held? Email directly and
             a real person reads and answers every message.
           </p>
           <p className="mt-4 leading-relaxed text-black/75">
@@ -34,7 +34,7 @@ export default function ContactPage() {
 
       <BrandPanel
         variant="card"
-        tagline="A real person reads every message — no support bot in between."
+        tagline="A real person reads every message, no support bot in between."
         className="rounded-[28px] p-7 sm:p-10"
       />
     </div>

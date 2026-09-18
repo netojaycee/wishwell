@@ -5,6 +5,7 @@ import { presignUpload } from "@/lib/media";
 const schema = z.object({
   mimeType: z.string().min(1),
   sizeBytes: z.number().positive(),
+  purpose: z.enum(["post", "recipient"]).optional(),
 });
 
 export async function POST(request: Request) {

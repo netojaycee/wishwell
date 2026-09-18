@@ -1,12 +1,24 @@
 "use client";
 
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { sendInviteAction } from "@/app/actions/invites";
 import { track } from "@/lib/analytics";
 
+const inviteSchema = z.object({
+  email: z.string().trim().min(1, "Enter an email address.").email("That doesn't look like an email address."),
+});
+type InviteValues = z.infer<typeof inviteSchema>;
+
 export function InviteForm({ slug }: { slug: string }) {
-  const [email, setEmail] = useState("");
-  const [sending, setSending] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<InviteValues>({ resolver: zodResolver(inviteSchema), defaultValues: { email: "" } });
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
   const [shareUrl, setShareUrl] = useState("");
   const [copied, setCopied] = useState(false);
@@ -20,23 +32,20 @@ export function InviteForm({ slug }: { slug: string }) {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleInvite = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSending(true);
+  const onInvite = async ({ email }: InviteValues) => {
     setMessage(null);
     const result = await sendInviteAction(slug, email);
-    setSending(false);
     setMessage(
       result.ok ? { ok: true, text: `Invite sent to ${email}.` } : { ok: false, text: result.error }
     );
     if (result.ok) {
-      setEmail("");
+      reset();
       track("invite_sent");
     }
   };
 
   return (
-    <div className="rounded-xl border border-black/10 p-4">
+    <div className="rounded-2xl border border-black/10 bg-white/70 p-4 shadow-sm">
       <h2 className="font-heading text-lg">Share</h2>
       <button
         onClick={copyLink}
@@ -45,25 +54,33 @@ export function InviteForm({ slug }: { slug: string }) {
         {copied ? "Link copied" : "Copy share link"}
       </button>
 
-      <form onSubmit={handleInvite} className="mt-4">
-        <label className="block text-xs font-medium text-black/60">Invite by email</label>
+      <form noValidate onSubmit={handleSubmit(onInvite)} className="mt-4">
+        <label htmlFor={`invite-${slug}`} className="block text-xs font-medium text-black/60">
+          Invite by email
+        </label>
         <div className="mt-1 flex gap-2">
           <input
-            required
+            id={`invite-${slug}`}
+            {...register("email")}
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="off"
+            aria-invalid={Boolean(errors.email)}
             placeholder="friend@example.com"
-            className="w-full rounded-lg border border-black/10 px-3 py-2 text-sm"
+            className="w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-sm focus:border-[var(--brand)] focus:outline-none aria-[invalid=true]:border-red-400"
           />
           <button
             type="submit"
-            disabled={sending}
-            className="shrink-0 rounded-lg bg-black px-3 py-2 text-sm font-semibold text-white disabled:opacity-60"
+            disabled={isSubmitting}
+            className="shrink-0 rounded-lg bg-[var(--brand-ink)] px-3 py-2 text-sm font-semibold text-white transition-colors enabled:hover:bg-[var(--brand)] disabled:opacity-60"
           >
-            {sending ? "…" : "Send"}
+            {isSubmitting ? "Sending…" : "Send"}
           </button>
         </div>
+        {errors.email ? (
+          <p role="alert" className="mt-1.5 text-xs text-red-600">
+            {errors.email.message}
+          </p>
+        ) : null}
         {message ? (
           <p className={`mt-2 text-xs ${message.ok ? "text-emerald-600" : "text-black/50"}`}>{message.text}</p>
         ) : null}

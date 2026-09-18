@@ -1,6 +1,6 @@
 // Anonymous "report this post" endpoint behind the global report button (CLAUDE.md
 // guardrails: moderation from v1). A route handler, not a Server Action, so its rate limit
-// is explicit — same reasoning as anonymous posting.
+// is explicit, same reasoning as anonymous posting.
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { checkReportRateLimit, getReportablePost, reportPost } from "@/lib/data/posts";

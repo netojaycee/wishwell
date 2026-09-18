@@ -1,4 +1,4 @@
-// Board slugs are the ad — pretty, shareable, and not enumerable (random suffix).
+// Board slugs are the ad, pretty, shareable, and not enumerable (random suffix).
 import { customAlphabet } from "nanoid";
 
 const suffix = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789", 5);

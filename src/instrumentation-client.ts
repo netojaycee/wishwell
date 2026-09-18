@@ -1,7 +1,7 @@
-// Client analytics bootstrap (Next 16 `instrumentation-client` convention — runs before the
+// Client analytics bootstrap (Next 16 `instrumentation-client` convention, runs before the
 // app becomes interactive). PostHog initialises only when NEXT_PUBLIC_POSTHOG_KEY is set,
 // so local dev and anyone without a key send nothing. Pageviews + the explicit funnel
-// events in src/lib/analytics.ts only: no autocapture, no session recording — people post
+// events in src/lib/analytics.ts only: no autocapture, no session recording, people post
 // grief and family photos here, and we don't need to watch them do it.
 import posthog from "posthog-js";
 

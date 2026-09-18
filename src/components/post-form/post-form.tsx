@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useForm, useWatch } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { postFieldsSchema, POST_BODY_MAX, type PostFieldsValues } from "@/lib/validation/post";
 import { LogoMark } from "@/components/brand/logo-mark";
 import { OccasionArt } from "@/components/illustrations/occasion-art";
 import { track } from "@/lib/analytics";
@@ -11,7 +14,6 @@ import { SuccessState } from "./success-state";
 import { PostPreviewCard } from "./post-preview-card";
 
 type Media = { url: string; type: "image" | "video" | "gif" } | null;
-const MAX_LENGTH = 2000;
 
 export function PostForm({
   boardSlug,
@@ -25,6 +27,9 @@ export function PostForm({
   mediaEnabled,
   gifEnabled,
   promptText,
+  recipientName,
+  recipientBio,
+  recipientPhoto,
 }: {
   boardSlug: string;
   boardTitle: string;
@@ -37,12 +42,23 @@ export function PostForm({
   mediaEnabled: boolean;
   gifEnabled: boolean;
   promptText: string;
+  recipientName: string;
+  recipientBio: string | null;
+  recipientPhoto: string | null;
 }) {
-  const [authorName, setAuthorName] = useState("");
-  const [body, setBody] = useState("");
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<PostFieldsValues>({
+    resolver: zodResolver(postFieldsSchema),
+    mode: "onTouched",
+    defaultValues: { authorName: "", body: "" },
+  });
+  const [authorName = "", body = ""] = useWatch({ control, name: ["authorName", "body"] });
   const [media, setMedia] = useState<Media>(null);
   const [showGifPicker, setShowGifPicker] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [renderedAt] = useState(() => Date.now());
@@ -62,30 +78,31 @@ export function PostForm({
     );
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (values: PostFieldsValues) => {
     setError(null);
-    setSubmitting(true);
 
-    const res = await fetch(`/api/boards/${boardSlug}/posts`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        authorName,
-        body,
-        mediaUrl: media?.type !== "gif" ? media?.url : undefined,
-        mediaType: media?.type ?? "none",
-        gifUrl: media?.type === "gif" ? media?.url : undefined,
-        website: "",
-        renderedAt,
-      }),
-    });
-
-    const data = await res.json();
-    setSubmitting(false);
+    let data: { ok: boolean; error?: string };
+    try {
+      const res = await fetch(`/api/boards/${boardSlug}/posts`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...values,
+          mediaUrl: media?.type !== "gif" ? media?.url : undefined,
+          mediaType: media?.type ?? "none",
+          gifUrl: media?.type === "gif" ? media?.url : undefined,
+          website: "",
+          renderedAt,
+        }),
+      });
+      data = await res.json();
+    } catch {
+      setError("We couldn't reach the board. Check your connection and try again.");
+      return;
+    }
 
     if (!data.ok) {
-      setError(data.error ?? "Something went wrong — please try again.");
+      setError(data.error ?? "Something went wrong, please try again.");
       return;
     }
 
@@ -93,7 +110,7 @@ export function PostForm({
     setSuccess(true);
   };
 
-  const remaining = MAX_LENGTH - body.length;
+  const remaining = POST_BODY_MAX - body.length;
 
   return (
     <div>
@@ -109,13 +126,42 @@ export function PostForm({
       </div>
 
       <div className="mx-auto grid max-w-4xl grid-cols-1 gap-10 px-6 py-10 lg:grid-cols-[1fr_320px] lg:items-start lg:gap-16">
-        <form onSubmit={handleSubmit}>
-        <OccasionArt
-          occasionKey={occasionKey}
-          profile={motionProfile}
-          palette={{ accent, accentSoft, ink, surface }}
-          className="mb-4 h-14 w-14"
-        />
+        <form noValidate onSubmit={handleSubmit(onSubmit)}>
+        {/* Who you're writing to: their photo, name and a few words, so a contributor
+            arriving cold from a group chat link feels at home before they type. */}
+        <div
+          className="mb-8 flex items-start gap-4 rounded-3xl p-4 shadow-sm sm:p-5"
+          style={{ background: "var(--board-surface)" }}
+        >
+          {recipientPhoto ? (
+            // eslint-disable-next-line @next/next/no-img-element -- user photo from R2; image optimization is off site-wide
+            <img
+              src={recipientPhoto}
+              alt={recipientName}
+              className="h-20 w-16 shrink-0 rounded-2xl object-cover shadow-md sm:h-24 sm:w-20"
+            />
+          ) : (
+            <OccasionArt
+              occasionKey={occasionKey}
+              profile={motionProfile}
+              palette={{ accent, accentSoft, ink, surface }}
+              className="h-14 w-14 shrink-0"
+            />
+          )}
+          <div className="min-w-0">
+            <p className="text-[11px] font-semibold tracking-[0.16em] uppercase" style={{ color: accent }}>
+              You&apos;re writing to
+            </p>
+            <p className="mt-0.5 truncate text-2xl" style={{ fontFamily: "var(--board-font-heading)", color: "var(--board-ink)" }}>
+              {recipientName}
+            </p>
+            {recipientBio ? (
+              <p className="mt-1.5 line-clamp-3 text-sm leading-relaxed whitespace-pre-line text-[var(--board-ink)]/65">
+                {recipientBio}
+              </p>
+            ) : null}
+          </div>
+        </div>
         <h1
           className="text-3xl"
           style={{ fontFamily: "var(--board-font-heading)", color: "var(--board-ink)" }}
@@ -125,38 +171,53 @@ export function PostForm({
         <p className="mt-2 text-sm text-[var(--board-ink)]/60">for {boardTitle}</p>
 
         <div className="mt-8 space-y-6">
-          <input
-            required
-            maxLength={60}
-            value={authorName}
-            onChange={(e) => setAuthorName(e.target.value)}
-            placeholder="Your name"
-            className="w-full border-b-2 border-black/10 bg-transparent pb-2 text-lg outline-none transition-colors placeholder:text-[var(--board-ink)]/30 focus:border-[var(--board-accent)]"
-            style={{ color: "var(--board-ink)" }}
-          />
-
           <div>
-            {/* Styled to feel like writing on the card itself, not filling a form field —
-                board's own heading font, no visible box until focused. */}
-            <textarea
-              required
-              maxLength={MAX_LENGTH}
-              rows={6}
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-              placeholder="Write something from the heart…"
-              className="w-full resize-none rounded-2xl border-2 border-transparent bg-[var(--board-surface)] p-5 text-xl leading-relaxed outline-none transition-colors focus:border-[var(--board-accent)]"
-              style={{ color: "var(--board-ink)", fontFamily: "var(--board-font-heading)" }}
+            <input
+              {...register("authorName")}
+              aria-label="Your name"
+              aria-invalid={Boolean(errors.authorName)}
+              placeholder="Your name"
+              autoComplete="name"
+              className="w-full border-b-2 border-black/10 bg-transparent pb-2 text-lg outline-none transition-colors placeholder:text-[var(--board-ink)]/30 focus:border-[var(--board-accent)] aria-[invalid=true]:border-red-400"
+              style={{ color: "var(--board-ink)" }}
             />
-            <p
-              className="mt-1.5 text-right text-xs"
-              style={{ color: remaining < 100 ? accent : "var(--board-ink)", opacity: remaining < 100 ? 1 : 0.35 }}
-            >
-              {remaining} left
-            </p>
+            {errors.authorName ? (
+              <p role="alert" className="mt-1.5 text-sm text-red-600">
+                {errors.authorName.message}
+              </p>
+            ) : null}
           </div>
 
-          {/* Honeypot — hidden from real people via CSS, catches bots that fill every field. */}
+          <div>
+            {/* Styled to feel like writing on the card itself, not filling a form field,
+                board's own heading font, no visible box until focused. */}
+            <textarea
+              {...register("body")}
+              aria-label="Your message"
+              aria-invalid={Boolean(errors.body)}
+              rows={6}
+              placeholder="Write something from the heart…"
+              className="w-full resize-none rounded-2xl border-2 border-transparent bg-[var(--board-surface)] p-5 text-xl leading-relaxed outline-none transition-colors focus:border-[var(--board-accent)] aria-[invalid=true]:border-red-300"
+              style={{ color: "var(--board-ink)", fontFamily: "var(--board-font-heading)" }}
+            />
+            <div className="mt-1.5 flex items-start justify-between gap-3">
+              {errors.body ? (
+                <p role="alert" className="text-sm text-red-600">
+                  {errors.body.message}
+                </p>
+              ) : (
+                <span />
+              )}
+              <p
+                className="shrink-0 text-xs"
+                style={{ color: remaining < 100 ? accent : "var(--board-ink)", opacity: remaining < 100 ? 1 : 0.35 }}
+              >
+                {remaining} left
+              </p>
+            </div>
+          </div>
+
+          {/* Honeypot, hidden from real people via CSS, catches bots that fill every field. */}
           <div className="absolute -left-[9999px]" aria-hidden="true">
             <label htmlFor="website">Leave this field empty</label>
             <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
@@ -206,16 +267,16 @@ export function PostForm({
 
           <button
             type="submit"
-            disabled={submitting}
+            disabled={isSubmitting}
             className="w-full rounded-full px-6 py-3 text-sm font-semibold text-white transition-transform disabled:opacity-60 enabled:hover:scale-[1.01]"
             style={{ background: accent }}
           >
-            {submitting ? "Posting…" : "Post to the board"}
+            {isSubmitting ? "Posting…" : "Post to the board"}
           </button>
         </div>
       </form>
 
-      {/* Live preview — hidden below lg, shown after the form on mobile so the flow
+      {/* Live preview, hidden below lg, shown after the form on mobile so the flow
           stays form-first there. */}
       <div className="flex justify-center lg:sticky lg:top-16 lg:justify-start">
         <div className="w-full max-w-xs">

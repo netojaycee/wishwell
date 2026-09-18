@@ -1,4 +1,4 @@
-# ARCHITECTURE.md — Fondly Held
+# ARCHITECTURE.md: Fondly Held
 
 ## Stack
 
@@ -23,14 +23,15 @@ Everything is a **Board**. Occasion is configuration.
 ```
 User            id, email, name, image, createdAt
 Board           id, ownerId, slug (unique), occasionTypeId, mode,
-                recipientName, title, headline, coverImageUrl,
+                recipientName, recipientBio, recipientPhotos[] (≤4, first = main),
+                title, headline, coverImageUrl,
                 themeId, visibility, status, deliverAt, closedAt, viewCount
 OccasionType    id, key, label, category, motionProfile,
                 defaultThemeId, promptText, ctaText, seoTitle, seoDescription
 Theme           id, name, palette(json), backgroundUrl, fontPair,
                 particleEffect, occasionTypeId?
-Post            id, boardId, authorName, authorEmail?, body,
-                mediaUrl?, mediaType, gifUrl?, status, pinned, createdAt
+Post            id, boardId, authorName, authorEmail? body,
+                mediaUrl? mediaType, gifUrl? status, pinned, createdAt
 Reaction        id, postId, emoji, fingerprint
 Invite          id, boardId, email, token, sentAt, openedAt
 Report          id, postId, reason, createdAt
@@ -75,10 +76,13 @@ POST /api/invites             send batch invites
 
 Prefer Server Actions for owner mutations; keep route handlers for anonymous/public writes so rate limiting is explicit.
 
+Forms: react-hook-form + zod on the client (`noValidate`, no HTML validation); the same
+schemas from `src/lib/validation/*` are re-checked on the server.
+
 ## Rendering & caching
 
-- `/b/[slug]` — ISR, `revalidate: 60`, tag-revalidated on new post. Boards get shared into group chats; first paint must be instant.
-- `/occasions/[key]` — statically generated at build from the OccasionType table. These are the SEO pages.
+- `/b/[slug]`, ISR, `revalidate: 60`, tag-revalidated on new post. Boards get shared into group chats; first paint must be instant.
+- `/occasions/[key]`, statically generated at build from the OccasionType table. These are the SEO pages.
 - Dynamic OG images via `next/og` per board: recipient name + theme + post count. This is what renders in WhatsApp and Slack previews and it materially drives click-through. Do not skip it.
 
 ## Security
@@ -94,4 +98,4 @@ Prefer Server Actions for owner mutations; keep route handlers for anonymous/pub
 
 Vercel + Neon + R2. Env vars in `.env.example`. Preview deploy per PR. Custom domain on Cloudflare DNS.
 
-Migration path to VPS later: the app is a standard Next.js standalone build — Dockerize, run behind Nginx, swap R2 for the same R2. Nothing here locks you to Vercel.
+Migration path to VPS later: the app is a standard Next.js standalone build, Dockerize, run behind Nginx, swap R2 for the same R2. Nothing here locks you to Vercel.

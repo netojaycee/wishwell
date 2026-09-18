@@ -1,14 +1,15 @@
 import Link from "next/link";
 import { requireSession } from "@/lib/session";
-import { SignOutButton } from "@/components/auth/sign-out-button";
+import { UserMenu } from "@/components/auth/user-menu";
+import { SiteFooter } from "@/components/marketing/site-footer";
 import { LogoMark } from "@/components/brand/logo-mark";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await requireSession();
 
   return (
-    <div className="relative min-h-screen bg-[var(--background)]">
-      {/* Soft brand wash behind the header area — the owner side should feel like the
+    <div className="relative flex min-h-screen flex-col bg-[var(--background)]">
+      {/* Soft brand wash behind the header area, the owner side should feel like the
           same warm product, not a grey admin panel. */}
       <div
         aria-hidden
@@ -24,19 +25,19 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <LogoMark className="h-5 w-5 shrink-0" color="var(--brand)" />
             Fondly Held
           </Link>
-          <div className="flex items-center gap-4 text-sm">
-            <span className="hidden text-black/50 sm:inline">{session.user.email}</span>
+          <div className="flex items-center gap-3 text-sm">
             <Link
               href="/create"
               className="rounded-full bg-[var(--brand-ink)] px-4 py-2 font-medium text-white transition-colors hover:bg-[var(--brand)]"
             >
               New board
             </Link>
-            <SignOutButton />
+            <UserMenu user={{ name: session.user.name, email: session.user.email, image: session.user.image }} />
           </div>
         </div>
       </header>
-      <main className="relative mx-auto max-w-4xl px-6 py-10">{children}</main>
+      <main className="relative mx-auto w-full max-w-4xl flex-1 px-6 py-10">{children}</main>
+      <SiteFooter />
     </div>
   );
 }

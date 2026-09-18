@@ -1,7 +1,7 @@
 // Curated imagery for marketing/showcase surfaces: real photos (Unsplash licence,
 // self-hosted in /public/images/moments for LCP) and illustrated GIFs (hotlinked from
 // GIPHY per their API terms, credited in the footer). Everything here is *illustrative
-// demo content* showing what a board looks like — never present it as testimonials or
+// demo content* showing what a board looks like, never present it as testimonials or
 // real users (GROWTH.md §3). Keyed by OccasionType.key with a fallback, so adding an
 // occasion row still renders without a deploy (CLAUDE.md rule 1).
 
@@ -166,7 +166,7 @@ export const occasionShowcase: Record<string, Showcase> = {
 };
 
 // The three example boards seeded by `pnpm db:seed-demo` (src/db/seed-demo.ts) and linked
-// from the home page — one per motion profile. Their slugs are the showcase slugs, so the
+// from the home page, one per motion profile. Their slugs are the showcase slugs, so the
 // URL shown in each DemoBoard's window chrome is the real example page.
 export const EXAMPLE_BOARD_KEYS = ["birthday", "farewell", "memorial"] as const;
 

@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const board = await getBoardBySlug(slug);
   if (!board) return {};
-  return { title: `Add your message — ${board.title}`, robots: { index: false, follow: false } };
+  return { title: `Add your message to ${board.title}`, robots: { index: false, follow: false } };
 }
 
 export default async function PostPage({ params }: Params) {
@@ -40,6 +40,9 @@ export default async function PostPage({ params }: Params) {
         mediaEnabled={hasR2}
         gifEnabled={hasGiphy}
         promptText={board.occasionType.promptText}
+        recipientName={board.recipientName}
+        recipientBio={board.recipientBio}
+        recipientPhoto={board.recipientPhotos?.[0] ?? null}
       />
     </div>
   );

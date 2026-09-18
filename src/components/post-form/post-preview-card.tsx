@@ -1,7 +1,7 @@
 "use client";
 
 // Live mirror of how the post will actually render on the board (see
-// components/board/post-card.tsx) — updates as the contributor types, so writing a
+// components/board/post-card.tsx), updates as the contributor types, so writing a
 // message feels like placing it on the card rather than filling out a form.
 type Media = { url: string; type: "image" | "video" | "gif" } | null;
 
@@ -49,7 +49,7 @@ export function PostPreviewCard({
           {body.trim() || "Your message will look like this…"}
         </p>
         <p className="mt-4 text-sm font-medium" style={{ color: accent }}>
-          — {authorName.trim() || "Your name"}
+          {authorName.trim() || "Your name"}
         </p>
       </div>
     </div>

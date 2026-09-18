@@ -1,6 +1,6 @@
 // Cloudflare R2 (S3-compatible) media storage. Presigned uploads so files go browser
-// -> R2 directly, never through our server. No-ops safely until R2 env vars are set —
-// see .env.example — so the rest of the app can be built and tested before that exists.
+// -> R2 directly, never through our server. No-ops safely until R2 env vars are set,
+// see .env.example, so the rest of the app can be built and tested before that exists.
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { nanoid } from "nanoid";
@@ -31,12 +31,20 @@ function client() {
   });
 }
 
-export type PresignInput = { mimeType: string; sizeBytes: number };
+// "post" = a contributor's photo/video; "recipient" = a photo of who the board is for,
+// set by the creator. Recipient photos are still images only and live under boards/.
+export type UploadPurpose = "post" | "recipient";
+export type PresignInput = { mimeType: string; sizeBytes: number; purpose?: UploadPurpose };
 
-export async function presignUpload({ mimeType, sizeBytes }: PresignInput) {
+const RECIPIENT_MIME = new Set(["image/jpeg", "image/png", "image/webp"]);
+
+export async function presignUpload({ mimeType, sizeBytes, purpose = "post" }: PresignInput) {
   const mediaType = ALLOWED_MIME[mimeType];
-  if (!mediaType) {
-    return { ok: false as const, error: "Unsupported file type." };
+  if (!mediaType || (purpose === "recipient" && !RECIPIENT_MIME.has(mimeType))) {
+    return {
+      ok: false as const,
+      error: purpose === "recipient" ? "Please choose a JPG, PNG or WebP photo." : "Unsupported file type.",
+    };
   }
 
   const cap = mediaType === "image" ? MAX_IMAGE_BYTES : MAX_VIDEO_BYTES;
@@ -49,7 +57,8 @@ export async function presignUpload({ mimeType, sizeBytes }: PresignInput) {
   }
 
   const ext = mimeType.split("/")[1];
-  const key = `posts/${new Date().toISOString().slice(0, 10)}/${nanoid(16)}.${ext}`;
+  const folder = purpose === "recipient" ? "boards" : "posts";
+  const key = `${folder}/${new Date().toISOString().slice(0, 10)}/${nanoid(16)}.${ext}`;
 
   const uploadUrl = await getSignedUrl(
     client(),
@@ -60,6 +69,12 @@ export async function presignUpload({ mimeType, sizeBytes }: PresignInput) {
   const publicUrl = `${env.R2_PUBLIC_URL}/${key}`;
 
   return { ok: true as const, uploadUrl, publicUrl, mediaType, key };
+}
+
+// True only for recipient photos we signed ourselves, so a board can't be pointed at an
+// arbitrary third-party image URL.
+export function isRecipientPhotoUrl(url: string) {
+  return Boolean(env.R2_PUBLIC_URL) && url.startsWith(`${env.R2_PUBLIC_URL}/boards/`);
 }
 
 export async function deleteMedia(publicUrl: string) {

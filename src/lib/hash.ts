@@ -1,4 +1,4 @@
-// Hashes IPs before they touch the DB — we only ever need to compare, never to know the address.
+// Hashes IPs before they touch the DB, we only ever need to compare, never to know the address.
 import { createHash } from "crypto";
 import { env } from "@/lib/env";
 

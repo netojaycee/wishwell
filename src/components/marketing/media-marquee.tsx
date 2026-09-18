@@ -1,5 +1,5 @@
 // Home page's auto-scrolling strip of demo cards (photos, GIFs, words) across several
-// occasions, each in its own theme. Memorial content is deliberately excluded — solemn
+// occasions, each in its own theme. Memorial content is deliberately excluded, solemn
 // boards are still, and a scrolling ticker is not. Stops under reduced motion and becomes
 // a normal horizontal scroller instead.
 import { boardThemeVars } from "@/lib/theme/vars";

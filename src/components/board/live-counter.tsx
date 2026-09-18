@@ -1,6 +1,6 @@
 "use client";
 
-// "X people have shared a memory" — animates up on load (DESIGN.md signature moment #3).
+// "X people have shared a memory", animates up on load (DESIGN.md signature moment #3).
 import { useEffect, useRef } from "react";
 import { animate, useReducedMotion } from "motion/react";
 

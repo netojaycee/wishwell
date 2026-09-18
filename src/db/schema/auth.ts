@@ -1,4 +1,4 @@
-// Better Auth's own tables. Owns its schema; do not hand-edit field names — regenerate via
+// Better Auth's own tables. Owns its schema; do not hand-edit field names, regenerate via
 // `pnpm auth:schema` (better-auth CLI) if the auth config's plugins/fields change.
 import { boolean, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 

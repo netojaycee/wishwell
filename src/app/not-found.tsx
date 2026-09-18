@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { OccasionArt } from "@/components/illustrations/occasion-art";
+import { SiteFooter } from "@/components/marketing/site-footer";
 
-// Calm, warm-profile illustration only — people can land here from a board link that
+// Calm, warm-profile illustration only, people can land here from a board link that
 // was made private, including memorial pages, so nothing playful or celebratory.
 export default function NotFound() {
   return (
-    <div className="flex min-h-full flex-1 flex-col items-center justify-center bg-[#fdf8ee] px-6 py-20 text-center">
+    <div className="flex min-h-full flex-1 flex-col bg-[#fdf8ee]">
+    <div className="flex flex-1 flex-col items-center justify-center px-6 py-20 text-center">
       <OccasionArt
         occasionKey="not-found"
         profile="warm"
@@ -22,6 +24,8 @@ export default function NotFound() {
       >
         Go home
       </Link>
+    </div>
+    <SiteFooter />
     </div>
   );
 }

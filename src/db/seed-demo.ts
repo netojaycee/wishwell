@@ -1,10 +1,10 @@
 // Seeds the three example boards linked from the home page (BUILD_PLAN.md hour 8–9): one
-// per motion profile — birthday (celebratory), farewell (warm), memorial (solemn).
+// per motion profile, birthday (celebratory), farewell (warm), memorial (solemn).
 // Honesty rules (GROWTH.md §3): each is visibly labelled an example in its headline and is
-// UNLISTED — reachable from the home page, but noindexed and kept out of the sitemap and
+// UNLISTED, reachable from the home page, but noindexed and kept out of the sitemap and
 // "recent boards", so they never pose as real customers' boards. They're owned by the
 // founder account (EXAMPLE_OWNER_EMAIL, default below) so they can be moderated from the
-// dashboard like any board. The memorial example uses only an archival photo and flowers —
+// dashboard like any board. The memorial example uses only an archival photo and flowers,
 // never a portrait of an identifiable living person presented as deceased.
 // Idempotent: skips any example whose slug already exists. Run: `pnpm db:seed-demo`.
 import { config } from "dotenv";
@@ -16,7 +16,7 @@ type DemoPostInput = { author: string; body: string; photo?: string; gif?: strin
 const EXTRA_POSTS: Record<string, DemoPostInput[]> = {
   birthday: [
     { author: "Tolani", body: "Remember this day? I still laugh about it. Happy birthday, my friend!", photo: "friendsLaughing" },
-    { author: "Sade", body: "Happy 30th, Tolu! Dinner is on me next week — no arguments." },
+    { author: "Sade", body: "Happy 30th, Tolu! Dinner is on me next week, no arguments." },
     { author: "Uncle Dayo", body: "Thirty years of making this family proud. Keep shining." },
   ],
   farewell: [
@@ -31,9 +31,26 @@ const EXTRA_POSTS: Record<string, DemoPostInput[]> = {
   ],
 };
 
+// Who each example board is for: a few words and photos, so the examples show off the
+// recipient profile. Scene photos only, never a stranger's portrait posed as the recipient.
+const PROFILE: Record<string, { bio: string; photos: string[] }> = {
+  birthday: {
+    bio: "Tolu is the friend who remembers everyone's birthday, so this year it's our turn. Thirty years of loud laughter, late-night jollof and showing up for the people he loves.",
+    photos: ["friendsLaughing", "birthdayFriends", "birthdayCandles"],
+  },
+  farewell: {
+    bio: "Rachel spent four years making our team kinder, sharper and better fed. She's off to London for her next chapter, and we wanted her to take a little of us with her.",
+    photos: ["farewellHug", "farewellOffice", "workHighfive"],
+  },
+  memorial: {
+    bio: "Rose Adeyemi, 1938 to 2024. A baker, a choir alto, and the grandmother of the whole street. She fed everyone who came through her door and never let anyone leave without a blessing.",
+    photos: ["memorialVintage", "memorialCandle"],
+  },
+};
+
 const HEADLINE = {
-  tribute: "An example memorial page — made to show how Fondly Held holds a life's worth of memories.",
-  collaborative: "An example board — made to show what yours could look like.",
+  tribute: "An example memorial page, made to show how Fondly Held holds a life's worth of memories.",
+  collaborative: "An example board, made to show what yours could look like.",
 };
 
 async function main() {
@@ -44,19 +61,28 @@ async function main() {
 
   const ownerEmail = process.env.EXAMPLE_OWNER_EMAIL || "netojaycee@gmail.com";
   const [owner] = await db.select({ id: user.id }).from(user).where(eq(user.email, ownerEmail));
-  if (!owner) console.warn(`  ! No account for ${ownerEmail} — examples will be unowned (not moderatable).`);
+  if (!owner) console.warn(`  ! No account for ${ownerEmail}, examples will be unowned (not moderatable).`);
 
   for (const key of EXAMPLE_BOARD_KEYS) {
     const showcase = occasionShowcase[key];
+    const profile = {
+      recipientBio: PROFILE[key].bio,
+      recipientPhotos: PROFILE[key].photos.map((k) => PHOTOS[k as keyof typeof PHOTOS].src),
+    };
     const [existing] = await db
-      .select({ id: board.id, ownerId: board.ownerId })
+      .select({ id: board.id, ownerId: board.ownerId, recipientPhotos: board.recipientPhotos })
       .from(board)
       .where(eq(board.slug, showcase.slug));
     if (existing) {
+      // Boards seeded before recipient profiles existed get one (never overwrites edits).
+      if (existing.recipientPhotos.length === 0) {
+        await db.update(board).set(profile).where(eq(board.id, existing.id));
+        console.log(`  ✓ ${showcase.slug}: added recipient bio and photos`);
+      }
       // Re-running after the founder signs up hands them the (unowned) examples to moderate.
       if (!existing.ownerId && owner) {
         await db.update(board).set({ ownerId: owner.id }).where(eq(board.id, existing.id));
-        console.log(`  ✓ ${showcase.slug} already exists — now owned by ${ownerEmail}`);
+        console.log(`  ✓ ${showcase.slug} already exists, now owned by ${ownerEmail}`);
       } else {
         console.log(`  – ${showcase.slug} already exists, skipping`);
       }
@@ -64,7 +90,7 @@ async function main() {
     }
 
     const [occasion] = await db.select().from(occasionType).where(eq(occasionType.key, key));
-    if (!occasion) throw new Error(`Occasion "${key}" not seeded — run pnpm db:seed first.`);
+    if (!occasion) throw new Error(`Occasion "${key}" not seeded, run pnpm db:seed first.`);
     const themes = await db.select().from(theme).where(eq(theme.occasionTypeId, occasion.id));
     const chosen = themes.find((t) => t.isDefault) ?? themes[0];
     if (!chosen) throw new Error(`No themes for "${key}".`);
@@ -80,6 +106,7 @@ async function main() {
         recipientName: showcase.recipient,
         title: showcase.title,
         headline: HEADLINE[mode],
+        ...profile,
         themeId: chosen.id,
         visibility: "unlisted",
         meta: { example: true },

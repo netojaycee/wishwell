@@ -1,5 +1,5 @@
-// The warm dark "story" panel — tagline plus a celebratory and a solemn demo card side by
-// side — shared by the auth split screen (desktop column AND mobile top band) and the
+// The warm dark "story" panel, tagline plus a celebratory and a solemn demo card side by
+// side, shared by the auth split screen (desktop column AND mobile top band) and the
 // About/Contact pages, so every one of those screens carries the same crafted feel at
 // every width instead of degrading to a bare form on phones.
 import Link from "next/link";
@@ -11,7 +11,7 @@ import { showcaseFor } from "@/lib/content/moments";
 import type { FontPair, Palette } from "@/lib/theme/types";
 
 // No DB access here, so the two panel themes are copied from the seed (birthday "Citrus
-// Burst", memorial "Quiet Grey") — the "every occasion" pitch shown rather than claimed.
+// Burst", memorial "Quiet Grey"), the "every occasion" pitch shown rather than claimed.
 const BIRTHDAY_THEME: { palette: Palette; fontPair: FontPair } = {
   palette: { bg: "#FFF8EC", surface: "#FFFFFF", ink: "#2B1B0F", accent: "#FF7A3D", accentSoft: "#FFE1C4" },
   fontPair: { heading: "fraunces", body: "geist" },
@@ -38,7 +38,7 @@ const LAYOUT: Record<
     compact: false,
     sizes: "224px",
   },
-  // Mobile auth top band — kept short so the form still starts near the fold.
+  // Mobile auth top band, kept short so the form still starts near the fold.
   band: {
     tagline: "mx-auto mt-6 max-w-[18rem] text-center font-heading text-[21px] leading-snug",
     collage: "relative mx-auto mt-6 h-44 w-full max-w-[300px]",
@@ -74,7 +74,7 @@ export function BrandPanel({
   return (
     <div className={`relative overflow-hidden bg-[var(--brand-ink)] text-white ${className ?? ""}`}>
       <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: GLOW }} />
-      {/* Gentle floating marks — decoration only, still under reduced motion. */}
+      {/* Gentle floating marks, decoration only, still under reduced motion. */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <span className="fh-float-slow absolute top-[18%] right-[10%] block">
           <LogoMark className="h-10 w-10 opacity-25" color="var(--brand-soft)" />

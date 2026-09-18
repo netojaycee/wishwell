@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const board = await getBoardBySlug(slug);
   if (!board) return {};
 
-  const title = `${board.title} — a ${board.occasionType.label.toLowerCase()} board for ${board.recipientName}`;
+  const title = `${board.title}, a ${board.occasionType.label.toLowerCase()} board for ${board.recipientName}`;
   const description = board.headline ?? `Add your message to ${board.recipientName}'s board on Fondly Held.`;
   const noindex = board.visibility !== "public";
 
@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     openGraph: {
       title,
       description,
-      // Only set `images` when there's a real cover photo — an explicit `images:
+      // Only set `images` when there's a real cover photo, an explicit `images:
       // undefined` key (even though the value is undefined) suppresses Next's
       // auto-detected opengraph-image.tsx for this route, which was the actual bug:
       // almost no boards have coverImageUrl set, so nearly every board link was
@@ -59,7 +59,7 @@ export default async function BoardPage({ params }: Params) {
 
   const profile = board.occasionType.motionProfile;
 
-  // BreadcrumbList JSON-LD (Home › occasion › board) — public boards only, since
+  // BreadcrumbList JSON-LD (Home › occasion › board), public boards only, since
   // unlisted/private ones are noindexed anyway.
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
   const breadcrumbJsonLd =

@@ -3,7 +3,7 @@
 // real Better Auth session check (cheap thanks to the session cookie cache) rather than
 // "does a cookie exist", so a stale cookie can't ping-pong someone between /sign-in and
 // /dashboard. Pages and Server Actions still verify the session themselves
-// (requireSession) — proxy is the fast first line, not the only one. Contributors never
+// (requireSession), proxy is the fast first line, not the only one. Contributors never
 // authenticate, so boards and posting are deliberately not matched.
 import { NextResponse, type NextRequest } from "next/server";
 import { auth } from "@/lib/auth";

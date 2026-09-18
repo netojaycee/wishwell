@@ -26,7 +26,7 @@ export function ModerationList({ posts, slug }: { posts: ModerationPost[]; slug:
             <div>
               <p className="text-sm">{post.body}</p>
               <p className="mt-1 text-xs text-black/50">
-                — {post.authorName} ·{" "}
+                {post.authorName} ·{" "}
                 <span
                   className={
                     post.status === "published"

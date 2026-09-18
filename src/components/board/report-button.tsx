@@ -1,15 +1,17 @@
 "use client";
 
 // The global "report this post" control (CLAUDE.md guardrails: moderation from v1, global
-// report button). Deliberately quiet — a small flag that appears on hover/focus (always
-// visible on touch screens) — so it never competes with the message, memorial boards
+// report button). Deliberately quiet, a small flag that appears on hover/focus (always
+// visible on touch screens), so it never competes with the message, memorial boards
 // included. The dialog is portalled to <body> because post cards are CSS-transformed
 // (the handmade tilt), which would otherwise trap a `position: fixed` overlay in the card;
 // the board's theme vars are copied onto the portal so it still matches the board.
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Flag, X } from "lucide-react";
-import { REPORT_REASONS, type ReportReason } from "@/lib/validation/report";
+import { useForm, useWatch } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { REPORT_REASONS, reportFieldsSchema, type ReportFieldsValues } from "@/lib/validation/report";
 
 const THEME_VARS = ["--board-surface", "--board-ink", "--board-accent", "--board-accent-soft", "--board-font-heading"];
 
@@ -17,8 +19,14 @@ export function ReportButton({ postId }: { postId: string }) {
   const triggerRef = useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useState(false);
   const [themeStyle, setThemeStyle] = useState<Record<string, string>>({});
-  const [reason, setReason] = useState<ReportReason | "">("");
-  const [details, setDetails] = useState("");
+  const {
+    register,
+    handleSubmit,
+    reset,
+    control,
+    formState: { errors },
+  } = useForm<ReportFieldsValues>({ resolver: zodResolver(reportFieldsSchema), defaultValues: { details: "" } });
+  const reason = useWatch({ control, name: "reason" });
   const [status, setStatus] = useState<"idle" | "sending" | "done">("idle");
   const [error, setError] = useState<string | null>(null);
 
@@ -36,8 +44,7 @@ export function ReportButton({ postId }: { postId: string }) {
   const close = () => {
     setOpen(false);
     if (status === "done") {
-      setReason("");
-      setDetails("");
+      reset();
       setStatus("idle");
     }
     triggerRef.current?.focus();
@@ -57,30 +64,25 @@ export function ReportButton({ postId }: { postId: string }) {
     };
   }, [open]);
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!reason) {
-      setError("Please choose a reason.");
-      return;
-    }
+  const submit = async ({ reason, details }: ReportFieldsValues) => {
     setStatus("sending");
     setError(null);
     try {
       const res = await fetch(`/api/posts/${postId}/report`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ reason, details: details.trim() || undefined, website: "" }),
+        body: JSON.stringify({ reason, details: details?.trim() || undefined, website: "" }),
       });
       const data = await res.json().catch(() => ({ ok: false }));
       if (!data.ok) {
         setStatus("idle");
-        setError(data.error ?? "We couldn't send that report — please try again.");
+        setError(data.error ?? "We couldn't send that report, please try again.");
         return;
       }
       setStatus("done");
     } catch {
       setStatus("idle");
-      setError("We couldn't reach the server — check your connection and try again.");
+      setError("We couldn't reach the server, check your connection and try again.");
     }
   };
 
@@ -140,7 +142,7 @@ export function ReportButton({ postId }: { postId: string }) {
                     </button>
                   </>
                 ) : (
-                  <form onSubmit={submit}>
+                  <form noValidate onSubmit={handleSubmit(submit)}>
                     <p className="mt-2 text-sm opacity-60">Reports are anonymous. What&apos;s wrong with this post?</p>
                     <fieldset className="mt-4 space-y-2">
                       <legend className="sr-only">Reason</legend>
@@ -155,25 +157,32 @@ export function ReportButton({ postId }: { postId: string }) {
                         >
                           <input
                             type="radio"
-                            name={`reason-${postId}`}
+                            {...register("reason")}
                             value={r}
-                            checked={reason === r}
-                            onChange={() => setReason(r)}
                             className="accent-[var(--board-accent,#241c0a)]"
                           />
                           {r}
                         </label>
                       ))}
                     </fieldset>
+                    {errors.reason ? (
+                      <p role="alert" className="mt-2 text-sm text-red-600">
+                        {errors.reason.message}
+                      </p>
+                    ) : null}
                     <textarea
-                      value={details}
-                      onChange={(e) => setDetails(e.target.value)}
-                      maxLength={500}
+                      {...register("details")}
+                      aria-label="More details (optional)"
                       rows={2}
                       placeholder="Anything else we should know? (optional)"
                       className="mt-3 w-full resize-none rounded-xl border bg-transparent px-4 py-3 text-sm outline-none focus:border-[var(--board-accent)]"
                       style={{ borderColor: "color-mix(in srgb, currentColor 12%, transparent)" }}
                     />
+                    {errors.details ? (
+                      <p role="alert" className="mt-1 text-sm text-red-600">
+                        {errors.details.message}
+                      </p>
+                    ) : null}
                     {error ? <p className="mt-2 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
                     <div className="mt-5 flex gap-3">
                       <button type="button" onClick={close} className="flex-1 rounded-full border px-5 py-3 text-sm font-semibold" style={{ borderColor: "color-mix(in srgb, currentColor 15%, transparent)" }}>

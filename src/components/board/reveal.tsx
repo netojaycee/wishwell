@@ -1,7 +1,7 @@
 "use client";
 
 // Entrance animation whose character follows the board's motion profile (DESIGN.md):
-// celebratory gets a spring scale-in, warm a soft fade-up, solemn a slow plain fade —
+// celebratory gets a spring scale-in, warm a soft fade-up, solemn a slow plain fade,
 // never a bounce or scale on solemn. Always respects prefers-reduced-motion.
 import { motion, useReducedMotion, type Variants } from "motion/react";
 import type { ReactNode } from "react";

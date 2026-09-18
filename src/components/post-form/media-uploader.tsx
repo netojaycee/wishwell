@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { uploadFile } from "@/lib/upload-client";
 
 type Media = { url: string; type: "image" | "video" } | null;
 
@@ -19,43 +20,13 @@ export function MediaUploader({
   const handleFile = async (file: File) => {
     setError(null);
     setProgress(0);
-
-    const signRes = await fetch("/api/upload/sign", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mimeType: file.type, sizeBytes: file.size }),
-    });
-    const signed = await signRes.json();
-
-    if (!signed.ok) {
-      setError(signed.error ?? "Couldn't start the upload.");
-      setProgress(null);
-      return;
-    }
-
-    const uploadSucceeded = await new Promise<boolean>((resolve) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open("PUT", signed.uploadUrl);
-      xhr.setRequestHeader("Content-Type", file.type);
-      xhr.upload.onprogress = (e) => {
-        if (e.lengthComputable) setProgress(Math.round((e.loaded / e.total) * 100));
-      };
-      xhr.onload = () => resolve(xhr.status < 300);
-      xhr.onerror = () => resolve(false);
-      xhr.send(file);
-    });
-
+    const result = await uploadFile(file, { onProgress: setProgress });
     setProgress(null);
-
-    // Previously this proceeded to show a "preview" even when the PUT above failed
-    // (its rejection was swallowed) — the URL looked fine but nothing was ever actually
-    // at it, so the image/video rendered blank everywhere it was used.
-    if (!uploadSucceeded) {
-      setError("Upload failed — try a smaller file or a different format.");
+    if (!result.ok) {
+      setError(result.error);
       return;
     }
-
-    const media: Media = { url: signed.publicUrl, type: signed.mediaType };
+    const media: Media = { url: result.url, type: result.mediaType };
     setPreview(media);
     onChange(media);
   };

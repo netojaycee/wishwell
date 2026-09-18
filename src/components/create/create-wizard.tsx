@@ -5,7 +5,16 @@ import Link from "next/link";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Copy, Check, Share2 } from "lucide-react";
+import { Controller, useForm, useWatch } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { createBoardAction } from "@/app/actions/boards";
+import { RecipientPhotosField } from "./recipient-photos-field";
+import {
+  boardDetailsSchema,
+  RECIPIENT_BIO_MAX,
+  RECIPIENT_PHOTO_LIMIT,
+  type BoardDetailsValues,
+} from "@/lib/validation/board";
 import { LogoMark } from "@/components/brand/logo-mark";
 import { OccasionArt } from "@/components/illustrations/occasion-art";
 import { boardThemeVars } from "@/lib/theme/vars";
@@ -18,19 +27,84 @@ type OccasionWithThemes = OccasionTypeRow & { themes: ThemeRow[] };
 
 const STEP_LABELS = ["Occasion", "Details", "Theme", "Done"];
 
+const INPUT =
+  "mt-1.5 w-full rounded-xl border-2 border-black/10 bg-white px-4 py-3.5 text-base transition-colors focus:border-[var(--brand)] focus:outline-none aria-[invalid=true]:border-red-400 sm:text-[15px]";
+
+function Field({
+  label,
+  optional,
+  hint,
+  error,
+  group,
+  children,
+}: {
+  label: string;
+  optional?: boolean;
+  // A group of controls (e.g. the photo grid) gets a plain heading, not a wrapping <label>.
+  group?: boolean;
+  hint?: string;
+  error?: string;
+  children: React.ReactNode;
+}) {
+  const heading = (
+    <>
+      {label} {optional ? <span className="font-normal text-black/40">(optional)</span> : null}
+    </>
+  );
+  return (
+    <div>
+      {group ? (
+        <div role="group" aria-label={label}>
+          <p className="text-sm font-medium">{heading}</p>
+          <div className="mt-1.5">{children}</div>
+        </div>
+      ) : (
+        <label className="block text-sm font-medium">
+          {heading}
+          {children}
+        </label>
+      )}
+      {hint ? <p className="mt-1.5 text-xs text-black/45">{hint}</p> : null}
+      {error ? (
+        <p role="alert" className="mt-1.5 text-sm text-red-600">
+          {error}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
 export function CreateWizard({
   occasions,
   initialOccasionKey,
+  mediaEnabled,
 }: {
   occasions: OccasionWithThemes[];
   initialOccasionKey?: string;
+  mediaEnabled: boolean;
 }) {
   const preselected = occasions.find((o) => o.key === initialOccasionKey);
   const [step, setStep] = useState(preselected ? 1 : 0);
   const [occasionKey, setOccasionKey] = useState(preselected?.key ?? "");
-  const [recipientName, setRecipientName] = useState("");
-  const [title, setTitle] = useState(preselected ? `${preselected.label} Board` : "");
-  const [headline, setHeadline] = useState("");
+  const details = useForm<BoardDetailsValues>({
+    resolver: zodResolver(boardDetailsSchema),
+    mode: "onTouched",
+    defaultValues: {
+      recipientName: "",
+      title: preselected ? `${preselected.label} Board` : "",
+      headline: "",
+      recipientBio: "",
+      recipientPhotos: [],
+    },
+  });
+  const errors = details.formState.errors;
+  const [watchedName, watchedTitle, watchedBio, watchedPhotos] = useWatch({
+    control: details.control,
+    name: ["recipientName", "title", "recipientBio", "recipientPhotos"],
+  });
+  const recipientName = watchedName ?? "";
+  const title = watchedTitle ?? "";
+  const mainPhoto = watchedPhotos?.[0];
   const [themeId, setThemeId] = useState(() => {
     if (!preselected) return "";
     const defaultTheme = preselected.themes.find((t) => t.isDefault) ?? preselected.themes[0];
@@ -61,13 +135,11 @@ export function CreateWizard({
     setOccasionKey(key);
     track("create_started", { occasion: key });
     const o = occasions.find((oc) => oc.key === key)!;
-    setTitle(`${o.label} Board`);
+    details.setValue("title", `${o.label} Board`);
     const defaultTheme = o.themes.find((t) => t.isDefault) ?? o.themes[0];
     if (defaultTheme) setThemeId(defaultTheme.id);
     setStep(1);
   };
-
-  const canContinueStep1 = recipientName.trim().length > 0 && title.trim().length > 0;
 
   const handleCreate = async () => {
     if (!occasion) return;
@@ -75,11 +147,9 @@ export function CreateWizard({
     setError(null);
 
     const result = await createBoardAction({
+      ...details.getValues(),
       occasionKey: occasion.key,
       themeId,
-      recipientName: recipientName.trim(),
-      title: title.trim(),
-      headline: headline.trim() || undefined,
       mode: occasion.category === "tribute" ? "tribute" : "collaborative",
       visibility: "public",
     });
@@ -99,8 +169,8 @@ export function CreateWizard({
   const shareUrl = resultSlug && typeof window !== "undefined" ? `${window.location.origin}/b/${resultSlug}` : "";
   const shareText =
     occasion && recipientName
-      ? `${occasion.promptText} for ${recipientName} on Fondly Held — no account needed, just click and post.`
-      : "Add your message on Fondly Held — no account needed, just click and post.";
+      ? `${occasion.promptText} for ${recipientName} on Fondly Held, no account needed, just click and post.`
+      : "Add your message on Fondly Held, no account needed, just click and post.";
 
   const copyLink = async () => {
     if (!shareUrl) return;
@@ -117,7 +187,7 @@ export function CreateWizard({
         await navigator.share({ title, text: shareText, url: shareUrl });
         track("board_link_shared", { via: "native_share" });
       } catch {
-        // user cancelled the native share sheet — not an error
+        // user cancelled the native share sheet, not an error
       }
     } else {
       await copyLink();
@@ -129,7 +199,7 @@ export function CreateWizard({
   const transition = reducedMotion ? { duration: 0.15 } : { duration: 0.35, ease: "easeOut" as const };
 
   return (
-    <div className="min-h-full bg-[var(--background)]">
+    <div>
       <header className="px-6 py-5">
         <Link href="/" className="inline-flex items-center gap-2 font-heading text-lg" style={{ color: "var(--brand-ink)" }}>
           <LogoMark className="h-5 w-5 shrink-0" color="var(--brand)" />
@@ -152,7 +222,7 @@ export function CreateWizard({
                 {i + 1}
               </span>
               <span className="hidden sm:inline">{label}</span>
-              {i < STEP_LABELS.length - 1 ? <span className="mx-0.5 text-black/20 sm:mx-1">—</span> : null}
+              {i < STEP_LABELS.length - 1 ? <span aria-hidden className="mx-0.5 h-px w-3 bg-black/15 sm:mx-1 sm:w-5" /> : null}
             </li>
           ))}
         </ol>
@@ -196,25 +266,39 @@ export function CreateWizard({
                 ← Change occasion
               </button>
               <h1 className="font-heading text-2xl sm:text-3xl">Tell us about them</h1>
+              <p className="mt-2 text-sm text-black/55">
+                A name, a few words and a photo or two, so everyone who opens the link knows exactly
+                who they&apos;re writing to.
+              </p>
               <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-[1fr_220px] sm:items-start">
-              {/* Live preview of the board's hero — updates as they type, so the details
+              {/* Live preview of the board's hero, updates as they type, so the details
                   step already feels like making the page, not filling a form. */}
               {previewTheme ? (
                 <div
                   aria-hidden
-                  className="flex items-center gap-4 rounded-2xl border p-4 shadow-sm sm:order-last sm:flex-col sm:gap-0 sm:p-5 sm:text-center"
+                  className="flex items-center gap-4 rounded-2xl border p-4 shadow-sm sm:sticky sm:top-6 sm:order-last sm:flex-col sm:gap-0 sm:p-5 sm:text-center"
                   style={{
                     ...boardThemeVars(previewTheme),
                     background: "var(--board-bg)",
                     borderColor: "color-mix(in srgb, var(--board-ink) 8%, transparent)",
                   }}
                 >
-                  <OccasionArt
-                    occasionKey={occasion.key}
-                    profile={occasion.motionProfile}
-                    palette={previewTheme.palette}
-                    className="h-14 w-14 shrink-0 sm:h-20 sm:w-20"
-                  />
+                  {mainPhoto ? (
+                    // eslint-disable-next-line @next/next/no-img-element -- live preview of an uploaded photo
+                    <img
+                      src={mainPhoto}
+                      alt=""
+                      className="h-16 w-14 shrink-0 rounded-2xl border-[3px] object-cover shadow-md sm:h-28 sm:w-24"
+                      style={{ borderColor: "var(--board-surface)" }}
+                    />
+                  ) : (
+                    <OccasionArt
+                      occasionKey={occasion.key}
+                      profile={occasion.motionProfile}
+                      palette={previewTheme.palette}
+                      className="h-14 w-14 shrink-0 sm:h-20 sm:w-20"
+                    />
+                  )}
                   <div className="min-w-0 sm:mt-3">
                     <span
                       className="inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wider uppercase"
@@ -226,62 +310,102 @@ export function CreateWizard({
                       className="mt-1.5 text-lg leading-tight break-words sm:text-xl"
                       style={{ fontFamily: "var(--board-font-heading)", color: "var(--board-ink)" }}
                     >
-                      {title.trim() || `${occasion.label} Board`}
+                      {watchedTitle?.trim() || `${occasion.label} Board`}
                     </p>
                     <p className="mt-1 truncate text-xs" style={{ color: "color-mix(in srgb, var(--board-ink) 55%, transparent)" }}>
-                      for {recipientName.trim() || "someone special"}
+                      for {watchedName?.trim() || "someone special"}
                     </p>
-                    <div className="mt-4 hidden grid-cols-2 gap-1.5 sm:grid">
-                      {[0, 1].map((i) => (
-                        <span
-                          key={i}
-                          className="h-10 rounded-lg border border-dashed"
-                          style={{ borderColor: "color-mix(in srgb, var(--board-accent) 35%, transparent)" }}
-                        />
-                      ))}
-                    </div>
+                    {watchedBio?.trim() ? (
+                      <p
+                        className="mt-2 hidden text-xs leading-snug sm:line-clamp-4"
+                        style={{ color: "color-mix(in srgb, var(--board-ink) 70%, transparent)" }}
+                      >
+                        {watchedBio}
+                      </p>
+                    ) : (
+                      <div className="mt-4 hidden grid-cols-2 gap-1.5 sm:grid">
+                        {[0, 1].map((i) => (
+                          <span
+                            key={i}
+                            className="h-10 rounded-lg border border-dashed"
+                            style={{ borderColor: "color-mix(in srgb, var(--board-accent) 35%, transparent)" }}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : null}
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium">Recipient&apos;s name</label>
+              <form noValidate onSubmit={details.handleSubmit(() => setStep(2))} className="space-y-5">
+                <Field label="Their name" error={errors.recipientName?.message}>
                   <input
                     autoFocus
-                    value={recipientName}
-                    onChange={(e) => setRecipientName(e.target.value)}
+                    {...details.register("recipientName")}
                     placeholder="Joyce"
-                    className="mt-1.5 w-full rounded-xl border-2 border-black/10 px-4 py-3.5 text-base transition-colors focus:border-[var(--brand)] focus:outline-none sm:text-[15px]"
+                    aria-invalid={Boolean(errors.recipientName)}
+                    className={INPUT}
                   />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium">Board title</label>
+                </Field>
+                <Field label="Board title" error={errors.title?.message}>
+                  <input {...details.register("title")} aria-invalid={Boolean(errors.title)} className={INPUT} />
+                </Field>
+                <Field label="Headline" optional error={errors.headline?.message}>
                   <input
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="mt-1.5 w-full rounded-xl border-2 border-black/10 px-4 py-3.5 text-base transition-colors focus:border-[var(--brand)] focus:outline-none sm:text-[15px]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium">
-                    Headline <span className="text-black/40">(optional)</span>
-                  </label>
-                  <input
-                    value={headline}
-                    onChange={(e) => setHeadline(e.target.value)}
+                    {...details.register("headline")}
                     placeholder="A little context for visitors"
-                    className="mt-1.5 w-full rounded-xl border-2 border-black/10 px-4 py-3.5 text-base transition-colors focus:border-[var(--brand)] focus:outline-none sm:text-[15px]"
+                    aria-invalid={Boolean(errors.headline)}
+                    className={INPUT}
                   />
-                </div>
+                </Field>
+                {mediaEnabled ? (
+                  <Field
+                    label="Photos"
+                    optional
+                    group
+                    hint={`Up to ${RECIPIENT_PHOTO_LIMIT}. A photo of ${watchedName?.trim() || "them"}, or anything that does them justice. The first is the main one.`}
+                  >
+                    <Controller
+                      control={details.control}
+                      name="recipientPhotos"
+                      render={({ field, fieldState }) => (
+                        <RecipientPhotosField
+                          value={field.value}
+                          onChange={field.onChange}
+                          recipientName={watchedName}
+                          error={fieldState.error?.message}
+                        />
+                      )}
+                    />
+                  </Field>
+                ) : null}
+                <Field
+                  label={occasion.motionProfile === "solemn" ? "A few words about their life" : "A few words about them"}
+                  optional
+                  error={errors.recipientBio?.message}
+                >
+                  <textarea
+                    {...details.register("recipientBio")}
+                    rows={4}
+                    placeholder={
+                      occasion.motionProfile === "solemn"
+                        ? "Who they were, what they loved, how they'd want to be remembered."
+                        : "Who they are, what they love, why this moment matters."
+                    }
+                    aria-invalid={Boolean(errors.recipientBio)}
+                    className={`${INPUT} resize-none leading-relaxed`}
+                  />
+                  <p className="mt-1 text-right text-xs text-black/35">
+                    {(watchedBio?.length ?? 0)}/{RECIPIENT_BIO_MAX}
+                  </p>
+                </Field>
                 <button
-                  disabled={!canContinueStep1}
-                  onClick={() => setStep(2)}
-                  className="w-full rounded-full px-6 py-3.5 text-sm font-semibold text-white transition-transform enabled:hover:scale-[1.01] disabled:opacity-40"
+                  type="submit"
+                  className="w-full rounded-full px-6 py-3.5 text-sm font-semibold text-white transition-transform hover:scale-[1.01]"
                   style={{ background: "var(--brand-ink)" }}
                 >
                   Continue
                 </button>
-              </div>
+              </form>
               </div>
             </motion.div>
           ) : null}
@@ -305,8 +429,8 @@ export function CreateWizard({
                         boxShadow: selected ? `0 0 0 3px ${t.palette.accentSoft}` : undefined,
                       }}
                     >
-                      {/* A tiny board in this theme — heading font, a photo card and a
-                          text card — so people pick a look by seeing it, not by swatches. */}
+                      {/* A tiny board in this theme, heading font, a photo card and a
+                          text card, so people pick a look by seeing it, not by swatches. */}
                       <div
                         className="relative h-40 overflow-hidden px-3 pt-3"
                         style={{ ...boardThemeVars(t), background: "var(--board-bg)" }}
@@ -349,7 +473,7 @@ export function CreateWizard({
                               {sampleText?.body ?? "A few words from the heart."}
                             </p>
                             <p className="mt-1 text-[9px] font-medium" style={{ color: "var(--board-accent)" }}>
-                              — {sampleText?.author ?? "A friend"}
+                              {sampleText?.author ?? "A friend"}
                             </p>
                           </div>
                         </div>
@@ -429,7 +553,7 @@ export function CreateWizard({
               <h1 className="font-heading text-2xl sm:text-3xl">
                 {occasion?.motionProfile === "solemn" ? "The page is ready" : "Your board is live"}
               </h1>
-              <p className="mt-3 text-black/60">Share this link with anyone you want to contribute — no account needed.</p>
+              <p className="mt-3 text-black/60">Share this link with anyone you want to contribute, no account needed.</p>
               <p className="mt-6 rounded-xl border-2 border-black/10 bg-black/[0.02] px-4 py-3 font-mono text-sm break-all">
                 {typeof window !== "undefined" ? window.location.host : ""}/b/{resultSlug}
               </p>
@@ -505,7 +629,7 @@ export function CreateWizard({
                   Keep this board safe
                 </p>
                 <p className="mt-1.5 text-sm text-black/60">
-                  Right now, this board only lives at the link above — create a free account
+                  Right now this board only lives at the link above. Create a free account
                   and it&apos;ll be saved to yours automatically, so you can moderate posts,
                   invite people by email, and never lose access to it.
                 </p>

@@ -152,7 +152,7 @@
 /* ---------------------------------------------------------------------------------
    Decorative motion vocabulary (`fh-*`). Used by illustrations, showcase collages and
    board ambience. Which of these an element gets is decided by motion profile in code
-   (solemn never receives any). All of them stop under prefers-reduced-motion — the
+   (solemn never receives any). All of them stop under prefers-reduced-motion, the
    element simply renders in its resting pose, content is never hidden.
    --------------------------------------------------------------------------------- */
 @keyframes fh-bob {
@@ -193,23 +193,33 @@
   from { transform: translate3d(0, 0, 0); }
   to { transform: translate3d(-50%, 0, 0); }
 }
-/* A "someone just posted" toast that appears, holds, and leaves — loops. */
+/* A "someone just posted" toast that appears, holds, and leaves, loops. */
 @keyframes fh-toast {
   0%, 6% { opacity: 0; transform: translateY(10px) scale(0.96); }
   12%, 78% { opacity: 1; transform: translateY(0) scale(1); }
   86%, 100% { opacity: 0; transform: translateY(-6px) scale(1); }
 }
-/* A card dropping onto a board, holding, then resetting — loops (how-it-works). */
+/* A card dropping onto a board, holding, then resetting, loops (how-it-works). */
 @keyframes fh-drop-in {
   0%, 10% { opacity: 0; transform: translateY(-14px) rotate(-4deg) scale(0.9); }
   22%, 85% { opacity: 1; transform: translateY(0) rotate(var(--fh-rot, 0deg)) scale(1); }
   95%, 100% { opacity: 0; transform: translateY(0) rotate(var(--fh-rot, 0deg)) scale(1); }
 }
-/* A chat bubble arriving — loops (how-it-works "share the link" step). */
+/* A chat bubble arriving, loops (how-it-works "share the link" step). */
 @keyframes fh-bubble {
   0%, 12% { opacity: 0; transform: translateY(8px) scale(0.92); }
   22%, 85% { opacity: 1; transform: translateY(0) scale(1); }
   95%, 100% { opacity: 0; }
+}
+
+/* Skeleton sheen for in-progress uploads (theme-coloured, never a grey spinner). */
+@keyframes fh-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.fh-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  animation: fh-shimmer 1.4s ease-in-out infinite;
 }
 
 .fh-bob { animation: fh-bob 3.2s ease-in-out infinite; }
@@ -251,10 +261,10 @@
 @media (prefers-reduced-motion: reduce) {
   .fh-bob, .fh-float, .fh-float-slow, .fh-sway, .fh-sway-slow, .fh-twinkle,
   .fh-flicker, .fh-flicker-slow, .fh-steam, .fh-marquee, .fh-toast, .fh-drop-in,
-  .fh-bubble, .fh-ambient-piece {
+  .fh-bubble, .fh-ambient-piece, .fh-shimmer {
     animation: none !important;
   }
-  /* Looping entrance keyframes start at opacity 0 — show the resting state instead. */
+  /* Looping entrance keyframes start at opacity 0, show the resting state instead. */
   .fh-toast, .fh-drop-in, .fh-bubble { opacity: 1; transform: none; }
   /* Ambient pieces are pure decoration that only makes sense moving. */
   .fh-ambient-piece { display: none; }

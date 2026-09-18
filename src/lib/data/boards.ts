@@ -3,9 +3,19 @@ import { nanoid } from "nanoid";
 import { db } from "@/db";
 import { board, post } from "@/db/schema";
 import { slugify } from "@/lib/slug";
-import type { CreateBoardInput } from "@/lib/validation/board";
 
-export async function createBoard(input: CreateBoardInput, occasionLabel: string, ownerId: string | null) {
+export type NewBoard = {
+  recipientName: string;
+  title: string;
+  headline: string | null;
+  recipientBio: string | null;
+  recipientPhotos: string[];
+  themeId: string;
+  mode: "collaborative" | "tribute";
+  visibility: "public" | "unlisted" | "private";
+};
+
+export async function createBoard(input: NewBoard, occasionTypeId: string, occasionLabel: string, ownerId: string | null) {
   const slug = slugify(input.recipientName, occasionLabel);
   const claimToken = ownerId ? null : nanoid(24);
 
@@ -15,11 +25,13 @@ export async function createBoard(input: CreateBoardInput, occasionLabel: string
       ownerId,
       claimToken,
       slug,
-      occasionTypeId: (await getOccasionTypeId(input.occasionKey))!,
+      occasionTypeId,
       mode: input.mode,
       recipientName: input.recipientName,
       title: input.title,
       headline: input.headline,
+      recipientBio: input.recipientBio,
+      recipientPhotos: input.recipientPhotos,
       themeId: input.themeId,
       visibility: input.visibility,
       status: "collecting",
@@ -29,17 +41,16 @@ export async function createBoard(input: CreateBoardInput, occasionLabel: string
   return row;
 }
 
-async function getOccasionTypeId(occasionKey: string) {
-  const { getOccasionByKey } = await import("@/lib/data/occasions");
-  const occasion = await getOccasionByKey(occasionKey);
-  return occasion?.id ?? null;
-}
-
 export async function getBoardBySlug(slug: string) {
   return db.query.board.findFirst({
     where: eq(board.slug, slug),
     with: { theme: true, occasionType: true },
   });
+}
+
+export async function getBoardById(id: string) {
+  const [row] = await db.select().from(board).where(eq(board.id, id));
+  return row ?? null;
 }
 
 export async function getBoardByClaimToken(claimToken: string) {
@@ -102,7 +113,14 @@ export async function listRecentPublicBoardsForOccasion(occasionTypeId: string, 
 export async function updateBoardDetails(
   boardId: string,
   ownerId: string,
-  input: { title?: string; headline?: string; visibility?: "public" | "unlisted" | "private" }
+  input: {
+    recipientName?: string;
+    title?: string;
+    headline?: string | null;
+    recipientBio?: string | null;
+    recipientPhotos?: string[];
+    visibility?: "public" | "unlisted" | "private";
+  }
 ) {
   const [row] = await db
     .update(board)

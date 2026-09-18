@@ -98,7 +98,7 @@ export async function deletePost(postId: string, ownerId: string) {
 
 const REPORTS_PER_IP_PER_DAY = 20;
 
-// Only published posts can be reported — hidden ones are already out of public view.
+// Only published posts can be reported, hidden ones are already out of public view.
 export async function getReportablePost(postId: string) {
   const [row] = await db
     .select({ id: post.id })
@@ -125,7 +125,7 @@ export async function checkReportRateLimit(ipHash: string, postId: string) {
     return {
       allowed: false as const,
       duplicate: false as const,
-      reason: "You've sent a lot of reports today — please try again tomorrow.",
+      reason: "You've sent a lot of reports today, please try again tomorrow.",
     };
   }
 

@@ -8,6 +8,7 @@ import { ModerationList } from "@/components/dashboard/moderation-list";
 import { BoardSettingsForm } from "@/components/dashboard/board-settings-form";
 import { InviteForm } from "@/components/dashboard/invite-form";
 import { OccasionArt } from "@/components/illustrations/occasion-art";
+import { hasR2 } from "@/lib/env";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -52,7 +53,7 @@ export default async function ManageBoardPage({ params }: Params) {
         </div>
 
         <div className="space-y-8">
-          <BoardSettingsForm board={board} />
+          <BoardSettingsForm board={board} mediaEnabled={hasR2} />
           <InviteForm slug={board.slug} />
         </div>
       </div>

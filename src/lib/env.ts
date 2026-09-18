@@ -1,4 +1,4 @@
-// Central env validation — fail fast at boot instead of deep inside a request.
+// Central env validation, fail fast at boot instead of deep inside a request.
 import { z } from "zod";
 
 const envSchema = z.object({

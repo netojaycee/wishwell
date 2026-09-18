@@ -1,9 +1,9 @@
 // Hand-drawn spot illustrations, one per OccasionType.key, coloured entirely from the
 // theme palette (DESIGN.md: never hardcode colour). Motion follows the motion profile:
-// celebratory bobs and twinkles, warm drifts gently, solemn is always perfectly still —
+// celebratory bobs and twinkles, warm drifts gently, solemn is always perfectly still,
 // solemn never receives an animation class at all. Unknown keys fall back to a generic
 // letter-in-envelope so a new occasion row renders without a deploy (CLAUDE.md rule 1).
-// Pure SVG + CSS classes from globals.css (`fh-*`) — no JS, safe in Server Components.
+// Pure SVG + CSS classes from globals.css (`fh-*`), no JS, safe in Server Components.
 import type { CSSProperties } from "react";
 
 type Profile = "celebratory" | "warm" | "solemn";
@@ -266,7 +266,7 @@ function Letter({ m }: { m: Motion }) {
 }
 
 // Solemn by design: no motion classes are referenced here at all, whatever profile is
-// passed — a memorial candle never flickers or bobs.
+// passed, a memorial candle never flickers or bobs.
 function Memorial() {
   return (
     <>
@@ -310,7 +310,7 @@ export function OccasionArt({
   profile: Profile;
   palette: ArtPalette;
   className?: string;
-  /** "hover" pauses motion until a `.group` ancestor is hovered — for grids of tiles. */
+  /** "hover" pauses motion until a `.group` ancestor is hovered, for grids of tiles. */
   animate?: "always" | "hover" | "never";
   title?: string;
 }) {

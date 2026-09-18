@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const occasion = await getOccasionByKey(key);
   if (!occasion) return {};
   return {
-    // seoTitle already ends in "| Fondly Held" — absolute skips the root "%s · Fondly Held"
+    // seoTitle already ends in "| Fondly Held", absolute skips the root "%s · Fondly Held"
     // template, which otherwise doubled the brand in the tab/SERP title.
     title: { absolute: occasion.seoTitle },
     description: occasion.seoDescription,
@@ -114,7 +114,7 @@ export default async function OccasionLandingPage({ params }: Params) {
                 </p>
               </div>
               <h1 className="mt-4 font-heading text-4xl leading-tight sm:text-5xl" style={{ color: "var(--board-ink)" }}>
-                {occasion.seoTitle.split(/ — | \| /)[0] || occasion.label}
+                {occasion.seoTitle.split(/, | \| /)[0] || occasion.label}
               </h1>
               <p className="mx-auto mt-4 max-w-xl text-black/60 lg:mx-0">{occasion.seoDescription}</p>
               <div className="mt-7">{cta}</div>
@@ -133,7 +133,7 @@ export default async function OccasionLandingPage({ params }: Params) {
                 tribute={occasion.category === "tribute"}
                 preload
               />
-              <p className="mt-3 text-center text-[11px] text-black/35">An example board — yours fills up with real messages.</p>
+              <p className="mt-3 text-center text-[11px] text-black/35">An example board, yours fills up with real messages.</p>
             </Reveal>
           ) : null}
         </div>

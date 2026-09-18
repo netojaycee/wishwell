@@ -2,7 +2,7 @@ import { BrandPanel } from "./brand-panel";
 
 // The sign-in/sign-up split screen. Desktop: story panel column + form column. Mobile:
 // the same story panel as a short top band with the form rising over it on a rounded
-// sheet — so phones get the same warmth as desktop instead of a bare centered form.
+// sheet, so phones get the same warmth as desktop instead of a bare centered form.
 // (About/Contact used to live here too; they now sit in the (marketing) group with the
 // real SiteHeader/SiteFooter and use BrandPanel as a side card.)
 export function SplitShell({

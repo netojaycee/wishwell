@@ -3,10 +3,12 @@ import Link from "next/link";
 import { Reveal } from "./reveal";
 import { LiveCounter } from "./live-counter";
 import { OccasionArt } from "@/components/illustrations/occasion-art";
+import { RecipientPortrait } from "./recipient-portrait";
 import type { BoardWithRelations } from "@/lib/types";
 
 export function BoardHero({ board, postCount }: { board: BoardWithRelations; postCount: number }) {
   const profile = board.occasionType.motionProfile;
+  const photos = board.recipientPhotos ?? [];
 
   return (
     <header className="relative overflow-hidden">
@@ -25,12 +27,31 @@ export function BoardHero({ board, postCount }: { board: BoardWithRelations; pos
 
       <div className="mx-auto max-w-3xl px-6 pt-20 pb-14 text-center sm:pt-28 sm:pb-20">
         <Reveal profile={profile}>
-          <OccasionArt
-            occasionKey={board.occasionType.key}
-            profile={profile}
-            palette={board.theme.palette}
-            className="mx-auto mb-4 h-16 w-16 sm:h-20 sm:w-20"
-          />
+          {photos.length ? (
+            // The person comes first: their photos lead the page, the occasion art
+            // becomes a small seal on the main print.
+            <RecipientPortrait photos={photos} name={board.recipientName} profile={profile}>
+              <span
+                className="absolute -right-3 -bottom-3 flex h-12 w-12 items-center justify-center rounded-full border-[3px] shadow-md sm:h-14 sm:w-14"
+                style={{ background: "var(--board-accent-soft)", borderColor: "var(--board-surface)" }}
+              >
+                <OccasionArt
+                  occasionKey={board.occasionType.key}
+                  profile={profile}
+                  palette={board.theme.palette}
+                  className="h-8 w-8 sm:h-10 sm:w-10"
+                />
+              </span>
+            </RecipientPortrait>
+          ) : (
+            <OccasionArt
+              occasionKey={board.occasionType.key}
+              profile={profile}
+              palette={board.theme.palette}
+              className="mx-auto mb-4 h-16 w-16 sm:h-20 sm:w-20"
+            />
+          )}
+          {photos.length ? <div className="h-7" /> : null}
           <span
             className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium tracking-wide uppercase"
             style={{ background: "var(--board-accent-soft)", color: "var(--board-accent)" }}
@@ -51,6 +72,25 @@ export function BoardHero({ board, postCount }: { board: BoardWithRelations; pos
         {board.headline ? (
           <Reveal profile={profile} delay={0.16}>
             <p className="mt-4 text-lg text-[var(--board-ink)]/70">{board.headline}</p>
+          </Reveal>
+        ) : null}
+
+        {board.recipientBio ? (
+          <Reveal profile={profile} delay={0.2}>
+            <figure className="mx-auto mt-8 max-w-xl">
+              <figcaption
+                className="text-xs font-semibold tracking-[0.18em] uppercase"
+                style={{ color: "var(--board-accent)" }}
+              >
+                About {board.recipientName}
+              </figcaption>
+              <p
+                className="mt-3 text-lg leading-relaxed whitespace-pre-line sm:text-xl"
+                style={{ fontFamily: "var(--board-font-heading)", color: "color-mix(in srgb, var(--board-ink) 82%, transparent)" }}
+              >
+                {board.recipientBio}
+              </p>
+            </figure>
           </Reveal>
         ) : null}
 

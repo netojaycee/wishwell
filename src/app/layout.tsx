@@ -10,7 +10,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { BRAND } from "@/lib/brand";
 import "./globals.css";
 
-// Body sans — clean, quiet, does not compete with the theme's headline serif.
+// Body sans, clean, quiet, does not compete with the theme's headline serif.
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -21,7 +21,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// Headline serifs — a per-board theme picks one of these three; each does most of the
+// Headline serifs, a per-board theme picks one of these three; each does most of the
 // emotional work for its motion profile (see DESIGN.md). next/font requires static
 // imports, so the full curated set loads once here and boards select by CSS variable.
 const fraunces = Fraunces({
@@ -46,9 +46,9 @@ const playfair = Playfair_Display({
 });
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL;
-const TITLE = "Fondly Held — beautiful group cards for every occasion";
+const TITLE = "Fondly Held, beautiful group cards for every occasion";
 const DESCRIPTION =
-  "One link, everyone contributes. Beautiful group cards and tribute pages for every occasion — free, no signup required to post.";
+  "One link, everyone contributes. Beautiful group cards and tribute pages for every occasion, free, no signup required to post.";
 
 export const metadata: Metadata = {
   // Without this, relative OG image URLs (like the ones next/og generates) can't
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
     title: TITLE,
     description: DESCRIPTION,
   },
-  // Search Console / Bing Webmaster ownership tags (GROWTH.md technical SEO checklist) —
+  // Search Console / Bing Webmaster ownership tags (GROWTH.md technical SEO checklist),
   // set the env vars to the tags' content values, redeploy, then verify in each console.
   verification: {
     google: process.env.GOOGLE_SITE_VERIFICATION || undefined,
@@ -80,7 +80,7 @@ export const metadata: Metadata = {
 };
 
 // Brand entity for search engines and AI assistants: name (+ the one-word spelling people
-// type), logo, description, founder and — once they exist — official profiles (sameAs).
+// type), logo, description, founder and, once they exist, official profiles (sameAs).
 // Facts live in src/lib/brand.ts so the About page and /llms.txt say exactly the same.
 const organizationJsonLd = {
   "@context": "https://schema.org",

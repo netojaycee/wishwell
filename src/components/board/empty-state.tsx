@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Reveal } from "./reveal";
 import { OccasionArt, type ArtPalette } from "@/components/illustrations/occasion-art";
 
-// Ghost cards hint at where the first messages will land — dashed, faint, theme-coloured.
+// Ghost cards hint at where the first messages will land, dashed, faint, theme-coloured.
 const GHOSTS = [
   { h: "h-28", rotate: -1.5, offset: "" },
   { h: "h-36", rotate: 1, offset: "mt-6" },
@@ -34,7 +34,7 @@ export function EmptyState({
         </h2>
         <p className="mx-auto mt-3 max-w-md text-[var(--board-ink)]/70">
           {mode === "tribute"
-            ? "A memory, a photo, a few words — it means more than you know."
+            ? "A memory, a photo, a few words, it means more than you know."
             : "Add a message, a photo, or a video. It takes a minute and it stays here forever."}
         </p>
         <Link

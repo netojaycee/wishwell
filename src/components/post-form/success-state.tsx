@@ -1,7 +1,7 @@
 "use client";
 
 // DESIGN.md signature moment #5 + GROWTH.md's highest-leverage growth surface: the
-// success-state CTA. Never shown with growth-hacky copy on solemn boards — solemn gets
+// success-state CTA. Never shown with growth-hacky copy on solemn boards, solemn gets
 // a still illustration, calm copy, and no "create your own" nudge at all.
 import { useState } from "react";
 import Link from "next/link";

@@ -1,5 +1,5 @@
 // The Fondly Held mark: an open, hand-drawn heart with a small held dot above the
-// gap — deliberately not a closed/filled heart, so it reads warm rather than romantic
+// gap, deliberately not a closed/filled heart, so it reads warm rather than romantic
 // or cartoonish, and stays appropriate on memorial boards, not just celebratory ones.
 export function LogoMark({ className, color = "currentColor" }: { className?: string; color?: string }) {
   return (

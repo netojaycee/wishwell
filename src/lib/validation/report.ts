@@ -12,9 +12,14 @@ export const REPORT_REASONS = [
 
 export type ReportReason = (typeof REPORT_REASONS)[number];
 
-export const reportSchema = z.object({
+// What the reporter fills in; the dialog validates exactly these.
+export const reportFieldsSchema = z.object({
   reason: z.enum(REPORT_REASONS, { message: "Please choose a reason." }),
   details: z.string().trim().max(500, "Please keep it under 500 characters.").optional(),
+});
+export type ReportFieldsValues = z.infer<typeof reportFieldsSchema>;
+
+export const reportSchema = reportFieldsSchema.extend({
   // Honeypot, same trick as the post form.
   website: z.string().max(0).optional().or(z.literal("")),
 });

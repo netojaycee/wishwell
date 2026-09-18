@@ -21,7 +21,7 @@ export default async function DashboardPage() {
 
       {boards.length === 0 ? (
         <div className="mt-10 overflow-hidden rounded-3xl border border-black/5 bg-white/70 px-6 py-14 text-center shadow-sm">
-          {/* Ghost cards fanned behind the illustration — a hint of the board to come. */}
+          {/* Ghost cards fanned behind the illustration, a hint of the board to come. */}
           <div aria-hidden className="relative mx-auto h-36 w-60">
             {[
               { rotate: -10, x: "-46%", bg: "#FFE1C4" },
@@ -44,7 +44,7 @@ export default async function DashboardPage() {
             Your boards will live here
           </h2>
           <p className="mx-auto mt-2 max-w-sm text-black/60">
-            Start one for someone — a birthday, a farewell, a memory worth keeping. It takes
+            Start one for someone, a birthday, a farewell, a memory worth keeping. It takes
             about a minute, and nobody needs an account to post.
           </p>
           <Link
@@ -58,15 +58,16 @@ export default async function DashboardPage() {
         <ul className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2">
           {boards.map((board) => {
             const palette = board.theme.palette;
+            const cover = board.coverImageUrl ?? board.recipientPhotos[0];
             return (
               <li
                 key={board.id}
                 className="group overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
               >
                 <div className="relative flex h-28 items-end justify-between overflow-hidden p-4" style={{ background: palette.bg }}>
-                  {board.coverImageUrl ? (
+                  {cover ? (
                     <>
-                      <Image src={board.coverImageUrl} alt="" fill sizes="(min-width: 640px) 440px, 100vw" className="object-cover" />
+                      <Image src={cover} alt="" fill sizes="(min-width: 640px) 440px, 100vw" className="object-cover" />
                       <div
                         className="absolute inset-0"
                         style={{ background: `linear-gradient(90deg, ${palette.bg} 30%, transparent)` }}

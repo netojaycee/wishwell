@@ -10,10 +10,10 @@ export const BRAND: {
   socialProfiles: string[];
 } = {
   name: "Fondly Held",
-  // People will type it as one word ("fondlyheld") — tell search engines it's the same brand.
+  // People will type it as one word ("fondlyheld"), tell search engines it's the same brand.
   alternateNames: ["FondlyHeld"],
   description:
-    "One link, everyone contributes. Beautiful group cards and tribute pages for every occasion — free, no signup required to post.",
+    "One link, everyone contributes. Beautiful group cards and tribute pages for every occasion, free, no signup required to post.",
   email: "netojaycee@gmail.com",
   founder: {
     name: "John Chinonso Edeh",

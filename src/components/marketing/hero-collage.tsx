@@ -86,14 +86,14 @@ export function HeroCollage({ variant, themes }: { variant: "desktop" | "mobile"
         </Reveal>
       </Themed>
 
-      {/* Memorial card sits apart from the stickers and toast — nothing playful near it. */}
+      {/* Memorial card sits apart from the stickers and toast, nothing playful near it. */}
       <Themed theme={themes.memorial} className="absolute right-0 bottom-0 w-[210px]">
         <Reveal profile="solemn" delay={0.45}>
           <DemoCard post={memorial[0]} rotate={2.5} />
         </Reveal>
       </Themed>
 
-      {/* "Someone just posted" — loops in, holds, leaves. Static under reduced motion. */}
+      {/* "Someone just posted", loops in, holds, leaves. Static under reduced motion. */}
       <Themed theme={themes.birthday} className="absolute -bottom-10 left-10 z-10">
         <div className="fh-toast flex items-center gap-2 rounded-full border border-black/5 bg-white/95 py-1.5 pr-3.5 pl-1.5 text-xs shadow-lg backdrop-blur">
           <span

@@ -4,7 +4,7 @@ import { SiteFooter } from "@/components/marketing/site-footer";
 export default function MarketingLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative flex min-h-full flex-1 flex-col bg-[var(--background)]">
-      {/* Faint grain — the editorial-warmth texture called for across DESIGN.md, applied
+      {/* Faint grain, the editorial-warmth texture called for across DESIGN.md, applied
           site-wide here rather than per-page. */}
       <div
         aria-hidden

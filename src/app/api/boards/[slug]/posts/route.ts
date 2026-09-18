@@ -1,5 +1,5 @@
 // Anonymous post creation. A route handler, not a Server Action, so rate limiting and
-// bot checks are explicit and unambiguous (see ARCHITECTURE.md — "Rendering & caching").
+// bot checks are explicit and unambiguous (see ARCHITECTURE.md, "Rendering & caching").
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { getBoardBySlug } from "@/lib/data/boards";

@@ -1,6 +1,6 @@
 "use client";
 
-// Fires once on mount for celebratory boards only. Never imported on warm/solemn paths —
+// Fires once on mount for celebratory boards only. Never imported on warm/solemn paths,
 // see BoardAmbient, which is the single place motionProfile decides what renders.
 import { useEffect, useRef } from "react";
 import confetti from "canvas-confetti";
@@ -24,7 +24,7 @@ export function ConfettiBurst({ accent, accentSoft }: { accent: string; accentSo
     });
 
     // canvas-confetti appends its own <canvas> straight to document.body, outside
-    // React's tree — a client-side route change won't remove it unless we do here.
+    // React's tree, a client-side route change won't remove it unless we do here.
     return () => {
       confetti.reset();
     };

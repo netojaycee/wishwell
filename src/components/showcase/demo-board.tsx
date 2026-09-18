@@ -1,5 +1,5 @@
-// A miniature, fully themed board — browser-ish frame, hero, and a small masonry of demo
-// cards — used wherever marketing needs to *show* the product rather than describe it
+// A miniature, fully themed board, browser-ish frame, hero, and a small masonry of demo
+// cards, used wherever marketing needs to *show* the product rather than describe it
 // (home page tone section, occasion landing pages). Pure presentation; entrance motion
 // is the caller's job (wrap in Reveal with the right profile).
 import { boardThemeVars } from "@/lib/theme/vars";
@@ -37,7 +37,7 @@ export function DemoBoard({
       className={`overflow-hidden rounded-[28px] border border-black/5 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_24px_60px_-20px_rgba(0,0,0,0.25)] ${className ?? ""}`}
       style={{ ...boardThemeVars(theme), background: "var(--board-bg)", fontFamily: "var(--board-font-body)" }}
     >
-      {/* Window chrome — reads instantly as "a web page you open from a link". */}
+      {/* Window chrome, reads instantly as "a web page you open from a link". */}
       <div className="flex items-center gap-2 border-b px-4 py-2.5" style={{ borderColor: "color-mix(in srgb, var(--board-ink) 8%, transparent)" }}>
         <span className="flex gap-1.5" aria-hidden>
           {[0, 1, 2].map((i) => (

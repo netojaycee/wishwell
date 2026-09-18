@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { signInSchema, signUpSchema, type AuthValues } from "@/lib/validation/auth";
 import Link from "next/link";
 import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
@@ -17,39 +20,53 @@ function nextPath() {
 
 function FieldShell({
   icon,
+  error,
   children,
 }: {
   icon: React.ReactNode;
+  error?: string;
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-black/10 bg-white px-4 py-3 transition-colors focus-within:border-[var(--brand)] focus-within:ring-2 focus-within:ring-[var(--brand)]/15">
-      <span className="text-black/35">{icon}</span>
-      {children}
+    <div>
+      <div
+        className={`flex items-center gap-3 rounded-xl border bg-white px-4 py-3 transition-colors focus-within:border-[var(--brand)] focus-within:ring-2 focus-within:ring-[var(--brand)]/15 ${
+          error ? "border-red-400" : "border-black/10"
+        }`}
+      >
+        <span className="text-black/35">{icon}</span>
+        {children}
+      </div>
+      {error ? (
+        <p role="alert" className="mt-1.5 text-sm text-red-600">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }
 
 export function AuthForm({ mode, hasGoogleAuth }: { mode: "sign-in" | "sign-up"; hasGoogleAuth: boolean }) {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<AuthValues>({
+    resolver: zodResolver(mode === "sign-up" ? signUpSchema : signInSchema),
+    mode: "onTouched",
+    defaultValues: { name: "", email: "", password: "" },
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
+  const onSubmit = async ({ name, email, password }: AuthValues) => {
     setError(null);
 
     const result =
       mode === "sign-up"
         ? await authClient.signUp.email({ name, email, password })
         : await authClient.signIn.email({ email, password });
-
-    setSubmitting(false);
 
     if (result.error) {
       setError(result.error.message ?? "Something went wrong.");
@@ -70,38 +87,40 @@ export function AuthForm({ mode, hasGoogleAuth }: { mode: "sign-in" | "sign-up";
         {mode === "sign-up" ? "Manage your boards and moderate posts." : "Sign in to manage your boards."}
       </p>
 
-      <form onSubmit={handleSubmit} className="mt-8 space-y-3.5">
+      <form noValidate onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-3.5">
         {mode === "sign-up" ? (
-          <FieldShell icon={<User size={18} strokeWidth={1.75} />}>
+          <FieldShell icon={<User size={18} strokeWidth={1.75} />} error={errors.name?.message}>
             <input
-              required
+              {...register("name")}
+              aria-label="Your name"
+              aria-invalid={Boolean(errors.name)}
+              autoComplete="name"
               placeholder="Your name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
               className="w-full bg-transparent text-[15px] outline-none placeholder:text-black/35"
             />
           </FieldShell>
         ) : null}
 
-        <FieldShell icon={<Mail size={18} strokeWidth={1.75} />}>
+        <FieldShell icon={<Mail size={18} strokeWidth={1.75} />} error={errors.email?.message}>
           <input
-            required
+            {...register("email")}
             type="email"
+            aria-label="Email"
+            aria-invalid={Boolean(errors.email)}
+            autoComplete="email"
             placeholder="you@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
             className="w-full bg-transparent text-[15px] outline-none placeholder:text-black/35"
           />
         </FieldShell>
 
-        <FieldShell icon={<Lock size={18} strokeWidth={1.75} />}>
+        <FieldShell icon={<Lock size={18} strokeWidth={1.75} />} error={errors.password?.message}>
           <input
-            required
+            {...register("password")}
             type={showPassword ? "text" : "password"}
-            minLength={8}
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            aria-label="Password"
+            aria-invalid={Boolean(errors.password)}
+            autoComplete={mode === "sign-up" ? "new-password" : "current-password"}
+            placeholder={mode === "sign-up" ? "Password (8+ characters)" : "Password"}
             className="w-full bg-transparent text-[15px] outline-none placeholder:text-black/35"
           />
           <button
@@ -120,11 +139,11 @@ export function AuthForm({ mode, hasGoogleAuth }: { mode: "sign-in" | "sign-up";
 
         <button
           type="submit"
-          disabled={submitting}
+          disabled={isSubmitting}
           className="w-full rounded-full px-6 py-3 text-sm font-semibold text-white transition-transform disabled:opacity-60 enabled:hover:scale-[1.02]"
           style={{ background: "var(--brand-ink)" }}
         >
-          {submitting ? "Please wait…" : mode === "sign-up" ? "Create account" : "Sign in"}
+          {isSubmitting ? "Please wait…" : mode === "sign-up" ? "Create account" : "Sign in"}
         </button>
       </form>
 

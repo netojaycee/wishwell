@@ -7,11 +7,11 @@ import { BRAND } from "@/lib/brand";
 
 export const metadata: Metadata = {
   title: "About",
-  description: `${BRAND.name} is built and run by ${BRAND.founder.name}, a solo founder in Nigeria — beautiful group cards and tribute pages for every occasion, free.`,
+  description: `${BRAND.name} is built and run by ${BRAND.founder.name}, a solo founder in Nigeria. Beautiful group cards and tribute pages for every occasion, free.`,
   alternates: { canonical: "/about" },
 };
 
-// Founder as a schema.org Person linked to the Organization in the root layout — a named,
+// Founder as a schema.org Person linked to the Organization in the root layout, a named,
 // real human behind the product (GROWTH.md §3 trust), readable by search engines too.
 const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
 const personJsonLd = {
@@ -30,7 +30,7 @@ const personJsonLd = {
 const PROMISES = [
   { icon: InfinityIcon, title: "Your board is yours forever", body: "No expiry dates and no archive fees." },
   { icon: ShieldCheck, title: "We never sell your data", body: "No ads, no data brokers. Delete anything, any time." },
-  { icon: Gift, title: "Free — every feature", body: "And nobody needs an account to post." },
+  { icon: Gift, title: "Free, every feature", body: "And nobody needs an account to post." },
 ];
 
 export default function AboutPage() {
@@ -45,7 +45,7 @@ export default function AboutPage() {
           </h1>
           <p className="mt-6 leading-relaxed text-black/75">
             Fondly Held exists because the two products that already do this well have picked
-            opposite lanes — one built for corporate celebrations, the other for grief — and
+            opposite lanes, one built for corporate celebrations, the other for grief, and
             neither is particularly beautiful. Most of life&apos;s occasions don&apos;t sort neatly into
             either box. Fondly Held is built to hold all of them: birthdays, farewells, weddings,
             memorials, and everything in between, in one product that takes the design
@@ -53,12 +53,12 @@ export default function AboutPage() {
           </p>
           <p className="mt-4 leading-relaxed text-black/75">
             The idea is simple: one link, anyone can add a message or a photo, no account
-            required. The board stays up for as long as you want it — a keepsake, not a
+            required. The board stays up for as long as you want it, a keepsake, not a
             campaign.
           </p>
           <p className="mt-4 leading-relaxed text-black/75">
             Fondly Held is built and run by John Chinonso Edeh, a solo founder in Nigeria. If
-            you have a question, feedback, or a board you&apos;re proud of, reach out — I read and
+            you have a question, feedback, or a board you&apos;re proud of, reach out. I read and
             answer every message myself.
           </p>
 
@@ -102,7 +102,7 @@ export default function AboutPage() {
 
       <BrandPanel
         variant="card"
-        tagline="Made for every occasion — including the ones that aren't easy to celebrate."
+        tagline="Made for every occasion, including the ones that aren't easy to celebrate."
         className="rounded-[28px] p-7 sm:p-10 lg:sticky lg:top-28"
       />
     </div>

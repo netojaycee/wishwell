@@ -1,5 +1,5 @@
-// Small looping illustrations for the home page's three "How it works" steps — create,
-// share, keep — built from HTML + `fh-*` keyframes in brand colours. Under reduced motion
+// Small looping illustrations for the home page's three "How it works" steps, create,
+// share, keep, built from HTML + `fh-*` keyframes in brand colours. Under reduced motion
 // every piece simply rests in its final, fully visible pose (handled in globals.css).
 import Image from "next/image";
 import type { CSSProperties } from "react";

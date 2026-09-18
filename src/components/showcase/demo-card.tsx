@@ -1,6 +1,6 @@
 // A static, illustrative post card for marketing/showcase surfaces. Mirrors PostCard's
 // look (photo-led; text-only cards get the soft accent surface and the heading font so
-// they never look empty — DESIGN.md) but renders curated demo content from
+// they never look empty, DESIGN.md) but renders curated demo content from
 // lib/content/moments.ts. Reads colours from `--board-*` vars set by an ancestor
 // (boardThemeVars), exactly like the real board does.
 import Image from "next/image";
@@ -67,7 +67,7 @@ export function DemoCard({
           {post.body}
         </p>
         <p className={`${compact ? "mt-1.5 text-[11px]" : "mt-3 text-[13px]"} font-medium`} style={{ color: "var(--board-accent)" }}>
-          — {post.author}
+          {post.author}
         </p>
       </div>
     </article>

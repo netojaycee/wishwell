@@ -3,7 +3,7 @@
 // Attaches any guest-created boards (identified by a `fondlyheld_claim_<slug>` cookie set
 // in the create-board Server Action) to the now-signed-in owner. A Server Action (not a
 // plain server-side function) because it deletes cookies, which Next only allows from a
-// Server Action or Route Handler — called client-side once the dashboard mounts.
+// Server Action or Route Handler, called client-side once the dashboard mounts.
 // See BUILD_PLAN.md: "claim the board by signing in after."
 import { cookies } from "next/headers";
 import { claimBoard } from "@/lib/data/boards";

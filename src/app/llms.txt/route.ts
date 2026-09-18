@@ -1,7 +1,7 @@
-// /llms.txt — a plain-text, factual summary of Fondly Held for AI assistants and crawlers
+// /llms.txt, a plain-text, factual summary of Fondly Held for AI assistants and crawlers
 // (the llmstxt.org convention). Generated from the OccasionType table so a new occasion row
 // shows up here without a deploy. Keep it factual: what it is, what's true today, where to
-// read more. No superlatives — assistants quote this.
+// read more. No superlatives, assistants quote this.
 import { listOccasionTypes } from "@/lib/data/occasions";
 import { BRAND } from "@/lib/brand";
 import { env } from "@/lib/env";

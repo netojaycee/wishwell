@@ -28,15 +28,15 @@ const TONE_CAPTION: Record<"celebratory" | "warm" | "solemn", { name: string; ca
 const TONE_BOARDS = ["birthday", "farewell", "memorial"];
 
 const STEPS = [
-  { step: "1", title: "Create a board", body: "Pick an occasion, add a name and a theme. Takes a minute — no account needed.", Art: CreateStepArt },
-  { step: "2", title: "Share the link", body: "Send it to whoever you want — WhatsApp, email, Slack. Anyone can post, no signup.", Art: ShareStepArt },
+  { step: "1", title: "Create a board", body: "Pick an occasion, add a name and a theme. Takes a minute, no account needed.", Art: CreateStepArt },
+  { step: "2", title: "Share the link", body: "Send it over WhatsApp, email or Slack. Anyone can post, no signup.", Art: ShareStepArt },
   { step: "3", title: "Keep it forever", body: "Messages, photos and videos land on one beautiful page the recipient can revisit anytime.", Art: BoardStepArt },
 ];
 
 const PROMISES = [
   { Icon: InfinityIcon, title: "Your board is yours forever", body: "No expiry dates and no archive fees. The page stays up for as long as you want it." },
   { Icon: ShieldCheck, title: "We never sell your data", body: "No ads and no data brokers. Owners can hide or delete any post, or the whole board, any time." },
-  { Icon: Gift, title: "Free — every feature", body: "Photos, videos, GIFs, invites and slideshow are all free, and nobody needs an account to post." },
+  { Icon: Gift, title: "Free, every feature", body: "Photos, videos, GIFs, invites and slideshow are all free, and nobody needs an account to post." },
 ];
 
 const BRAND_ART = { accent: "var(--brand)", accentSoft: "var(--brand-soft)", ink: "var(--brand-ink)" };
@@ -67,7 +67,7 @@ export default async function HomePage() {
                 </h1>
                 <p className="mx-auto mt-5 max-w-xl text-lg text-black/60 lg:mx-0">
                   One link, everyone contributes. Collect messages, photos and videos on a
-                  beautiful page the recipient keeps forever — free, no signup required to
+                  beautiful page the recipient keeps forever, free, no signup required to
                   post.
                 </p>
                 <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:justify-start">
@@ -89,7 +89,7 @@ export default async function HomePage() {
             <HeroCollage variant="mobile" themes={themes} />
           </div>
 
-          {/* Card collage — shows the product itself, across a celebratory / warm / solemn
+          {/* Card collage, shows the product itself, across a celebratory / warm / solemn
               spread, so the pitch ("every occasion") is visible rather than just claimed. */}
           <HeroCollage variant="desktop" themes={themes} />
         </div>
@@ -98,7 +98,7 @@ export default async function HomePage() {
       <section id="occasions" className="mx-auto max-w-6xl scroll-mt-24 px-6 pb-20">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <h2 className="font-heading text-3xl">Pick an occasion</h2>
-          <p className="text-sm text-black/50">Ten occasions, one kind of board — each with its own look and feel.</p>
+          <p className="text-sm text-black/50">Ten occasions, one kind of board, each with its own look and feel.</p>
         </div>
         <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
           {occasions.map((o) => {
@@ -227,7 +227,7 @@ export default async function HomePage() {
         <div className="mx-auto max-w-6xl px-6">
           <h2 className="font-heading text-3xl sm:text-4xl">Messages, photos, videos and GIFs</h2>
           <p className="mt-3 max-w-xl text-black/60">
-            Whatever people want to say lands on one page — in their own words, their own
+            Whatever people want to say lands on one page, in their own words, their own
             photos, and the occasional very silly GIF.
           </p>
         </div>

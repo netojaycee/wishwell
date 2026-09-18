@@ -1,4 +1,4 @@
-# CLAUDE.md — Fondly Held
+# CLAUDE.md: Fondly Held
 
 @AGENTS.md
 
@@ -6,11 +6,11 @@ You are the engineering agent on Fondly Held. Read this file, then `ARCHITECTURE
 
 ## What Fondly Held is
 
-A multi-tenant SaaS for **collaborative occasion boards**. One person creates a board for someone (birthday, farewell, memorial, wedding, new baby, retirement, get-well, thank-you). They share a link. Anyone with the link posts a message, photo, video or GIF — no signup required. The board is a beautiful, animated, permanent page the recipient can revisit.
+A multi-tenant SaaS for **collaborative occasion boards**. One person creates a board for someone (birthday, farewell, memorial, wedding, new baby, retirement, get-well, thank-you). They share a link. Anyone with the link posts a message, photo, video or GIF, no signup required. The board is a beautiful, animated, permanent page the recipient can revisit.
 
 Two reference products, deliberately merged:
-- **Kudoboard** — short-lived collaborative boards with a "delivery" moment.
-- **ForeverMissed** — long-lived tribute pages with open-ended posting.
+- **Kudoboard**, short-lived collaborative boards with a "delivery" moment.
+- **ForeverMissed**, long-lived tribute pages with open-ended posting.
 
 Fondly Held supports both as *modes* of the same object.
 
@@ -21,7 +21,7 @@ Fondly Held supports both as *modes* of the same object.
 3. **Tone follows occasion.** Memorial boards must never fire confetti. Every occasion type carries a `motionProfile` (`celebratory` | `warm` | `solemn`) and the UI must respect it. Getting this wrong is the worst possible bug in this product.
 4. **Beauty is the feature.** This ships against funded incumbents. If a screen is functional but plain, it is not done. See `DESIGN.md`.
 5. **Every board is a public, indexable, share-worthy page** unless the owner marks it private. Boards are the SEO and virality surface.
-6. **Everything is free right now — no payment, no gated/paid tier.** Every feature (media upload, invites, slideshow, unlimited boards/posts) is open to every user. Don't build pricing pages, plan checks, or feature flags that restrict functionality by tier. Payments are explicitly deferred (see `BUILD_PLAN.md` Deferred section) — this will be revisited deliberately, not implied by a stray check somewhere in the code.
+6. **Everything is free right now, no payment, no gated/paid tier.** Every feature (media upload, invites, slideshow, unlimited boards/posts) is open to every user. Don't build pricing pages, plan checks, or feature flags that restrict functionality by tier. Payments are explicitly deferred (see `BUILD_PLAN.md` Deferred section), this will be revisited deliberately, not implied by a stray check somewhere in the code.
 
 ## Working style
 

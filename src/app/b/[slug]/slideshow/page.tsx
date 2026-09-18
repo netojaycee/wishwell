@@ -9,7 +9,7 @@ type Params = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const board = await getBoardBySlug(slug);
-  return board ? { title: `Slideshow — ${board.title}` } : {};
+  return board ? { title: `${board.title} slideshow` } : {};
 }
 
 export default async function SlideshowPage({ params }: Params) {

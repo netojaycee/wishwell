@@ -1,4 +1,4 @@
-// Stable, square raster logo at /logo.png for schema.org Organization.logo — Google wants a
+// Stable, square raster logo at /logo.png for schema.org Organization.logo, Google wants a
 // crawlable PNG/JPG ≥112px at a fixed URL (the app icon's URL carries a build hash, and SVG
 // isn't accepted). Same open-heart mark as components/brand/logo-mark.tsx. Prerendered.
 import { ImageResponse } from "next/og";

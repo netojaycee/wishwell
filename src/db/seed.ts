@@ -25,9 +25,9 @@ const occasions: OccasionSeed[] = [
     motionProfile: "celebratory",
     promptText: "Share a birthday memory or wish",
     ctaText: "Start their birthday board",
-    seoTitle: "Free Online Birthday Cards — Group Birthday Board | Fondly Held",
+    seoTitle: "Free Online Birthday Cards, Group Birthday Board | Fondly Held",
     seoDescription:
-      "Create a free group birthday card in seconds. Invite friends and family to add messages, photos and videos to one beautiful page — no signup required to post.",
+      "Create a free group birthday card in seconds. Invite friends and family to add messages, photos and videos to one beautiful page, no signup required to post.",
     themes: [
       {
         name: "Citrus Burst",
@@ -57,9 +57,9 @@ const occasions: OccasionSeed[] = [
     motionProfile: "celebratory",
     promptText: "Say congratulations",
     ctaText: "Start a congratulations board",
-    seoTitle: "Free Online Congratulations Cards — Group Card | Fondly Held",
+    seoTitle: "Free Online Congratulations Cards, Group Card | Fondly Held",
     seoDescription:
-      "Celebrate a graduation, promotion or big win with a group congratulations card. Everyone adds a message or photo to one link — free, no signup to post.",
+      "Celebrate a graduation, promotion or big win with a group congratulations card. Everyone adds a message or photo to one link, free, no signup to post.",
     themes: [
       {
         name: "Gold Foil",
@@ -121,9 +121,9 @@ const occasions: OccasionSeed[] = [
     motionProfile: "celebratory",
     promptText: "Welcome the new arrival",
     ctaText: "Start a new baby board",
-    seoTitle: "Free Online New Baby Cards — Group Card | Fondly Held",
+    seoTitle: "Free Online New Baby Cards, Group Card | Fondly Held",
     seoDescription:
-      "Welcome a new baby with a group card everyone can sign online. Collect messages, photos and well-wishes on one page, free — no signup required to post.",
+      "Welcome a new baby with a group card everyone can sign online. Collect messages, photos and well-wishes on one page, free, no signup required to post.",
     themes: [
       {
         name: "Soft Clouds",
@@ -187,7 +187,7 @@ const occasions: OccasionSeed[] = [
     ctaText: "Start a farewell board",
     seoTitle: "Free Online Farewell Cards for Coworkers | Fondly Held",
     seoDescription:
-      "Send a coworker off with a group farewell card. Everyone adds a message, photo or memory to one page — free, no signup required to contribute.",
+      "Send a coworker off with a group farewell card. Everyone adds a message, photo or memory to one page, free, no signup required to contribute.",
     themes: [
       {
         name: "Warm Horizon",
@@ -249,9 +249,9 @@ const occasions: OccasionSeed[] = [
     motionProfile: "warm",
     promptText: "Send get-well wishes",
     ctaText: "Start a get-well board",
-    seoTitle: "Free Online Get Well Soon Cards — Group Card | Fondly Held",
+    seoTitle: "Free Online Get Well Soon Cards, Group Card | Fondly Held",
     seoDescription:
-      "Send comfort and encouragement with a group get-well-soon card. Friends and family add messages and photos to one page — free, gentle, no signup to post.",
+      "Send comfort and encouragement with a group get-well-soon card. Friends and family add messages and photos to one page, free, gentle, no signup to post.",
     themes: [
       {
         name: "Gentle Bloom",
@@ -281,9 +281,9 @@ const occasions: OccasionSeed[] = [
     motionProfile: "warm",
     promptText: "Say thank you",
     ctaText: "Start a thank-you board",
-    seoTitle: "Free Online Thank You Cards — Group Card | Fondly Held",
+    seoTitle: "Free Online Thank You Cards, Group Card | Fondly Held",
     seoDescription:
-      "Show appreciation with a group thank-you card. Everyone adds a message or photo to one beautiful page — free, no signup required to contribute.",
+      "Show appreciation with a group thank-you card. Everyone adds a message or photo to one beautiful page, free, no signup required to contribute.",
     themes: [
       {
         name: "Honeyed Cream",

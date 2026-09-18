@@ -7,6 +7,7 @@
 // never sees a flash of "Sign in".
 import Link from "next/link";
 import { useSession } from "@/lib/auth-client";
+import { UserMenu } from "@/components/auth/user-menu";
 
 const PILL =
   "rounded-full bg-[var(--brand-ink)] px-4 py-2 text-white transition-colors hover:bg-[var(--brand)]";
@@ -17,12 +18,13 @@ export function HeaderAuth() {
   if (session) {
     return (
       <>
-        <Link href="/dashboard" className="hover:text-[var(--brand)]">
+        <Link href="/dashboard" className="hidden hover:text-[var(--brand)] sm:inline">
           My boards
         </Link>
         <Link href="/create" className={PILL}>
           New board
         </Link>
+        <UserMenu user={session.user} />
       </>
     );
   }

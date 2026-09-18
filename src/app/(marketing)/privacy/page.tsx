@@ -16,11 +16,11 @@ export default function PrivacyPage() {
       <h2 className="mt-8 font-heading text-xl">What we collect</h2>
       <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-black/70">
         <li>Account info for board owners: name, email, and an encrypted password (or your Google account, if you sign in that way).</li>
-        <li>Board content: whatever you and your contributors post — names, messages, photos, and videos.</li>
+        <li>Board content: whatever you and your contributors post, names, messages, photos, and videos.</li>
         <li>A hashed (not raw) IP address on each anonymous post or report, used only to enforce rate limits and reduce spam.</li>
         <li>
-          Basic usage analytics — page views (Vercel Web Analytics) and whether key steps like
-          creating a board or posting succeed (PostHog) — to understand what&apos;s working. These
+          Basic usage analytics, page views (Vercel Web Analytics) and whether key steps like
+          creating a board or posting succeed (PostHog), to understand what&apos;s working. These
           never include the content of messages, names, or photos, and we don&apos;t record sessions.
         </li>
       </ul>
@@ -41,7 +41,7 @@ export default function PrivacyPage() {
 
       <h2 className="mt-8 font-heading text-xl">Your choices</h2>
       <p className="mt-3 text-sm text-black/70">
-        Board owners can hide or delete any post at any time — deleting a post also deletes
+        Board owners can hide or delete any post at any time, deleting a post also deletes
         its media from storage, not just the visible entry. You can delete your account and
         its boards by contacting us. Anyone can report a post they believe shouldn&apos;t be
         there.

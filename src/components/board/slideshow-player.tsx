@@ -1,6 +1,6 @@
 "use client";
 
-// Fullscreen autoplay presentation — Ken Burns drift + cross-fade (DESIGN.md signature
+// Fullscreen autoplay presentation, Ken Burns drift + cross-fade (DESIGN.md signature
 // moment #4: "Plays at parties and funerals alike"). Motion-profile-agnostic by design;
 // only prefers-reduced-motion changes behavior (plain cross-fade, no pan/zoom).
 import { useEffect, useState } from "react";
@@ -99,7 +99,7 @@ export function SlideshowPlayer({ board, posts }: { board: BoardWithRelations; p
               className={hasMedia ? "mt-3 text-sm text-white/70" : "mt-4 text-lg"}
               style={hasMedia ? undefined : { color: "var(--board-accent)" }}
             >
-              — {post.authorName}
+              {post.authorName}
             </p>
           </div>
         </motion.div>

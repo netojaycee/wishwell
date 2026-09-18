@@ -17,7 +17,7 @@ export default function TermsPage() {
       <p className="mt-3 text-sm text-black/70">
         You keep ownership of anything you post. By posting, you give Fondly Held permission
         to store and display it as part of the board you&apos;re posting to. You&apos;re responsible
-        for having the right to share anything you post — photos, videos, and messages —
+        for having the right to share anything you post, photos, videos, and messages,
         including getting consent from anyone identifiable in them where appropriate.
       </p>
 

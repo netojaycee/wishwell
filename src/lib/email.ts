@@ -1,4 +1,4 @@
-// Resend client. No-ops until RESEND_API_KEY is set — see .env.example. Real delivery to
+// Resend client. No-ops until RESEND_API_KEY is set, see .env.example. Real delivery to
 // arbitrary recipients additionally needs a verified sending domain on Resend's side.
 import { Resend } from "resend";
 import { env, hasResend } from "@/lib/env";

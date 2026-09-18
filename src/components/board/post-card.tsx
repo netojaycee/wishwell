@@ -2,7 +2,7 @@ import Image from "next/image";
 import type { PostRow } from "@/lib/types";
 import { ReportButton } from "./report-button";
 
-// Deterministic tiny rotation from the post id — "reads handmade" (DESIGN.md) without
+// Deterministic tiny rotation from the post id, "reads handmade" (DESIGN.md) without
 // a client/server hydration mismatch (Math.random() would differ between the two).
 function rotationFor(id: string) {
   let hash = 0;
@@ -50,7 +50,7 @@ export function PostCard({ post }: { post: PostRow }) {
           {post.body}
         </p>
         <p className="mt-4 text-sm font-medium" style={{ color: "var(--board-accent)" }}>
-          — {post.authorName}
+          {post.authorName}
         </p>
       </div>
       <ReportButton postId={post.id} />
