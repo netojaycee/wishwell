@@ -40,6 +40,26 @@ Fondly Held supports both as *modes* of the same object.
 - Media deletion must actually delete from object storage, not just the DB row.
 - Memorial and sympathy boards handle grief. No growth-hacky copy, no upsell modals, no "🎉" anywhere in that flow.
 
+## Database operations (Neon)
+
+`DATABASE_URL` is Neon's **pooled** endpoint (host contains `-pooler`) and it is the
+production database. The pooler shares server connections between clients, so anything
+that sets session state on it leaks to the live app.
+
+- **`pg_dump`, `pg_restore`, `psql` maintenance and `pnpm db:migrate` must use the direct
+  URL**: `sed 's/-pooler\././'` on `DATABASE_URL`. `db:migrate` already does this itself.
+- **Why:** `pg_dump` runs `SET search_path = ''`. Run through the pooler, that stuck to
+  shared connections and the live app failed with `relation "user" does not exist`
+  (logins, Google button and the Vercel build all broke, 2026-09-24). Fix was restarting the
+  Neon compute (Console → Branch → Compute → Restart). Check with `show search_path`; it
+  should print `"$user", public`.
+- Neon runs Postgres 17: use `/opt/homebrew/opt/postgresql@17/bin/pg_dump` (the default
+  Homebrew one is 16 and refuses).
+- Dumps go in `backups/` (gitignored), named `fondlyheld-YYYY-MM-DD.dump`. They contain real
+  user emails and password hashes, so never commit or sync them.
+- Take a dump before any migration on the shared DB, and migrate BEFORE pushing code that
+  needs the new schema.
+
 ## Definition of done for any task
 
 - [ ] Works on a 375px viewport first, then desktop.

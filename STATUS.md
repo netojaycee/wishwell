@@ -61,6 +61,12 @@ Done), left alone deliberately, internal identifiers only, no user-facing effect
   real email
 - [ ] Privacy/Terms are real, substantive, non-lorem policies but not lawyer-reviewed
 
+### Known issue: pooled connection poisoning (resolved 2026-09-24, can recur)
+A `pg_dump` run through the `-pooler` URL leaked an empty `search_path` into shared
+connections; production logins and the Vercel build failed with "relation does not exist".
+Fixed by restarting the Neon compute. Prevention: always use the direct URL for dumps and
+maintenance, see "Database operations" in `CLAUDE.md`.
+
 ### Known limitations (not bugs)
 - Invite and password-reset emails send from `EMAIL_FROM`, default
   `Fondly Held <fondlyheld@mail.johnedeh.com>`: the owner's own domain, `mail.johnedeh.com`
