@@ -1,10 +1,10 @@
-import { and, asc, desc, eq, gte, inArray, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gte, inArray, isNull, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { board, occasionType, post, reaction, report } from "@/db/schema";
 import { deleteMedia } from "@/lib/media";
 import type { CreatePostInput } from "@/lib/validation/post";
 
-export async function createPost(boardId: string, input: Omit<CreatePostInput, "website" | "renderedAt">, ipHash: string) {
+export async function createPost(boardId: string, input: Omit<CreatePostInput, "website" | "renderedAt">, ipHash: string, userId: string | null = null) {
   const [row] = await db
     .insert(post)
     .values({
@@ -15,6 +15,7 @@ export async function createPost(boardId: string, input: Omit<CreatePostInput, "
       mediaType: input.mediaType,
       gifUrl: input.gifUrl,
       authorIpHash: ipHash,
+      userId,
       status: "published",
     })
     .returning();
@@ -175,4 +176,16 @@ export async function toggleReaction(postId: string, emoji: string, fingerprint:
     await db.insert(reaction).values({ postId, emoji, fingerprint }).onConflictDoNothing();
   }
   return (await listReactionCounts([postId]))[postId] ?? {};
+}
+
+// Attach posts written from this browser (ids from the post cookie) to a now-signed-in
+// user. Only rows with no owner yet, so it can never steal someone else's post.
+export async function claimPostsForUser(postIds: string[], userId: string) {
+  if (postIds.length === 0) return 0;
+  const rows = await db
+    .update(post)
+    .set({ userId })
+    .where(and(inArray(post.id, postIds), isNull(post.userId)))
+    .returning({ id: post.id });
+  return rows.length;
 }

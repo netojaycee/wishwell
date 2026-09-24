@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireSession } from "@/lib/session";
 import { UserMenu } from "@/components/auth/user-menu";
 import { SiteFooter } from "@/components/marketing/site-footer";
+import { VerifyEmailBanner } from "@/components/auth/verify-email-banner";
 import { LogoMark } from "@/components/brand/logo-mark";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -36,6 +37,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           </div>
         </div>
       </header>
+      {session.user.emailVerified ? null : <VerifyEmailBanner email={session.user.email} />}
       <main className="relative mx-auto w-full max-w-4xl flex-1 px-6 py-10">{children}</main>
       <SiteFooter />
     </div>

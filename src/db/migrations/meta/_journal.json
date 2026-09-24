@@ -29,6 +29,13 @@
       "when": 1789725298451,
       "tag": "0003_rate_events",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790230215030,
+      "tag": "0004_gifted_the_anarchist",
+      "breakpoints": true
     }
   ]
 }

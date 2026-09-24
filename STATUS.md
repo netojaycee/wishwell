@@ -2,7 +2,7 @@
 
 > Living file. The agent updates this after every meaningful change. Keep it short and true. Delete finished noise; this is a state file, not a changelog.
 
-**Last updated:** 2026-09-18
+**Last updated:** 2026-09-24
 **Phase:** Day-1 build, live in production, polished, tester guide ready to send
 **Live URL:** https://fondlyheld.vercel.app, confirmed deployed and auto-deploying from
 `main` on every push (Vercel's git integration). Email/password sign-up verified working
@@ -25,6 +25,19 @@ Done), left alone deliberately, internal identifiers only, no user-facing effect
    machine, already diagnosed, documented there.
 
 ## Now (actually pending)
+- [ ] **Linked boards/messages (2026-09-24), code written, NOT deployed.** Adds nullable
+  `post.user_id` (migration `0004`, additive). Signed-in posts set it; signed-out posts are
+  remembered in an httpOnly `fondlyheld_posts` cookie and claimed on the next dashboard
+  visit. Dashboard gains "Boards you're invited to" (email match, **verified email only**,
+  link carries the invite token) and "Boards you've written on" (non-private only).
+  **Deploy order: take a DB dump, run `pnpm db:migrate` (prod and local share one DB), THEN
+  push**, or new posts will 500 against the old schema. Old posts can't be back-filled:
+  `post.author_email` was never collected, so there is nothing to match on.
+- [x] **Email verification (2026-09-24), soft.** Sent on sign-up (branded template,
+  `src/lib/email-layout.ts`, reusable for other emails); dashboard banner with resend for
+  unverified accounts. Sign-in is deliberately NOT blocked (would lock out existing
+  accounts); flip `requireEmailVerification` in `src/lib/auth.ts` later if wanted. Google
+  users are verified already. Verified email is what unlocks the "invited to" list.
 - [x] **Media upload fixed (2026-09-15)**, owner added the R2 CORS rule and the `R2_*`
   env vars in Vercel. Verified: production renders "Add a photo or video", signs upload
   URLs, and R2 answers the browser preflight with 204 + `Access-Control-Allow-Origin` for

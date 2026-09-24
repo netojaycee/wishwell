@@ -1,7 +1,7 @@
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, ne, sql } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { db } from "@/db";
-import { board, post } from "@/db/schema";
+import { board, invite, post } from "@/db/schema";
 import { slugify } from "@/lib/slug";
 
 export type NewBoard = {
@@ -169,4 +169,43 @@ export async function setBoardDelivery(
     .where(and(eq(board.id, boardId), eq(board.ownerId, ownerId), eq(board.mode, "collaborative")))
     .returning();
   return row ?? null;
+}
+
+// Boards someone else made that this user was invited to (matched on a VERIFIED email only,
+// otherwise anyone could sign up with a stranger's address and read their invites). The
+// link carries the invite token so private boards open on any device.
+export async function listInvitedBoards(userId: string, email: string, emailVerified: boolean) {
+  if (!emailVerified) return [];
+  const rows = await db
+    .select({ boardId: invite.boardId, token: invite.token })
+    .from(invite)
+    .innerJoin(board, eq(invite.boardId, board.id))
+    .where(and(sql`lower(${invite.email}) = ${email.toLowerCase()}`, ne(board.ownerId, userId)))
+    .orderBy(desc(invite.createdAt));
+  const tokenByBoard = new Map<string, string>();
+  for (const r of rows) if (!tokenByBoard.has(r.boardId)) tokenByBoard.set(r.boardId, r.token);
+  if (tokenByBoard.size === 0) return [];
+
+  const boards = await db.query.board.findMany({
+    where: (b, { inArray }) => inArray(b.id, [...tokenByBoard.keys()]),
+    with: { theme: true, occasionType: true },
+  });
+  return boards.map((b) => ({ ...b, href: `/b/${b.slug}?invite=${tokenByBoard.get(b.id)}` }));
+}
+
+// Boards this user has written on (not their own, not private: a private board's link only
+// works with an invite, which listInvitedBoards already covers).
+export async function listContributedBoards(userId: string) {
+  const ids = await db
+    .selectDistinct({ boardId: post.boardId })
+    .from(post)
+    .innerJoin(board, eq(post.boardId, board.id))
+    .where(and(eq(post.userId, userId), ne(board.visibility, "private"), sql`${board.ownerId} is distinct from ${userId}`));
+  if (ids.length === 0) return [];
+  const boards = await db.query.board.findMany({
+    where: (b, { inArray }) => inArray(b.id, ids.map((i) => i.boardId)),
+    with: { theme: true, occasionType: true },
+    orderBy: desc(board.createdAt),
+  });
+  return boards.map((b) => ({ ...b, href: `/b/${b.slug}` }));
 }

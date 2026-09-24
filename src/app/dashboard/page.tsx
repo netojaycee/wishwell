@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getSession } from "@/lib/session";
-import { listBoardsForOwner } from "@/lib/data/boards";
+import { listBoardsForOwner, listContributedBoards, listInvitedBoards } from "@/lib/data/boards";
 import { ClaimBoards } from "@/components/dashboard/claim-boards";
 import { OccasionArt } from "@/components/illustrations/occasion-art";
 import { BoardCard } from "@/components/dashboard/board-card";
@@ -14,6 +14,14 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const { deleted } = await searchParams;
   const session = await getSession();
   const boards = session ? await listBoardsForOwner(session.user.id) : [];
+  const [invited, contributed] = session
+    ? await Promise.all([
+        listInvitedBoards(session.user.id, session.user.email, session.user.emailVerified),
+        listContributedBoards(session.user.id),
+      ])
+    : [[], []];
+  const invitedIds = new Set(invited.map((b) => b.id));
+  const contributedOnly = contributed.filter((b) => !invitedIds.has(b.id));
 
   return (
     <div>
@@ -67,6 +75,34 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           ))}
         </ul>
       )}
+
+      <BoardLinkSection title="Boards you're invited to" boards={invited} />
+      <BoardLinkSection title="Boards you've written on" boards={contributedOnly} />
     </div>
+  );
+}
+
+// Plain list of other people's boards: quiet on purpose (no growth copy, memorial-safe).
+function BoardLinkSection({ title, boards }: { title: string; boards: Awaited<ReturnType<typeof listInvitedBoards>> }) {
+  if (boards.length === 0) return null;
+  return (
+    <section className="mt-12">
+      <h2 className="font-heading text-2xl">{title}</h2>
+      <ul className="mt-4 divide-y divide-black/5 overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm">
+        {boards.map((b) => (
+          <li key={b.id}>
+            <Link href={b.href} className="flex items-center justify-between gap-4 px-5 py-4 transition-colors hover:bg-black/[0.02]">
+              <span className="min-w-0">
+                <span className="block truncate font-medium">for {b.recipientName}</span>
+                <span className="block truncate text-sm text-black/55">{b.title}</span>
+              </span>
+              <span className="shrink-0 rounded-full px-2.5 py-1 text-xs font-medium" style={{ background: b.theme.palette.accentSoft, color: b.theme.palette.accent }}>
+                {b.occasionType.label}
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }

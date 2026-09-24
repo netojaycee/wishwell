@@ -3,7 +3,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@/db";
 import { env, hasGoogleAuth } from "@/lib/env";
-import { sendPasswordResetEmail } from "@/lib/email";
+import { sendPasswordResetEmail, sendVerificationEmail } from "@/lib/email";
 import { deleteAllBoardsForOwner } from "@/lib/data/boards";
 
 export const auth = betterAuth({
@@ -17,6 +17,15 @@ export const auth = betterAuth({
       await sendPasswordResetEmail({ to: user.email, url });
     },
     revokeSessionsOnPasswordReset: true,
+  },
+  // Soft verification: sent on sign-up, not required to sign in (that would lock out every
+  // account created before this existed). Unverified users get a banner with a resend link.
+  emailVerification: {
+    sendOnSignUp: true,
+    autoSignInAfterVerification: true,
+    sendVerificationEmail: async ({ user, url }) => {
+      await sendVerificationEmail({ to: user.email, name: user.name, url });
+    },
   },
   user: {
     // Owners can delete their account from /dashboard/settings. Their boards, posts and

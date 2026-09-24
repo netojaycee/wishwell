@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { claimPendingBoards } from "@/lib/claim";
+import { claimPendingBoards, claimWrittenPosts } from "@/lib/claim";
 
 export function ClaimBoards({ ownerId }: { ownerId: string }) {
   const [claimed, setClaimed] = useState<string[] | null>(null);
@@ -14,6 +14,10 @@ export function ClaimBoards({ ownerId }: { ownerId: string }) {
         setClaimed(slugs);
         router.refresh();
       }
+    });
+    // Messages written from this browser while signed out now belong to the account too.
+    claimWrittenPosts().then((count) => {
+      if (count > 0) router.refresh();
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- run once on mount only
   }, []);

@@ -65,7 +65,7 @@ export function AuthForm({ mode, hasGoogleAuth }: { mode: "sign-in" | "sign-up";
 
     const result =
       mode === "sign-up"
-        ? await authClient.signUp.email({ name, email, password })
+        ? await authClient.signUp.email({ name, email, password, callbackURL: "/dashboard" })
         : await authClient.signIn.email({ email, password });
 
     if (result.error) {

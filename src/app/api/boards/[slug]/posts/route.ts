@@ -1,11 +1,14 @@
 // Anonymous post creation. A route handler, not a Server Action, so rate limiting and
 // bot checks are explicit and unambiguous (see ARCHITECTURE.md, "Rendering & caching").
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { getBoardBySlug } from "@/lib/data/boards";
 import { canViewBoard } from "@/lib/access";
 import { isGiphyUrl, isPostMediaUrl } from "@/lib/media";
 import { isPostingClosed } from "@/lib/board-state";
+import { getSession } from "@/lib/session";
+import { addWrittenPostCookie } from "@/lib/my-posts";
 import { createPost } from "@/lib/data/posts";
 import { checkPostRateLimit } from "@/lib/rate-limit";
 import { sanitizePostBody, sanitizePlainText } from "@/lib/sanitize";
@@ -61,6 +64,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ slu
     );
   }
 
+  const session = await getSession();
   const ip = requestIp(request.headers);
   const ipHash = hashIp(ip);
 
@@ -78,8 +82,12 @@ export async function POST(request: Request, { params }: { params: Promise<{ slu
       mediaType: input.mediaType,
       gifUrl: input.gifUrl,
     },
-    ipHash
+    ipHash,
+    session?.user.id ?? null
   );
+
+  // Signed out: remember this post in the browser so it can be linked if they sign up later.
+  if (!session) await addWrittenPostCookie(await cookies(), post.id);
 
   revalidatePath(`/b/${slug}`);
 

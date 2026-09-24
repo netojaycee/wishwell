@@ -88,8 +88,12 @@ export const post = pgTable("post", {
   pinned: boolean("pinned").notNull().default(false),
   // Hashed (not raw) requesting IP, used only for anonymous rate-limit windows.
   authorIpHash: text("author_ip_hash").notNull(),
+  // Set when the author was signed in, or later claimed the post from the browser that wrote
+  // it. Optional forever: contributing never requires an account. Powers "boards I've
+  // written on" in the dashboard.
+  userId: text("user_id").references(() => user.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-});
+}, (t) => [index("post_user_id").on(t.userId)]);
 
 export const reaction = pgTable(
   "reaction",
@@ -155,6 +159,7 @@ export const boardRelations = relations(board, ({ one, many }) => ({
 
 export const postRelations = relations(post, ({ one, many }) => ({
   board: one(board, { fields: [post.boardId], references: [board.id] }),
+  author: one(user, { fields: [post.userId], references: [user.id] }),
   reactions: many(reaction),
   reports: many(report),
 }));
