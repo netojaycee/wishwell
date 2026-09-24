@@ -10,7 +10,14 @@ async function main() {
   if (!url) throw new Error("DATABASE_URL is not set");
   const isLocal = url.includes("127.0.0.1") || url.includes("localhost");
 
-  const client = postgres(url, { ssl: isLocal ? false : "require", max: 1 });
+  // Migrations go through Neon's DIRECT endpoint, not the "-pooler" one: the pooler hands
+  // out connections with no search_path, so unqualified table names ("post") don't resolve.
+  const directUrl = url.replace("-pooler.", ".");
+  const client = postgres(directUrl, {
+    ssl: isLocal ? false : "require",
+    max: 1,
+    connection: { search_path: "public" },
+  });
   const db = drizzle(client);
 
   console.log("Running migrations…");
